@@ -15,17 +15,17 @@
  */
 
 import * as vscode from "vscode";
-import { KogitoToolingVsCodeRouter } from "./KogitoToolingVsCodeRouter";
+import { SimpleReactEditorsRouter } from "./SimpleReactEditorsRouter";
 import { startKogitoExtension } from "appformer-js-vscode-extension";
 
 export function activate(context: vscode.ExtensionContext) {
   console.info("Extension is alive.");
 
   startKogitoExtension({
-    extensionName: "kiegroup.appformer-js-vscode-extension-pack",
+    extensionName: "kiegroup.appformer-js-vscode-extension-pack-simple-react",
     webviewLocation: "dist/webview/index.js",
     context: context,
-    router: new KogitoToolingVsCodeRouter(context)
+    router: new SimpleReactEditorsRouter(context)
   });
 
   console.info("Extension is successfully setup.");

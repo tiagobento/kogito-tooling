@@ -17,15 +17,15 @@
 import { Router } from "appformer-js-core";
 import * as vscode from "vscode";
 import * as __path from "path";
-import { ReadonlyEditorsLanguageData } from "../common/ReadonlyEditorsLanguageData";
+import { SimpleReactEditorsLanguageData } from "../common/SimpleReactEditorsLanguageData";
 
-export class ReadonlyEditorsRouter implements Router<ReadonlyEditorsLanguageData> {
+export class SimpleReactEditorsRouter implements Router<SimpleReactEditorsLanguageData> {
   private readonly context: vscode.ExtensionContext;
-  private readonly languageDataByFileExtension: Map<string, ReadonlyEditorsLanguageData>;
+  private readonly languageDataByFileExtension: Map<string, SimpleReactEditorsLanguageData>;
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
-    this.languageDataByFileExtension = new Map<string, ReadonlyEditorsLanguageData>([
+    this.languageDataByFileExtension = new Map<string, SimpleReactEditorsLanguageData>([
       [
         "dmn",
         {

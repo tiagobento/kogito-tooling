@@ -17,13 +17,17 @@
 import * as React from "react";
 import * as AppFormer from "appformer-js-core";
 import * as MicroEditorEnvelope from "appformer-js-microeditor-envelope";
-import { ReadonlyEditorsLanguageData } from "../common/ReadonlyEditorsLanguageData";
+import { EnvelopeBusInnerMessageHandler } from "appformer-js-microeditor-envelope";
+import { SimpleReactEditorsLanguageData } from "../common/SimpleReactEditorsLanguageData";
 
-export class ReadonlyEditorsFactory implements MicroEditorEnvelope.EditorFactory<ReadonlyEditorsLanguageData> {
-  public createEditor(languageData: ReadonlyEditorsLanguageData): Promise<AppFormer.Editor> {
+export class SimpleReactEditorsFactory implements MicroEditorEnvelope.EditorFactory<SimpleReactEditorsLanguageData> {
+  public createEditor(
+    languageData: SimpleReactEditorsLanguageData,
+    messageBus: EnvelopeBusInnerMessageHandler
+  ): Promise<AppFormer.Editor> {
     switch (languageData.type) {
       case "react":
-        return Promise.resolve(new ReactReadonlyAppFormerEditor());
+        return Promise.resolve(new ReactReadonlyAppFormerEditor(messageBus));
       default:
         throw new Error("Only react editors are supported on this extension.");
     }
@@ -31,11 +35,14 @@ export class ReadonlyEditorsFactory implements MicroEditorEnvelope.EditorFactory
 }
 
 class ReactReadonlyAppFormerEditor extends AppFormer.Editor {
+  private readonly messageBus: EnvelopeBusInnerMessageHandler;
+
   private self: ReactReadonlyEditor;
 
-  constructor() {
+  constructor(messageBus: EnvelopeBusInnerMessageHandler) {
     super("readonly-react-editor");
     this.af_isReact = true;
+    this.messageBus = messageBus;
   }
 
   public getContent(): Promise<string> {
@@ -43,7 +50,7 @@ class ReactReadonlyAppFormerEditor extends AppFormer.Editor {
   }
 
   public isDirty(): boolean {
-    return false;
+    return this.self.isDirty();
   }
 
   public setContent(content: string): Promise<void> {
@@ -51,16 +58,18 @@ class ReactReadonlyAppFormerEditor extends AppFormer.Editor {
   }
 
   public af_componentRoot(): AppFormer.Element {
-    return <ReactReadonlyEditor exposing={s => (this.self = s)} />;
+    return <ReactReadonlyEditor exposing={s => (this.self = s)} messageBus={this.messageBus} />;
   }
 }
 
 interface Props {
   exposing: (s: ReactReadonlyEditor) => void;
+  messageBus: EnvelopeBusInnerMessageHandler;
 }
 
 interface State {
   content: string;
+  originalContent: string;
 }
 
 class ReactReadonlyEditor extends React.Component<Props, State> {
@@ -68,26 +77,44 @@ class ReactReadonlyEditor extends React.Component<Props, State> {
     super(props);
     props.exposing(this);
     this.state = {
+      originalContent: "",
       content: ""
     };
   }
 
   public setContent(content: string) {
-    return new Promise<void>(res => this.setState({ content: content }, res));
+    return new Promise<void>(res =>
+      this.setState({ originalContent: content }, () => {
+        res();
+      })
+    ).then(() => this.updateContent(content));
   }
 
+  private updateContent(content: string) {
+    return new Promise<void>(res => {
+      this.setState({ content: content }, () => {
+        this.props.messageBus.notify_dirtyIndicatorChange(this.isDirty());
+        res();
+      });
+    });
+  }
+
+  //saving triggers this method
   public getContent() {
-    return Promise.resolve(this.state.content);
+    return this.setContent(this.state.content).then(() => this.state.content);
+  }
+
+  public isDirty() {
+    return this.state.content !== this.state.originalContent;
   }
 
   public render() {
     return (
-      <div>
-        <h1> This is the content: </h1>
-        <br />
-
-        <p>{this.state.content}</p>
-      </div>
+      <textarea
+        style={{ width: "100%", height: "100%" }}
+        value={this.state.content}
+        onInput={(e: any) => this.updateContent(e.target.value)}
+      />
     );
   }
 }

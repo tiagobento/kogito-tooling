@@ -29,6 +29,7 @@ export interface Args {
 }
 
 export * from "./EditorFactory";
+export * from "./EnvelopeBusInnerMessageHandler";
 
 class ReactDomRenderer implements Renderer {
   public render(element: ReactElement, container: HTMLElement, callback: () => void) {

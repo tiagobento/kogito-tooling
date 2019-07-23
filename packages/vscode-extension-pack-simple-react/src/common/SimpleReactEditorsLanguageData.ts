@@ -16,6 +16,6 @@
 
 import { LanguageData } from "appformer-js-core";
 
-export interface ReadonlyEditorsLanguageData extends LanguageData {
+export interface SimpleReactEditorsLanguageData extends LanguageData {
   type: string;
 }

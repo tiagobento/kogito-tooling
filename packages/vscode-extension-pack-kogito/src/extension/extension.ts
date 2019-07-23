@@ -15,17 +15,17 @@
  */
 
 import * as vscode from "vscode";
-import { ReadonlyEditorsRouter } from "./ReadonlyEditorsRouter";
+import { KogitoRouter } from "./KogitoRouter";
 import { startKogitoExtension } from "appformer-js-vscode-extension";
 
 export function activate(context: vscode.ExtensionContext) {
   console.info("Extension is alive.");
 
   startKogitoExtension({
-    extensionName: "kiegroup.appformer-js-vscode-extension-pack-react-readonly",
+    extensionName: "kiegroup.appformer-js-vscode-extension-pack-kogito",
     webviewLocation: "dist/webview/index.js",
     context: context,
-    router: new ReadonlyEditorsRouter(context)
+    router: new KogitoRouter(context)
   });
 
   console.info("Extension is successfully setup.");

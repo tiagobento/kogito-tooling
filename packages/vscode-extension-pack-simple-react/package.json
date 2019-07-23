@@ -1,5 +1,5 @@
 {
-  "name": "appformer-js-vscode-extension-pack",
+  "name": "appformer-js-vscode-extension-pack-simple-react",
   "displayName": "KIE :: Kogito VSCode Extension",
   "description": "",
   "version": "0.0.0",
@@ -46,15 +46,13 @@
     ]
   },
   "scripts": {
-    "pack-extension": "vsce package --yarn -o ./dist/kiegroup_kogito_editors.vsix",
+    "pack-extension": "vsce package --yarn -o ./dist/kiegroup_kogito_editors-readonly.vsix",
     "vscode:prepublish": "yarn run build",
     "build": "yarn run build:fast",
     "build:fast": "rm -rf dist && webpack",
     "compile": "webpack",
     "watch": "webpack",
-    "test": "jest",
-    "test:it": "rm -rf tests-it/out && tsc -p tests-it && node tests-it/out/main.js",
-    "build:prod": "yarn run build --mode production && yarn run test:it && yarn run pack-extension"
+    "build:prod": "yarn run build --mode production && yarn run pack-extension"
   },
   "jest-junit": {
     "outputDirectory": "./target"

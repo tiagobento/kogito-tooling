@@ -18,16 +18,17 @@ import { AppFormerGwtApi } from "./AppFormerGwtApi";
 import * as AppFormer from "appformer-js-core";
 import * as MicroEditorEnvelope from "appformer-js-microeditor-envelope";
 import { GwtEditorWrapper } from "./GwtEditorWrapper";
-import { Resource, KogitoToolingVsCodeLanguageData } from "../../common/KogitoToolingVsCodeLanguageData";
+import { Resource, KogitoLanguageData } from "../../common/KogitoLanguageData";
+import {EnvelopeBusInnerMessageHandler} from "appformer-js-microeditor-envelope";
 
-export class GwtEditorWrapperFactory implements MicroEditorEnvelope.EditorFactory<KogitoToolingVsCodeLanguageData> {
+export class GwtEditorWrapperFactory implements MicroEditorEnvelope.EditorFactory<KogitoLanguageData> {
   private readonly appFormerGwtApi: AppFormerGwtApi;
 
   constructor(appFormerGwtApi: AppFormerGwtApi) {
     this.appFormerGwtApi = appFormerGwtApi;
   }
 
-  public createEditor(languageData: KogitoToolingVsCodeLanguageData) {
+  public createEditor(languageData: KogitoLanguageData, messageBus: EnvelopeBusInnerMessageHandler) {
     return new Promise<AppFormer.Editor>(res => {
       this.appFormerGwtApi.setErraiDomain(languageData.erraiDomain); //needed only for backend communication
 

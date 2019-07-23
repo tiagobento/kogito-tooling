@@ -148,11 +148,12 @@ export class KogitoEditor {
         <html lang="en">
         <head>
             <style>
-                html, body, session, main, div#app {
+                html, body, div#envelope-app {
                     margin: 0;
                     border: 0;
                     padding: 0;
                     overflow: hidden;
+                    height: 100%;
                 }
             </style>
         

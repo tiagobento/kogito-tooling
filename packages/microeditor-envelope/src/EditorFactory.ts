@@ -16,7 +16,8 @@
 
 import * as AppFormer from "appformer-js-core";
 import { LanguageData } from "appformer-js-core";
+import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
 
 export interface EditorFactory<T extends LanguageData> {
-  createEditor(languageData: T): Promise<AppFormer.Editor>;
+  createEditor(languageData: T, messageBus: EnvelopeBusInnerMessageHandler): Promise<AppFormer.Editor>;
 }

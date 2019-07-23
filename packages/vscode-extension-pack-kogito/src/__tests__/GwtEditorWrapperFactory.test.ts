@@ -16,7 +16,7 @@
 
 import { AppFormerGwtApi } from "../webview/gwt/AppFormerGwtApi";
 import { GwtEditorWrapperFactory } from "../webview/gwt/GwtEditorWrapperFactory";
-import { Resource, KogitoToolingVsCodeLanguageData } from "../common/KogitoToolingVsCodeLanguageData";
+import { Resource, KogitoLanguageData } from "../common/KogitoLanguageData";
 
 const delay = (ms: number) => {
   return new Promise(res => setTimeout(res, ms));
@@ -39,7 +39,7 @@ const jsResource: Resource = {
   paths: ["resource.js"]
 };
 
-const testLanguageData: KogitoToolingVsCodeLanguageData = {
+const testLanguageData: KogitoLanguageData = {
   type: "dummy",
   editorId: "editorID",
   gwtModuleName: "moduleName",
@@ -53,7 +53,7 @@ describe("GwtEditorWrapperFactory", () => {
   test("create editor", async () => {
     const res = jest.fn();
 
-    gwtEditorWrapperFactory.createEditor(testLanguageData).then(res);
+    gwtEditorWrapperFactory.createEditor(testLanguageData, undefined as any).then(res);
 
     const links = document.body.getElementsByTagName("link");
     const scripts = document.getElementsByTagName("script");

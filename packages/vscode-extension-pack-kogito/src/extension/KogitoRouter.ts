@@ -17,20 +17,20 @@
 import { Router } from "appformer-js-core";
 import * as vscode from "vscode";
 import * as __path from "path";
-import { KogitoToolingVsCodeLanguageData } from "../common/KogitoToolingVsCodeLanguageData";
+import { KogitoLanguageData } from "../common/KogitoLanguageData";
 
 const dmnGwtModuleName = "org.kie.workbench.common.dmn.showcase.DMNShowcase";
 const dmnDistPath = `dist/webview/editors/dmn/`;
 const bpmnGwtModuleName = "org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase";
 const bpmnDistPath = `dist/webview/editors/bpmn/`;
 
-export class KogitoToolingVsCodeRouter implements Router<KogitoToolingVsCodeLanguageData> {
+export class KogitoRouter implements Router<KogitoLanguageData> {
   private readonly context: vscode.ExtensionContext;
-  private readonly languageDataByFileExtension: Map<string, KogitoToolingVsCodeLanguageData>;
+  private readonly languageDataByFileExtension: Map<string, KogitoLanguageData>;
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
-    this.languageDataByFileExtension = new Map<string, KogitoToolingVsCodeLanguageData>([
+    this.languageDataByFileExtension = new Map<string, KogitoLanguageData>([
       [
         "dmn",
         {

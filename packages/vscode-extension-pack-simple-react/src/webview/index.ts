@@ -15,7 +15,7 @@
  */
 
 import * as MicroEditorEnvelope from "appformer-js-microeditor-envelope";
-import { ReadonlyEditorsFactory } from "./ReadonlyEditorsFactory";
+import { SimpleReactEditorsFactory } from "./SimpleReactEditorsFactory";
 
 declare global {
   export const acquireVsCodeApi: any;
@@ -24,5 +24,5 @@ declare global {
 MicroEditorEnvelope.init({
   container: document.getElementById("envelope-app")!,
   busApi: acquireVsCodeApi(),
-  editorFactory: new ReadonlyEditorsFactory()
+  editorFactory: new SimpleReactEditorsFactory()
 });
