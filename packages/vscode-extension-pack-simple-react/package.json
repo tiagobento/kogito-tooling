@@ -46,7 +46,7 @@
     ]
   },
   "scripts": {
-    "pack-extension": "vsce package --yarn -o ./dist/kiegroup_kogito_editors-readonly.vsix",
+    "pack-extension": "vsce package --yarn -o ./dist/kiegroup_kogito_editors-simple-react.vsix",
     "vscode:prepublish": "yarn run build",
     "build": "yarn run build:fast",
     "build:fast": "rm -rf dist && webpack",
