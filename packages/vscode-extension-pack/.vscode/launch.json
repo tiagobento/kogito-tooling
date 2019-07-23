@@ -20,7 +20,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/__tests__/out/suite"
+				"--extensionTestsPath=${workspaceFolder}/tests-it/out/suite"
 			]
 		}
 	]

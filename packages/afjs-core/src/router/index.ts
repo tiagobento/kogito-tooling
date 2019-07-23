@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-export interface LanguageData {
-    editorId: string;
-    gwtModuleName: string;
-    erraiDomain: string;
-    resources: Resource[];
-}
-
-export interface Resource {
-    type: "css" | "js";
-    paths: string[];
-}
+export * from "./Router";

@@ -21,7 +21,7 @@ async function main() {
   try {
     const extensionDevelopmentPath = __path.resolve(__dirname, "../../");
     const extensionTestsPath = __path.resolve(__dirname, "./suite");
-    const workspace = __path.resolve(__dirname, "../../__tests__/test-workspace");
+    const workspace = __path.resolve(__dirname, "../../tests-it/test-workspace");
 
     await vscodeTest.runTests({
       extensionDevelopmentPath,

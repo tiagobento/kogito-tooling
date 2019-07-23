@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import * as MicroEditorEnvelope from "appformer-js-microeditor-envelope";
-
-declare global {
-  export const acquireVsCodeApi: any;
+export interface Router<T extends LanguageData> {
+  getLanguageData(fileExtension: string): T | undefined;
+  getRelativePathTo(uri: string): string;
 }
 
-MicroEditorEnvelope.init({
-  container: document.getElementById("envelope-app")!,
-  busApi: acquireVsCodeApi(),
-  clientSideOnly: true
-});
+export interface LanguageData {
+  type: string
+}

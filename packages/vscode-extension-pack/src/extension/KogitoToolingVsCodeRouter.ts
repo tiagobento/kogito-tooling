@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-import { LanguageData } from "appformer-js-core";
+import { Router } from "appformer-js-core";
 import * as vscode from "vscode";
 import * as __path from "path";
+import { KogitoToolingVsCodeLanguageData } from "../common/KogitoToolingVsCodeLanguageData";
 
 const dmnGwtModuleName = "org.kie.workbench.common.dmn.showcase.DMNShowcase";
 const dmnDistPath = `dist/webview/editors/dmn/`;
 const bpmnGwtModuleName = "org.kie.workbench.common.stunner.standalone.StunnerStandaloneShowcase";
 const bpmnDistPath = `dist/webview/editors/bpmn/`;
 
-export class LocalRouter {
+export class KogitoToolingVsCodeRouter implements Router<KogitoToolingVsCodeLanguageData> {
   private readonly context: vscode.ExtensionContext;
-  private readonly languageDataByFileExtension: Map<string, LanguageData>;
+  private readonly languageDataByFileExtension: Map<string, KogitoToolingVsCodeLanguageData>;
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
-    this.languageDataByFileExtension = new Map<string, LanguageData>([
+    this.languageDataByFileExtension = new Map<string, KogitoToolingVsCodeLanguageData>([
       [
         "dmn",
         {
+          type: "gwt",
           editorId: "DMNDiagramEditor",
           gwtModuleName: dmnGwtModuleName,
           erraiDomain: "",
@@ -56,6 +58,7 @@ export class LocalRouter {
         //FIXME: BPMN doesn't have a client-side only editor yet.
         "bpmn",
         {
+          type: "gwt",
           editorId: "BPMNStandaloneDiagramEditor",
           gwtModuleName: bpmnGwtModuleName,
           erraiDomain: "",
@@ -80,9 +83,7 @@ export class LocalRouter {
 
   public getRelativePathTo(uri: string) {
     return vscode.Uri.file(__path.join(this.context.extensionPath, ...uri.split("/")))
-      .with({
-        scheme: "vscode-resource"
-      })
+      .with({ scheme: "vscode-resource" })
       .toString();
   }
 

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { AppFormerGwtApi } from "../gwt/AppFormerGwtApi";
-import { GwtEditorWrapperFactory } from "../gwt/GwtEditorWrapperFactory";
-import { LanguageData, Resource } from "appformer-js-microeditor-router/src";
+import { AppFormerGwtApi } from "../webview/gwt/AppFormerGwtApi";
+import { GwtEditorWrapperFactory } from "../webview/gwt/GwtEditorWrapperFactory";
+import { Resource, KogitoToolingVsCodeLanguageData } from "../common/KogitoToolingVsCodeLanguageData";
 
 const delay = (ms: number) => {
   return new Promise(res => setTimeout(res, ms));
@@ -39,7 +39,8 @@ const jsResource: Resource = {
   paths: ["resource.js"]
 };
 
-const testLanguageData: LanguageData = {
+const testLanguageData: KogitoToolingVsCodeLanguageData = {
+  type: "dummy",
   editorId: "editorID",
   gwtModuleName: "moduleName",
   erraiDomain: "erraiDomain",
@@ -52,7 +53,7 @@ describe("GwtEditorWrapperFactory", () => {
   test("create editor", async () => {
     const res = jest.fn();
 
-    gwtEditorWrapperFactory.createEditor(testLanguageData, undefined as any).then(res);
+    gwtEditorWrapperFactory.createEditor(testLanguageData).then(res);
 
     const links = document.body.getElementsByTagName("link");
     const scripts = document.getElementsByTagName("script");

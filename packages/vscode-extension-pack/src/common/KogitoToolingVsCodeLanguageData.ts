@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import * as MicroEditorEnvelope from "..";
+import { LanguageData } from "appformer-js-core";
 
-MicroEditorEnvelope.init({
-  container: document.getElementById("envelope-app")!,
-  busApi: window.parent,
-  //FIXME: change it to "true" once bpmn editor is also client side.
-  //FIXME: maybe this information should live on LanguageData
-  clientSideOnly: false
-});
+export interface KogitoToolingVsCodeLanguageData extends LanguageData {
+  type: string;
+  editorId: string;
+  gwtModuleName: string;
+  erraiDomain: string;
+  resources: Resource[];
+}
+
+export interface Resource {
+  type: "css" | "js";
+  paths: string[];
+}

@@ -16,16 +16,17 @@
 
 import * as vscode from "vscode";
 import * as fs from "fs";
-import { LocalRouter } from "./LocalRouter";
 import { EnvelopeBusOuterMessageHandler } from "appformer-js-microeditor-envelope-protocol";
 import { KogitoEditorStore } from "./KogitoEditorStore";
+import { Router } from "appformer-js-core";
 
 export class KogitoEditor {
   private static readonly DIRTY_INDICATOR = " *";
 
   private readonly path: string;
+  private readonly webviewLocation: string;
   private readonly context: vscode.ExtensionContext;
-  private readonly router: LocalRouter;
+  private readonly router: Router<any>;
   private readonly panel: vscode.WebviewPanel;
   private readonly editorStore: KogitoEditorStore;
   private readonly envelopeBusOuterMessageHandler: EnvelopeBusOuterMessageHandler;
@@ -34,13 +35,15 @@ export class KogitoEditor {
     path: string,
     panel: vscode.WebviewPanel,
     context: vscode.ExtensionContext,
-    router: LocalRouter,
+    router: Router<any>,
+    webviewLocation: string,
     editorStore: KogitoEditorStore
   ) {
     this.path = path;
     this.panel = panel;
     this.context = context;
     this.router = router;
+    this.webviewLocation = webviewLocation;
     this.editorStore = editorStore;
     this.envelopeBusOuterMessageHandler = new EnvelopeBusOuterMessageHandler(
       {
@@ -124,7 +127,7 @@ export class KogitoEditor {
   }
 
   private getWebviewIndexJsPath() {
-    return this.router.getRelativePathTo("dist/webview/index.js");
+    return this.router.getRelativePathTo(this.webviewLocation);
   }
 
   public hasPath(path: string) {

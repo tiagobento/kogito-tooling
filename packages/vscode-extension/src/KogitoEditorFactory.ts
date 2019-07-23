@@ -17,17 +17,19 @@
 import * as vscode from "vscode";
 import { KogitoEditorStore } from "./KogitoEditorStore";
 import { KogitoEditor } from "./KogitoEditor";
-import { LocalRouter } from "./LocalRouter";
+import { Router } from "appformer-js-core";
 
 export class KogitoEditorFactory {
   private readonly context: vscode.ExtensionContext;
   private readonly editorStore: KogitoEditorStore;
-  private readonly router: LocalRouter;
+  private readonly webviewLocation: string;
+  private readonly router: Router<any>;
 
-  constructor(context: vscode.ExtensionContext, router: LocalRouter, editorStore: KogitoEditorStore) {
+  constructor(context: vscode.ExtensionContext, router: Router<any>, webviewLocation: string, editorStore: KogitoEditorStore) {
     this.context = context;
     this.editorStore = editorStore;
     this.router = router;
+    this.webviewLocation = webviewLocation;
   }
 
   public openNew(path: string) {
@@ -36,7 +38,7 @@ export class KogitoEditorFactory {
     }
 
     const panel = this.openNewPanel(path);
-    const editor = new KogitoEditor(path, panel, this.context, this.router, this.editorStore);
+    const editor = new KogitoEditor(path, panel, this.context, this.router, this.webviewLocation, this.editorStore);
     this.editorStore.addAsActive(editor);
     editor.setupEnvelopeBus();
     editor.setupPanelActiveStatusChange();

@@ -20,13 +20,20 @@ import { KogitoEditorFactory } from "./KogitoEditorFactory";
 
 export class KogitoEditorsExtension {
   private readonly context: vscode.ExtensionContext;
+  private readonly extensionName: string;
   private readonly editorStore: KogitoEditorStore;
   private readonly editorFactory: KogitoEditorFactory;
 
-  constructor(context: vscode.ExtensionContext, editorStore: KogitoEditorStore, editorFactory: KogitoEditorFactory) {
+  constructor(
+    context: vscode.ExtensionContext,
+    extensionName: string,
+    editorStore: KogitoEditorStore,
+    editorFactory: KogitoEditorFactory
+  ) {
     this.context = context;
     this.editorStore = editorStore;
     this.editorFactory = editorFactory;
+    this.extensionName = extensionName;
   }
 
   public registerCustomSaveCommand() {
@@ -93,7 +100,7 @@ export class KogitoEditorsExtension {
   }
 
   private supportsLanguage(languageId: string) {
-    const extension = vscode.extensions.getExtension("kiegroup.appformer-js-vscode-extension");
+    const extension = vscode.extensions.getExtension(this.extensionName);
     if (!extension) {
       throw new Error("Extension configuration not found.");
     }

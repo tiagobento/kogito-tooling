@@ -59,7 +59,9 @@ suite("vscode extension :: integration tests", () => {
     const dmnFile = `${workspace}/demo.dmn`;
     open(dmnFile);
 
-    assert.deepStrictEqual([dmnFile, ""], await textEditorOpenedAndClosed);
+    const expt  = await textEditorOpenedAndClosed;
+
+    assert.deepStrictEqual([dmnFile, ""], expt);
 
     await delay(1000);
   });

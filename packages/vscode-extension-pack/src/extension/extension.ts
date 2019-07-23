@@ -15,23 +15,18 @@
  */
 
 import * as vscode from "vscode";
-import { KogitoEditorsExtension } from "./KogitoEditorsExtension";
-import { KogitoEditorStore } from "./KogitoEditorStore";
-import { KogitoEditorFactory } from "./KogitoEditorFactory";
-import { LocalRouter } from "./LocalRouter";
+import { KogitoToolingVsCodeRouter } from "./KogitoToolingVsCodeRouter";
+import { startKogitoExtension } from "appformer-js-vscode-extension";
 
 export function activate(context: vscode.ExtensionContext) {
   console.info("Extension is alive.");
 
-  const router = new LocalRouter(context);
-
-  const editorStore = new KogitoEditorStore();
-  const editorFactory = new KogitoEditorFactory(context, router, editorStore);
-  const extension = new KogitoEditorsExtension(context, editorStore, editorFactory);
-
-  extension.startReplacingTextEditorsByKogitoEditorsAsTheyOpenIfLanguageIsSupported();
-  extension.registerCustomSaveCommand();
-  extension.registerCustomSaveAllCommand();
+  startKogitoExtension({
+    extensionName: "kiegroup.appformer-js-vscode-extension-pack",
+    webviewLocation: "dist/webview/index.js",
+    context: context,
+    router: new KogitoToolingVsCodeRouter(context)
+  });
 
   console.info("Extension is successfully setup.");
 }
