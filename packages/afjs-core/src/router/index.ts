@@ -15,13 +15,13 @@
  */
 
 export interface LanguageData {
-  editorId: string;
-  gwtModuleName: string;
-  erraiDomain: string;
-  resources: Resource[];
+    editorId: string;
+    gwtModuleName: string;
+    erraiDomain: string;
+    resources: Resource[];
 }
 
 export interface Resource {
-  type: "css" | "js";
-  paths: string[];
+    type: "css" | "js";
+    paths: string[];
 }

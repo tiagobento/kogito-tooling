@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LanguageData } from "appformer-js-microeditor-router";
+import { LanguageData } from "appformer-js-core";
 import * as vscode from "vscode";
 import * as __path from "path";
 

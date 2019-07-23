@@ -73,7 +73,6 @@
   "dependencies": {
     "appformer-js-core": "0.0.0",
     "appformer-js-microeditor-envelope-protocol": "0.0.0",
-    "appformer-js-microeditor-router": "0.0.0",
     "appformer-js-microeditor-envelope": "0.0.0"
   }
 }

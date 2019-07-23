@@ -19,7 +19,7 @@ import * as AppFormer from "appformer-js-core";
 import { EditorEnvelopeView } from "./EditorEnvelopeView";
 import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";
-import { LanguageData } from "appformer-js-microeditor-router";
+import { LanguageData } from "appformer-js-core";
 import { EditorFactory } from "./EditorFactory";
 import { SpecialDomElements } from "./SpecialDomElements";
 import { Renderer } from "./Renderer";

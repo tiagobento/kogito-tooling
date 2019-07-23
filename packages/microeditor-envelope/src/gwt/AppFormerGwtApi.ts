@@ -15,7 +15,7 @@
  */
 
 import { GwtEditor } from "./GwtEditor";
-import { Resource } from "appformer-js-microeditor-router";
+import { Resource } from "appformer-js-core";
 
 declare global {
   //Exposed API of AppFormerGwt
