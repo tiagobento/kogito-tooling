@@ -45,7 +45,7 @@ export function LoadingScreen(props: { visible: boolean }) {
   return (
     <>
       {mustRender && (
-        <div className="foo"
+        <div
           style={{
             width: "100vw",
             height: "100vh"
