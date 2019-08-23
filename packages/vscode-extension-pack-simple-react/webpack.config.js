@@ -15,9 +15,10 @@
  */
 
 const path = require("path");
-const CircularDependencyPlugin = require("circular-dependency-plugin");
+const merge = require("webpack-merge");
+const baseConfig = require("../../base.webpack.config");
 
-const commonConfig = {
+const commonConfig = merge(baseConfig(__dirname), {
   mode: "development",
   devtool: "inline-source-map",
   output: {
@@ -29,35 +30,8 @@ const commonConfig = {
   },
   externals: {
     vscode: "commonjs vscode"
-  },
-  plugins: [
-    new CircularDependencyPlugin({
-      exclude: /node_modules/, // exclude detection of files based on a RegExp
-      failOnError: false, // add errors to webpack instead of warnings
-      cwd: process.cwd() // set the current working directory for displaying module paths
-    })
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        loader: "ts-loader",
-        options: {
-          configFile: path.resolve("./tsconfig.json")
-        }
-      },
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        use: ["babel-loader"]
-      }
-    ]
-  },
-  resolve: {
-    extensions: [".tsx", ".ts", ".js", ".jsx"],
-    modules: [path.resolve("../../node_modules"), path.resolve("./node_modules"), path.resolve("./src")]
   }
-};
+});
 
 module.exports = [
   {

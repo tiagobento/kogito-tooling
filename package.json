@@ -13,6 +13,7 @@
     "build:prod": "npx lerna run build:prod --stream"
   },
   "devDependencies": {
+    "circular-dependency-plugin": "^5.2.0",
     "lerna": "3.4.0"
   }
 }
