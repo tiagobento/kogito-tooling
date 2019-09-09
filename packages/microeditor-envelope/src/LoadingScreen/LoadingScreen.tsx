@@ -48,11 +48,7 @@ export function LoadingScreen(props: { visible: boolean }) {
         <Bullseye>
           <EmptyState variant={EmptyStateVariant.large}>
             <div className="pf-u-mb-lg">
-              <div className="pf-c-spinner" role="progressbar" aria-valuetext="Loading...">
-                <div className="pf-c-spinner__clipper" />
-                <div className="pf-c-spinner__lead-ball" />
-                <div className="pf-c-spinner__tail-ball" />
-              </div>
+              <div role="progressbar" className="spinner spinner-lg spinner-inverse" />
             </div>
             <Title headingLevel="h5" size="lg">
               Loading...
