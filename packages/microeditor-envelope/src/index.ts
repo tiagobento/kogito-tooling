@@ -38,14 +38,18 @@ class ReactDomRenderer implements Renderer {
  * @param args.editorFactory The factory of Editors using a LanguageData implementation.
  */
 export function init(args: { container: HTMLElement; busApi: EnvelopeBusApi; editorFactory: EditorFactory<any> }) {
-  const specialDomElements = new SpecialDomElements();
-  const renderer = new ReactDomRenderer();
-  const editorEnvelopeController = new EditorEnvelopeController(
-    args.busApi,
-    args.editorFactory,
-    specialDomElements,
-    renderer
-  );
+  return new Promise(res => {
+    setTimeout(() => {
+      const specialDomElements = new SpecialDomElements();
+      const renderer = new ReactDomRenderer();
+      const editorEnvelopeController = new EditorEnvelopeController(
+        args.busApi,
+        args.editorFactory,
+        specialDomElements,
+        renderer
+      );
 
-  return editorEnvelopeController.start(args.container);
+      res(editorEnvelopeController.start(args.container));
+    }, 0);
+  });
 }
