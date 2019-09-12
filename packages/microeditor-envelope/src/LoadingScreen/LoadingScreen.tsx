@@ -38,11 +38,11 @@ export function LoadingScreen(props: { visible: boolean }) {
   if (props.visible) {
     cssAnimation = { opacity: 1 };
   } else {
-    cssAnimation = { opacity: 0, transition: `opacity ${FADE_OUT_DELAY}ms` };
+    // cssAnimation = { opacity: 0, transition: `opacity ${FADE_OUT_DELAY}ms` };
   }
 
   return (
-    (mustRender && (
+    // (mustRender && (
       <div className="kogito-tooling--loading-screen" style={{ ...cssAnimation }} onTransitionEnd={() => setMustRender(false)}>
         <Page>
         <Bullseye>
@@ -62,6 +62,6 @@ export function LoadingScreen(props: { visible: boolean }) {
         </Bullseye>
         </Page>
       </div>
-    )) || <></>
+    // )) || <></>
   );
 }

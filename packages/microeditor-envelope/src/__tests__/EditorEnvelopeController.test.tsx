@@ -25,7 +25,7 @@ let loadingScreenContainer: HTMLElement;
 let envelopeContainer: HTMLElement;
 beforeEach(() => {
   loadingScreenContainer = document.body.appendChild(document.createElement("div"));
-  loadingScreenContainer.setAttribute("id", "loading-screen");
+  loadingScreenContainer.setAttribute("id", "loading-screen-react-container");
 
   envelopeContainer = document.body.appendChild(document.createElement("div"));
   envelopeContainer.setAttribute("id", "envelopeContainer");

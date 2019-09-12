@@ -18,7 +18,8 @@ export class SpecialDomElements {
   public readonly loadingScreenContainer: HTMLElement;
 
   constructor() {
-    const loadingScreenContainer = document.getElementById("loading-screen");
+    const loadingScreenContainer = document.querySelector("#loading-screen")!.shadowRoot!.getElementById("loading-screen-react-container");
+    // const loadingScreenContainer = document.getElementById("loading-screen-react-container")!;
     if (!loadingScreenContainer) {
       throw new Error("LoadingScreen container was not found");
     }

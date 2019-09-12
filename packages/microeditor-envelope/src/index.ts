@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+document.getElementById("loading-screen")!.attachShadow({ mode: "open" });
+const newChild = document.createElement("div");
+newChild.style.cssText="position:relative";
+newChild.id="loading-screen-react-container";
+document.getElementById("loading-screen")!.shadowRoot!.appendChild(newChild);
+// document.getElementById("loading-screen")!.appendChild(newChild);
+
 import * as ReactDOM from "react-dom";
 import { EditorEnvelopeController } from "./EditorEnvelopeController";
 import { EnvelopeBusApi } from "appformer-js-microeditor-envelope-protocol";

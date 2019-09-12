@@ -67,7 +67,16 @@ module.exports = {
       {
         test: /\.s[ac]ss$/i,
         include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "../../node_modules/@patternfly/patternfly")],
-        use: ["style-loader", "css-loader", "sass-loader"]
+        use: [
+          {
+            loader: "style-loader",
+            options: {
+              insert: style => document.getElementById("loading-screen").shadowRoot.appendChild(style)
+            }
+          },
+          "css-loader",
+          "sass-loader"
+        ]
       },
       {
         test: /\.css$/,
@@ -79,7 +88,15 @@ module.exports = {
           path.resolve(__dirname, "../../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly"),
           path.resolve(__dirname, "../../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css")
         ],
-        use: ["style-loader", "css-loader"]
+        use: [
+          {
+            loader: "style-loader",
+            options: {
+              insert: style => document.getElementById("loading-screen").shadowRoot.appendChild(style)
+            }
+          },
+          "css-loader"
+        ]
       },
       {
         test: /\.(svg|ttf|eot|woff|woff2)$/,
