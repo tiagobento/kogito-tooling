@@ -77,7 +77,7 @@ function unmountPreviouslyRenderedFeatures() {
       ReactDOM.unmountComponentAtNode(mainContainer()!);
     }
   } catch (e) {
-    console.info("[Kogito] Ignoring exception while unmounting features.");
+    console.info("[Kogito] Ignoring exception while unmounting features.", e);
   }
 }
 
@@ -98,7 +98,7 @@ async function init() {
     return;
   }
 
-  const router = new ChromeRouter(new GwtEditorRoutes({ bpmnPath: "bpmn" }));
+  const router = new ChromeRouter(new GwtEditorRoutes({ bpmnPath: "bpmn", dmnPath: "dmn" }));
   if (!router.getLanguageData(openFileExtension)) {
     console.info(`[Kogito] No enhanced editor available for "${openFileExtension}" format.`);
     return;

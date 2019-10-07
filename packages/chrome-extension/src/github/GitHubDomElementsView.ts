@@ -36,7 +36,7 @@ export class GitHubDomElementsView implements GitHubDomElements {
   }
 
   public githubTextEditorToReplace() {
-    return document.querySelector(".Box-body.p-0.blob-wrapper.data.type-xml")! as HTMLElement;
+    return document.querySelector(".Box-body.p-0.blob-wrapper.data")! as HTMLElement;
   }
 
   public iframeContainer() {

@@ -47,10 +47,7 @@ export class EditorEnvelopeController {
       receive_contentResponse: (content: string) => {
         const editor = this.getEditor();
         if (editor) {
-          editor
-            .setContent("")
-            .finally(() => this.waitForEmptySetContentThenSetLoadingFinished())
-            .then(() => editor.setContent(content));
+          editor.setContent(content).finally(() => this.waitForEmptySetContentThenSetLoadingFinished());
         }
       },
       receive_contentRequest: () => {

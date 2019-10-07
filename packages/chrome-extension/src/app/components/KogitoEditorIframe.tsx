@@ -65,9 +65,9 @@ export function KogitoEditorIframe(props: {
           .then(c => self.respond_contentRequest(c))
           .then(() => startPollingForChangesOnDiagram());
       },
-      receive_setContentError() {
+      receive_setContentError(errorMessage: string) {
         //TODO: Display a nice message with explanation why "setContent" failed
-        console.info("Set content error");
+        console.info("Set content error", errorMessage);
       },
       receive_dirtyIndicatorChange(isDirty: boolean) {
         //TODO: Perhaps show window.alert to warn that the changes were not saved?
