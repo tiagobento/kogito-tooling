@@ -19,12 +19,14 @@ import {
   EnvelopeBusMessage,
   EnvelopeBusMessageType
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import { LanguageData } from "@kogito-tooling/core-api";
+import { LanguageData, ResourceContent, ResourcesList } from "@kogito-tooling/core-api";
 
 export interface Impl {
   receive_contentResponse(content: string): void;
   receive_languageResponse(languageData: LanguageData): void;
   receive_contentRequest(): void;
+  receive_resourceContentResponse(content: string): void;
+  receive_resourceContentList(pattern: string): void;
 }
 
 export class EnvelopeBusInnerMessageHandler {
@@ -35,6 +37,9 @@ export class EnvelopeBusInnerMessageHandler {
   public targetOrigin: string;
   public id: string;
   public eventListener?: any;
+  // TODO: correct any type
+  public pendingResourceRequests = new Map<string, any>();
+  public pendingResourceListRequests = new Map<string, any>();
 
   constructor(busApi: EnvelopeBusApi, impl: (_this: EnvelopeBusInnerMessageHandler) => Impl) {
     this.envelopeBusApi = busApi;
@@ -89,6 +94,14 @@ export class EnvelopeBusInnerMessageHandler {
     return this.send({ type: EnvelopeBusMessageType.NOTIFY_READY, data: undefined });
   }
 
+  public request_resourceContent(uri: string) {
+    return this.send({ type: EnvelopeBusMessageType.REQUEST_RESOURCE_CONTENT, data: uri });
+  }
+
+  public request_resourceList(pattern: string) {
+    return this.send({ type: EnvelopeBusMessageType.REQUEST_RESOURCE_LIST, data: pattern });
+  }
+
   private receive_initRequest(init: { origin: string; busId: string }) {
     if (this.capturedInitRequestYet) {
       return;
@@ -115,6 +128,23 @@ export class EnvelopeBusInnerMessageHandler {
         break;
       case EnvelopeBusMessageType.REQUEST_CONTENT:
         this.impl.receive_contentRequest();
+        break;
+      // TODO: check if this should be kept here or moved to the impl (editor)
+      case EnvelopeBusMessageType.RETURN_RESOURCE_CONTENT:
+        const resourceContent = message.data as ResourceContent;
+        const resourceContentCallback = this.pendingResourceRequests.get(resourceContent.path);
+        if (resourceContentCallback) {
+          resourceContentCallback(resourceContent.content);
+          this.pendingResourceRequests.set(resourceContent.path, undefined);
+        }
+        break;
+      case EnvelopeBusMessageType.RETURN_RESOURCE_LIST:
+        const resourcesList = message.data as ResourcesList;
+        const resourceListCallback = this.pendingResourceListRequests.get(resourcesList.pattern);
+        if (resourceListCallback) {
+          resourceListCallback(resourcesList.paths);
+          this.pendingResourceRequests.set(resourcesList.pattern, undefined);
+        }
         break;
       default:
         console.info(`[Bus ${this.id}]: Unknown message type received: ${message.type}`);

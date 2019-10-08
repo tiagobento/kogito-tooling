@@ -29,7 +29,7 @@ export class EditorEnvelopeController {
 
   private readonly editorFactory: EditorFactory<any>;
   private readonly specialDomElements: SpecialDomElements;
-  private readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
+  public readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
 
   private editorEnvelopeView?: EditorEnvelopeView;
   private renderer: Renderer;
@@ -65,6 +65,12 @@ export class EditorEnvelopeController {
           .createEditor(languageData, this.envelopeBusInnerMessageHandler)
           .then(editor => this.open(editor))
           .then(() => self.request_contentResponse());
+      },
+      receive_resourceContentResponse: (content: string) => {
+        // TODO: Implement
+      },
+      receive_resourceContentList: (pattern: string) => {
+        // TODO: Implement
       }
     }));
   }

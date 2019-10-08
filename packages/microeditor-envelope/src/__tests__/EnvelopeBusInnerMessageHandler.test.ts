@@ -39,6 +39,12 @@ beforeEach(() => {
       },
       receive_contentRequest: () => {
         receivedMessages.push(["contentRequest", undefined]);
+      },
+      receive_resourceContentResponse: (content: string) => {
+        receivedMessages.push(["resourceContent", content]);
+      },
+      receive_resourceContentList: (pattern: string) => {
+        receivedMessages.push(["resourceContentList", pattern]);
       }
     })
   );
