@@ -38,6 +38,26 @@ export class KogitoEditorFactory {
     this.webviewLocation = webviewLocation;
   }
 
+  public configure(uri: vscode.Uri, webview: vscode.WebviewEditor) {
+    const path = uri.fsPath;
+    if (path.length <= 0) {
+      throw new Error("parameter 'path' cannot be empty");
+    }
+
+    webview.webview.options = {
+      enableCommandUris: true,
+      enableScripts: true,
+      localResourceRoots: [vscode.Uri.file(this.context.extensionPath)]
+    };
+
+    const editor = new KogitoEditor(path, webview, this.context, this.router, this.webviewLocation, this.editorStore);
+    this.editorStore.addAsActive(editor);
+    editor.setupEnvelopeBus();
+    editor.setupPanelActiveStatusChange();
+    editor.setupPanelOnDidDispose();
+    editor.setupWebviewContent();
+  }
+
   public openNew(path: string) {
     if (path.length <= 0) {
       throw new Error("parameter 'path' cannot be empty");

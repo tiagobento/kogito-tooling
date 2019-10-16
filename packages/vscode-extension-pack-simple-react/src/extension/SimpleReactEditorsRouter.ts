@@ -24,8 +24,7 @@ export class SimpleReactEditorsRouter extends Router {
 
   constructor(context: vscode.ExtensionContext) {
     super({
-      getRoutes: () =>
-        new Map<string, SimpleReactEditorsLanguageData>([["dmn", { type: "react" }], ["bpmn", { type: "react" }]])
+      getRoutes: () => new Map<string, SimpleReactEditorsLanguageData>([["txt", { type: "react" }]])
     });
     this.context = context;
   }

@@ -14,12 +14,25 @@
   "categories": [
     "Other"
   ],
+  "enableProposedApi": true,
   "activationEvents": [
-    "*"
+    "onWebviewEditor:kogitoEditorWebview"
   ],
   "publisher": "kiegroup",
   "main": "./dist/extension/extension.js",
   "contributes": {
+    "webviewEditors": [
+      {
+        "viewType": "kogitoEditorWebview",
+        "displayName": "Kogito",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{dmn,bpmn,bpmn2}"
+          }
+        ]
+      }
+    ],
     "languages": [
       {
         "id": "bpmn",
@@ -62,7 +75,7 @@
     "@types/glob": "7.1.1",
     "@types/mocha": "5.2.7",
     "@types/node": "10.12.21",
-    "@types/vscode": "^1.33.0",
+    "@types/vscode": "^1.39.0",
     "babel-core": "6.26.3",
     "babel-loader": "7.1.5",
     "babel-preset-env": "1.7.0",

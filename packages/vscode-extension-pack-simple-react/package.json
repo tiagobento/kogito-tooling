@@ -4,6 +4,7 @@
   "description": "",
   "version": "0.1.1",
   "license": "Apache-2.0",
+  "enableProposedApi": true,
   "engines": {
     "vscode": "^1.33.0"
   },
@@ -15,32 +16,32 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onWebviewEditor:kogitoEditorWebview"
   ],
   "publisher": "kiegroup",
   "main": "./dist/extension/extension.js",
   "contributes": {
+    "webviewEditors": [
+      {
+        "viewType": "kogitoEditorWebview",
+        "displayName": "Kogito",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{txt}"
+          }
+        ]
+      }
+    ],
     "languages": [
       {
-        "id": "dmn",
+        "id": "txt",
         "extensions": [
-          ".dmn"
+          ".txt"
         ],
         "aliases": [
-          "dmn",
-          "Decision Model Notation"
-        ]
-      },
-      {
-        "id": "bpmn",
-        "extensions": [
-          ".bpmn",
-          ".bpmn2"
-        ],
-        "aliases": [
-          "bpmn",
-          "bpmn2",
-          "Business Process Model and Notation"
+          "txt",
+          "Text"
         ]
       }
     ]
@@ -60,7 +61,7 @@
     "@types/glob": "7.1.1",
     "@types/mocha": "5.2.7",
     "@types/node": "10.12.21",
-    "@types/vscode": "^1.33.0",
+    "@types/vscode": "^1.39.0",
     "babel-core": "6.26.3",
     "babel-loader": "7.1.5",
     "babel-preset-env": "1.7.0",

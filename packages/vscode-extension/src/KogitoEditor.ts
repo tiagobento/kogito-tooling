@@ -110,6 +110,7 @@ export class KogitoEditor {
       () => {
         if (this.panel.active) {
           this.editorStore.setActive(this);
+          this.envelopeBusOuterMessageHandler.startInitPolling();
         }
 
         if (!this.panel.active && this.editorStore.isActive(this)) {
