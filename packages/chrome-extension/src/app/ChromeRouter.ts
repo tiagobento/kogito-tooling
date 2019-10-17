@@ -22,7 +22,7 @@ export class ChromeRouter extends Router {
   }
 
   public getRelativePathTo(uri: string): string {
-    return `${this.getTargetOrigin()}/tiagobento/kogito-online/chrome-extension-resources/${uri}`;
+    return `${this.getTargetOrigin()}/$_{WEBPACK_REPLACE__relativePath}${uri}`;
   }
 
   public getLanguageData(fileExtension: string) {
@@ -30,6 +30,6 @@ export class ChromeRouter extends Router {
   }
 
   public getTargetOrigin() {
-    return "https://raw.githubusercontent.com";
+    return "$_{WEBPACK_REPLACE__targetOrigin}";
   }
 }
