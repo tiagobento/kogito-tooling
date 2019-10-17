@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const fs = require("fs");
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 
@@ -27,19 +28,20 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
-    filename: "[name].js",
-    publicPath: "/envelope"
+    filename: "[name].js"
   },
   externals: {},
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
+    contentBase: [path.join(__dirname, "..", "unpacked-gwt-editors")],
     compress: true,
+    hot: false,
+    liveReload: false,
+    watchContentBase: true,
     https: true,
     port: 9000
   },
   plugins: [
     new CopyPlugin([
-      { from: "../unpacked-gwt-editors/bpmn", to: "./bpmn" },
       { from: "./static/manifest.json" },
       { from: "./static/resources", to: "./resources" },
       { from: "./static/envelope", to: "./envelope" }
