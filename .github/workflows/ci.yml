@@ -16,4 +16,5 @@ jobs:
     - name: init
       run: yarn run init
     - name: build
+      if: success()
       run: yarn run build:fast
