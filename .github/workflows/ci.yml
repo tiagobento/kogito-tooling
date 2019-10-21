@@ -33,7 +33,7 @@ jobs:
 
     - name: Merge with base ref
       if: github.base_ref
-      run: git merge ${{ github.ref }}
+      run: git merge ${{ github.head_ref }}
     
     - uses: actions/setup-node@v1
       name: Setup Node
