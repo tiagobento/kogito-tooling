@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  DISPLAY: ":99.0"
+
 on:
   push:
     branches: [master, gha]
@@ -29,8 +32,6 @@ jobs:
       run: |
           /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           echo ">>> Started xvfb"
-      env:
-        DISPLAY: ":99.0"
     - name: Download dependencies
       run: yarn run init
     - name: Build
