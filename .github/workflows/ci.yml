@@ -1,20 +1,21 @@
 name: CI
 
-
 on:
   push:
     branches: [master, gha]
 
-
 jobs:
   build:
+    runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, macOS-latest]
         node: [12.13.0]
         yarn: [1.19.0]
-    runs-on: ${{ matrix.os }}
+
+    
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
@@ -29,7 +30,7 @@ jobs:
           /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           echo ">>> Started xvfb"
       env:
-        DISPLAY: :99.0
+        DISPLAY: ":99.0"
     - name: Download dependencies
       run: yarn run init
     - name: Build
