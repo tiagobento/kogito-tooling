@@ -5,7 +5,10 @@ env:
 
 on:
   push:
-    branches: [master, gha]
+    branches: [master]
+  pull_request:
+    branches: "**"
+    
 
 jobs:
   build:
@@ -21,6 +24,16 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    
+    - uses: actions/checkout@v1
+      name: Checkout to base_ref
+      if: github.base_ref
+      with:
+        ref: ${{ github.base_ref }}
+
+    - name: Merge with base ref
+      if: github.base_ref
+      run: git merge ${{ github.ref }}
     
     - uses: actions/setup-node@v1
       name: Setup Node
