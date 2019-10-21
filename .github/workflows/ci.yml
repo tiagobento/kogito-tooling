@@ -12,7 +12,8 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        node: [11.6.0]
+        node: [12.13.0]
+        yarn: [1.19.0]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
@@ -21,7 +22,7 @@ jobs:
       with:
         node-version: ${{ matrix.node }}
     - name: Setup Yarn
-      run: npm install -g yarn@1.19.0
+      run: npm install -g yarn@${{ matrix.yarn }}
     - name: Start Xvfb
       if: matrix.os == 'ubuntu-latest'
       run: |
