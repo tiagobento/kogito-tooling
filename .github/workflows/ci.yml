@@ -1,12 +1,18 @@
 name: CI
 
+
 on: [push]
 
-jobs:
+jobs:      
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
+    - name: print env
+      run: node -v && yarn -v
     - name: init
       run: yarn run init
     - name: build
