@@ -9,9 +9,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
+        node_version: [11.6.0]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1 ${{ matrix.node_version }}
     - name: print env
       run: node -v && yarn -v
     - name: init
