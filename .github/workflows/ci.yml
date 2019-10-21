@@ -1,7 +1,10 @@
 name: CI
 
 
-on: [push]
+on:
+  push:
+    branches: [master, gha]
+
 
 jobs:      
   build:
@@ -14,12 +17,13 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
+      name: Setup Node
       with:
         node-version: ${{ matrix.node }}
-    - name: print env
-      run: node -v && yarn -v
-    - name: init
+    - name: Setup Yarn
+      run: npm install -g yarn@1.19.0
+    - name: Download dependencies
       run: yarn run init
-    - name: build
+    - name: Build
       if: success()
-      run: yarn run build:fast
+      run: yarn run build:prod
