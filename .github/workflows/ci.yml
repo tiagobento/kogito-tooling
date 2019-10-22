@@ -71,3 +71,15 @@ jobs:
     - name: Integration tests
       run: npx lerna run test:it --stream
 
+    - name: Upload VSCode Extension
+      uses: actions/upload-artifact@v1
+      with:
+        name: vscode-extension
+        path: packages/vscode-extension-pack-kogito-kie-editors/dist/**.vsix
+
+    - name: Upload Chrome Extension
+      uses: actions/upload-artifact@v1
+      with:
+        name: chrome-extension
+        path: packages/chrome-extension/dist/**.zip
+
