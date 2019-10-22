@@ -17,7 +17,6 @@
 import * as vscode from "vscode";
 import * as assert from "assert";
 import * as __path from "path";
-import { afterEach } from "mocha";
 
 const NONE = "";
 
