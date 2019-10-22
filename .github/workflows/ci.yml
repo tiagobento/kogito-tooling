@@ -78,11 +78,11 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: vscode-extension
-        path: packages/vscode-extension-pack-kogito-kie-editors/dist/**.vsix
+        path: packages/vscode-extension-pack-kogito-kie-editors/dist
 
     - name: Upload Chrome Extension
       uses: actions/upload-artifact@v1
       with:
         name: chrome-extension
-        path: packages/chrome-extension/dist/**.zip
+        path: packages/chrome-extension/dist
 
