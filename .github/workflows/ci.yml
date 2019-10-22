@@ -39,6 +39,12 @@ jobs:
       name: Setup Node
       with:
         node-version: ${{ matrix.node }}
+    - name: Setup node-gyp (Windows only)
+      if: matrix.os == 'windows-latest'
+      run: |
+        npm install --global node-gyp@latest
+        for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
+
     
     - name: Setup Yarn
       run: npm install -g yarn@${{ matrix.yarn }}
