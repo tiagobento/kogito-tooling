@@ -70,6 +70,9 @@ jobs:
     
     - name: Integration tests
       run: npx lerna run test:it --stream
+      
+    - name: Pack artifacts
+      run: npx lerna run pack-extension --stream
 
     - name: Upload VSCode Extension
       uses: actions/upload-artifact@v1
