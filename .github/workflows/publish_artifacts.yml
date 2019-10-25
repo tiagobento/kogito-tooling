@@ -13,7 +13,7 @@ jobs:
     - name: Check release `tag` against `lerna.json.version`
       run: |
         # This bash script returns 0 if equal and 1 otherwise. Will fail if versions are not equal.
-        [ "${{ github.ref }}" == "$(node -e "console.log(require('./lerna.json').version);")" ]
+        [ "${{ github.ref }}" == "$(node -e "console.log("refs/tags/" + require('./lerna.json').version);")" ]
 
     - name: Setup Node
       uses: actions/setup-node@v1
