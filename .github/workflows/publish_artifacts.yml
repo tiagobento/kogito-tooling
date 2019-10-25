@@ -1,11 +1,11 @@
-name: Publish artifacts
+name: Publish release artifacts
 
 on:
   release:
     types: [published]
 
 jobs:
-  prerelease:
+  publish_release_artifacts:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
