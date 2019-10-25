@@ -12,14 +12,14 @@ jobs:
    runs-on: macOS-latest
    steps:
 
-   - name: Fetch editors from last release
+   - name: Checkout upstream
      uses: actions/checkout@v1
      with:
        repository: kiegroup/kogito-tooling
        ref: master
 
    - name: Checkout to lastest tag
-     run: git checkout $(git describe --tags `git rev-list --tags --max-count=1`")
+     run: git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
 
    - name: Upload DMN editor
      uses: actions/upload-artifact@v1
