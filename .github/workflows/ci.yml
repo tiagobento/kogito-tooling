@@ -32,8 +32,8 @@ jobs:
      with:
        name: bpmn-editor
        path: packages/unpacked-gwt-editors/bpmn
-   
-     
+
+
   build:    
     needs: fetch-editors
     runs-on: ${{ matrix.os }}
