@@ -16,6 +16,7 @@ jobs:
      uses: actions/checkout@v1
      with:
        repository: kiegroup/kogito-tooling
+       ref: master
 
    - name: Checkout to lastest tag
      run: git checkout $(git describe --tags `git rev-list --tags --max-count=1`")
