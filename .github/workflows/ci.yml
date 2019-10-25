@@ -57,7 +57,7 @@ jobs:
     - name: Output version
       id: version
       run: |
-        echo "::set-output name=version::$(node -e "console.log(require('./lerna.json').version);"")
+        echo ::set-output name=version::$(node -e "console.log(require('./lerna.json').version);")
     
     - name: Setup Node
       uses: actions/setup-node@v1
