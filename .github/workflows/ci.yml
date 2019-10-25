@@ -11,23 +11,26 @@ jobs:
   fetch-editors:
    runs-on: macOS-latest
    steps:
-     - name: Fetch editors from last release
-       uses: actions/checkout@v1
-       with:
-         repository: kiegroup/kogito-tooling
-         ref: 0.2.0
-     
-     - name: Upload DMN editor
-       uses: actions/upload-artifact@v1
-       with:
-         name: dmn-editor
-         path: packages/unpacked-gwt-editors/dmn
- 
-     - name: Upload BPMN editor
-       uses: actions/upload-artifact@v1
-       with:
-         name: bpmn-editor
-         path: packages/unpacked-gwt-editors/bpmn
+
+   - name: Fetch editors from last release
+     uses: actions/checkout@v1
+     with:
+       repository: kiegroup/kogito-tooling
+
+   - name: Checkout to lastest tag
+     run: git checkout $(git describe --tags `git rev-list --tags --max-count=1`")
+
+   - name: Upload DMN editor
+     uses: actions/upload-artifact@v1
+     with:
+       name: dmn-editor
+       path: packages/unpacked-gwt-editors/dmn
+
+   - name: Upload BPMN editor
+     uses: actions/upload-artifact@v1
+     with:
+       name: bpmn-editor
+       path: packages/unpacked-gwt-editors/bpmn
    
      
   build:    
@@ -57,6 +60,7 @@ jobs:
     - name: Output version
       id: version
       run: |
+        # This bash script will set an output for this step. It can be used with steps.version.outputs.version
         echo ::set-output name=version::$(node -e "console.log(require('./lerna.json').version);")
     
     - name: Setup Node
