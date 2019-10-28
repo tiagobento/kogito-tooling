@@ -46,6 +46,10 @@ if (!lernaVersionArg) {
   return 1;
 }
 
+function red(str) {
+  return ["\x1b[31m", str, "\x1b[0m"];
+}
+
 Promise.resolve()
   .then(() => updatePackages(lernaVersionArg))
   .then(version => updateChromeExtensionManifest(version))
@@ -53,12 +57,8 @@ Promise.resolve()
     console.error("");
     console.info(`Updated to '${version}'.`);
   })
-  .catch(e => {
-    function red(str) {
-      return ["\x1b[31m", str, "\x1b[0m"];
-    }
-
-    console.error(e);
+  .catch(error => {
+    console.error(error);
     console.error("");
     console.error(...red("Error updating versions. There might be undesired changes."));
   })
