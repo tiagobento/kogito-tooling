@@ -19,8 +19,35 @@ const CopyPlugin = require("copy-webpack-plugin");
 const ZipPlugin = require("zip-webpack-plugin");
 const packageJson = require("./package.json");
 
-module.exports = (env, argv) => {
+function getLatestGitTag() {
+  return require("child_process")
+    .execSync("git describe --tags `git rev-list --tags --max-count=1`")
+    .toString()
+    .trim();
+}
+
+function getRouterArgs(argv) {
   const isProd = argv.mode === "production";
+
+  let targetOrigin = argv["router_targetOrigin"];
+  let relativePath = argv["router_relativePath"];
+
+  if (isProd) {
+    targetOrigin = targetOrigin || "https://raw.githubusercontent.com";
+    relativePath = relativePath || `kiegroup/kogito-online/chrome-extension-resources-${getLatestGitTag()}/`;
+  } else {
+    targetOrigin = targetOrigin || "https://localhost:9000";
+    relativePath = relativePath || "";
+  }
+
+  console.info("Router :: target origin: " + targetOrigin);
+  console.info("Router :: relative path: " + relativePath);
+
+  return [targetOrigin, relativePath];
+}
+
+module.exports = async (env, argv) => {
+  const [router_targetOrigin, router_relativePath] = getRouterArgs(argv);
 
   return {
     mode: "development",
@@ -71,11 +98,11 @@ module.exports = (env, argv) => {
             multiple: [
               {
                 search: "$_{WEBPACK_REPLACE__targetOrigin}",
-                replace: isProd ? "https://raw.githubusercontent.com" : "https://localhost:9000"
+                replace: router_targetOrigin
               },
               {
                 search: "$_{WEBPACK_REPLACE__relativePath}",
-                replace: isProd ? "kiegroup/kogito-online/chrome-extension-resources-0.2.0/" : ""
+                replace: router_relativePath
               }
             ]
           }
