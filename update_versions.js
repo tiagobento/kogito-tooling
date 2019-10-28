@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const redOutput = "\x1b[31m";
-
 const fs = require("fs");
 const util = require("util");
 const prettier = require("prettier");
