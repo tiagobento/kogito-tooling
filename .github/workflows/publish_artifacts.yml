@@ -31,7 +31,7 @@ jobs:
         DISPLAY: ":99.0"
       run: yarn run init && yarn run build:prod
 
-    - name: Publish artifacts to NPM
+    - name: Publish artifacts to NPM registry
       run: echo "Publish success."
 
     - name: Update kogito-online GitHub pages

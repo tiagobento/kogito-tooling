@@ -12,9 +12,7 @@ jobs:
 
     - name: Parse `tag`
       id: prerelease-tag
-      uses: ./.github/actions/prerelease-tag
-      with:
-        ref: ${{ github.ref }}
+      run: echo ::set-output name=tag::${GITHUB_REF#refs/tags/}
 
     - name: Check `tag` against `lerna.json.version`
       run: |
