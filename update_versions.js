@@ -15,36 +15,44 @@
  */
 
 const fs = require("fs");
-const cp = require("child_process");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 const prettier = require("prettier");
 
-const CHROME_EXTENSION_MANIFEST_JSON_PATH = "./packages/chrome-extension-pack-kogito-kie-editors/static/manifest.json";
+const CHROME_EXTENSION_MANIFEST_JSON = "./packages/chrome-extension-pack-kogito-kie-editors/static/manifest.json";
+const LERNA_JSON = "./lerna.json";
 
 //
 
-async function updatePackages(version) {
-  await cp.exec(`npx lerna version ${version} --no-push --no-git-tag-version --exact --yes`);
+async function updatePackages(lernaVersionArg) {
+  await exec(`npx lerna version ${lernaVersionArg} --no-push --no-git-tag-version --exact --yes`);
+  return require(LERNA_JSON).version;
 }
 
 async function updateChromeExtensionManifest(version) {
-  const manifest = require(CHROME_EXTENSION_MANIFEST_JSON_PATH);
+  const manifest = require(CHROME_EXTENSION_MANIFEST_JSON);
   manifest.version = version;
 
   const formattedManifest = prettier.format(JSON.stringify(manifest), { parser: "json" });
-  fs.writeFileSync(CHROME_EXTENSION_MANIFEST_JSON_PATH, formattedManifest);
+  fs.writeFileSync(CHROME_EXTENSION_MANIFEST_JSON, formattedManifest);
+  return version;
 }
 
 // MAIN
 
-const newVersion = process.argv[2];
-if (!newVersion) {
-  console.error("Missing version number as first argument.");
+const lernaVersionArg = process.argv[2];
+if (!lernaVersionArg) {
+  console.error("Missing Lerna's version argument.");
   return 1;
 }
 
 Promise.resolve()
-  .then(() => updatePackages(newVersion))
-  .then(() => updateChromeExtensionManifest(newVersion))
+  .then(() => updatePackages(lernaVersionArg))
+  .then(version => updateChromeExtensionManifest(version))
+  .then(version => {
+    console.error("");
+    console.info(`Updated to '${version}'.`);
+  })
   .catch(e => {
     function red(str) {
       return ["\x1b[31m", str, "\x1b[0m"];
@@ -53,5 +61,7 @@ Promise.resolve()
     console.error(e);
     console.error("");
     console.error(...red("Error updating versions. There might be undesired changes."));
+  })
+  .finally(() => {
     console.error("");
   });
