@@ -15,16 +15,15 @@
  */
 
 const fs = require("fs");
-const util = require("util");
+const cp = require("child_process");
 const prettier = require("prettier");
-const exec = util.promisify(require("child_process").exec);
 
 const CHROME_EXTENSION_MANIFEST_JSON_PATH = "./packages/chrome-extension-pack-kogito-kie-editors/static/manifest.json";
 
 //
 
 async function updatePackages(version) {
-  await exec(`npx lerna version ${version} --no-push --no-git-tag-version --exact --yes`);
+  await cp.exec(`npx lerna version ${version} --no-push --no-git-tag-version --exact --yes`);
 }
 
 async function updateChromeExtensionManifest(version) {
