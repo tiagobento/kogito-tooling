@@ -12,7 +12,9 @@ jobs:
 
     - name: Parse `tag`
       id: prerelease-tag
-      run: echo ::set-output name=tag::$(node -e "console.log('${{ github.ref }}'.match(/^.*\/(.+)-prerelease$/)[1])")
+      run: |
+        # This bash script returns the `tag` name for the release. Will match "/refs/[tags/heads]/[tag]-prerelease"
+        echo ::set-output name=tag::$(node -e "console.log('${{ github.ref }}'.match(/^.*\/(.+)-prerelease$/)[1])")
 
     - name: Check `tag` against `lerna.json.version`
       run: |
