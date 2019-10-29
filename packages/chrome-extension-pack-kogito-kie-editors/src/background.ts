@@ -53,5 +53,5 @@ chrome.webRequest.onHeadersReceived.addListener(
     return { responseHeaders: details.responseHeaders };
   },
   { urls: ["https://github.com/*", "https://raw.githubusercontent.com/*"] },
-  ["blocking", "responseHeaders", "extraHeaders"]
+  ["blocking", "responseHeaders"]
 );
