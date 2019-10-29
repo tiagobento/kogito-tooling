@@ -49,7 +49,7 @@ jobs:
       - name: Update "kogito-online" latest resources
         run: |
           cd ../kogito-online
-          rm ./editors/latest
+          rm -rf ./editors/latest
           ln -s ${{ steps.release-tag.outputs.tag }} latest
           git config --global user.email "kogito-tooling-bot@gmail.com"
           git config --global user.name "kogito-tooling Bot (${{ github.actor }})"
