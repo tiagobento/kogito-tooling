@@ -42,14 +42,7 @@ jobs:
 #        working-directory: $HOME
         uses: actions/checkout@v1
         with:
-          repository: tiagobento/kogito-online
-          ref: gh-pages
-
-      - name: Checkout kogito-online
-#        working-directory: $HOME
-        uses: actions/checkout@v1
-        with:
-          repository: ${{ github.repository }}/kogito-online
+          repository: ${{ github.actor }}/kogito-online
           ref: gh-pages
 
       - name: Update kogito-online resources
