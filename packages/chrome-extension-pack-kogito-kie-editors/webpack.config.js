@@ -29,8 +29,8 @@ function getLatestGitTag() {
 function getRouterArgs(argv) {
   const isProd = argv.mode === "production";
 
-  let targetOrigin = argv["router_targetOrigin"];
-  let relativePath = argv["router_relativePath"];
+  let targetOrigin = argv["ROUTER_targetOrigin"] || process.env["ROUTER_targetOrigin"];
+  let relativePath = argv["ROUTER_relativePath"] || process.env["ROUTER_relativePath"];
 
   if (isProd) {
     targetOrigin = targetOrigin || "https://kiegroup.github.io";
