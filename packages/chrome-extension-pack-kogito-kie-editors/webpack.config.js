@@ -33,8 +33,8 @@ function getRouterArgs(argv) {
   let relativePath = argv["router_relativePath"];
 
   if (isProd) {
-    targetOrigin = targetOrigin || "https://raw.githubusercontent.com";
-    relativePath = relativePath || `kiegroup/kogito-online/chrome-extension-resources-${getLatestGitTag()}/`;
+    targetOrigin = targetOrigin || "https://kiegroup.github.io";
+    relativePath = relativePath || `kogito-online/editors/${getLatestGitTag()}/`;
   } else {
     targetOrigin = targetOrigin || "https://localhost:9000";
     relativePath = relativePath || "";
