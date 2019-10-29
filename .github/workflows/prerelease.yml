@@ -49,18 +49,18 @@ jobs:
           KOGITO_ONLINE_DIR: ./editors/${{ steps.prerelease-tag.outputs.tag }}
         run: |
           cd ../kogito-online
-          git checkout gh-pages
           rm -rf $KOGITO_ONLINE_DIR
           mkdir -p $KOGITO_ONLINE_DIR
-          cp -r ../kogito-tooling/packages/unpacked-gwt-editors/* $KOGITO_ONLINE_DIR
+          cp -r ../kogito-tooling/packages/unpacked-gwt-editors/bpmn $KOGITO_ONLINE_DIR/
+          cp -r ../kogito-tooling/packages/unpacked-gwt-editors/dmn $KOGITO_ONLINE_DIR/
+          cp -r ../kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/envelope $KOGITO_ONLINE_DIR/
           git config --global user.email "actions@github.com"
           git config --global user.name "${{ github.actor }}"
           git add .
-          git commit -am "${{ steps.prerelease-tag.outputs.tag }} resources"
-          pwd
-          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          git commit -m "${{ steps.prerelease-tag.outputs.tag }} resources"
           git remote set-url --push origin https://${{ github.actor }}:${{ secrets.KOGITO_ONLINE_TOKEN }}@github.com/${{ github.actor }}/kogito-online
           git push origin gh-pages
+          cd -
 
       - name: Create Release
         id: create_release
