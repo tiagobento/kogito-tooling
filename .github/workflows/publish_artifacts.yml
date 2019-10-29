@@ -50,7 +50,7 @@ jobs:
         run: |
           cd ../kogito-online
           rm -rf ./editors/latest
-          ln -s ./editors/${{ steps.release-tag.outputs.tag }} ./editors/latest
+          ln -s ${{ steps.release-tag.outputs.tag }} ./editors/latest
           git config --global user.email "kogito-tooling-bot@gmail.com"
           git config --global user.name "kogito-tooling Bot (${{ github.actor }})"
           git add . && git commit -m "Update editors/latest to ${{ steps.release-tag.outputs.tag }}" || echo "No changes."
