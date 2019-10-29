@@ -51,12 +51,14 @@ jobs:
           rm -rf $KOGITO_ONLINE_DIR
           mkdir -p $KOGITO_ONLINE_DIR
           cp -r ../kogito-tooling/packages/unpacked-gwt-editors/* $KOGITO_ONLINE_DIR
-          cp -r ../kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/envelope $KOGITO_ONLINE_DIR
+#          cp -r ../kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/envelope $KOGITO_ONLINE_DIR
           git config --global user.email "actions@github.com"
           git config --global user.name "${{ github.actor }}"
           git add .
           git commit -am "${{ steps.prerelease-tag.outputs.tag }} resources"
-          git push
+          pwd
+          echo "Tiago"
+          git push origin gh-pages
 
       - name: Create Release
         id: create_release
