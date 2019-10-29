@@ -54,9 +54,8 @@ jobs:
           cp -r ../kogito-tooling/packages/unpacked-gwt-editors/bpmn $KOGITO_ONLINE_DIR/
           cp -r ../kogito-tooling/packages/unpacked-gwt-editors/dmn $KOGITO_ONLINE_DIR/
           cp -r ../kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/envelope $KOGITO_ONLINE_DIR/
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Action"
-          pwd
+          git config --global user.email "kogito-tooling-bot@gmail.com"
+          git config --global user.name "kogito-tooling Bot"
           git add . && git commit -m "${{ steps.prerelease-tag.outputs.tag }} resources" || echo "No changes."
           git remote set-url --push origin https://${{ secrets.KOGITO_TOOLING_BOT_TOKEN }}@github.com/${{ github.actor }}/kogito-online
           git push origin gh-pages
