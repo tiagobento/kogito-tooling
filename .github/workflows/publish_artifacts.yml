@@ -10,10 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - name: Parse `tag`
+          id: release-tag
+          run: |
+            # This bash script returns the `tag` name for the release. Will match "/refs/[tags/heads]/[tag]"
+            echo ::set-output name=tag::$(node -e "console.log('${{ github.ref }}'.match(/^.*\/(.+)$/)[1])")
+
       - name: Check release `tag` against `lerna.json.version`
         run: |
           # This bash script returns 0 if equal and 1 otherwise. Will fail if versions are not equal.
-          [ "${{ github.ref }}" == "$(node -e "console.log('refs/tags/' + require('./lerna.json').version);")" ]
+          [ "${{ steps.release-tag.outputs.tag }}" == "$(node -e "console.log(require('./lerna.json').version);")" ]
 
       - name: Setup Node
         uses: actions/setup-node@v1
@@ -28,6 +34,8 @@ jobs:
 
       - name: Build
         env:
+          ROUTER_targetOrigin: "https://kiegroup.github.io"
+          ROUTER_relativePath: "kogito-online/editors/${{ steps.release-tag.outputs.tag }}/"
           DISPLAY: ":99.0"
         run: yarn run init && yarn run build:prod
 
