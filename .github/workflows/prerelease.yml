@@ -60,6 +60,7 @@ jobs:
           pwd
           echo "Tiago"
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          git remote set-url --push origin https://${{ github.actor }}:$GITHUB_TOKEN@github.com/${{ github.actor }}/kogito-online
           git push origin gh-pages
 
       - name: Create Release
