@@ -34,13 +34,30 @@ jobs:
 
       - name: Build
         env:
-          ROUTER_targetOrigin: "https://kiegroup.github.io"
+          ROUTER_targetOrigin: "https://${{ github.actor }}.github.io"
           ROUTER_relativePath: "kogito-online/editors/${{ steps.release-tag.outputs.tag }}/"
           DISPLAY: ":99.0"
         run: yarn run init && yarn run build:prod
 
-      - name: Publish artifacts to NPM registry
-        run: echo "Publish success."
+      - name: Checkout "kogito-online"
+        uses: actions/checkout@v1
+        with:
+          repository: ${{ github.actor }}/kogito-online
+          ref: gh-pages
 
-      - name: Update kogito-online GitHub pages
-        run: echo "Publish success."
+      # For this step to work properly, you have to add the owner of KOGITO_TOOLING_BOT_TOKEN as collaborator on 'kogito-online'.
+      - name: Update "kogito-online" latest resources
+        run: |
+          cd ../kogito-online
+          rm ./editors/latest
+          ln -s ${{ steps.release-tag.outputs.tag }} latest
+          git config --global user.email "kogito-tooling-bot@gmail.com"
+          git config --global user.name "kogito-tooling Bot (${{ github.actor }})"
+          git add . && git commit -m "Update editors/latest to ${{ steps.release-tag.outputs.tag }}" || echo "No changes."
+          git remote set-url --push origin https://${{ secrets.KOGITO_TOOLING_BOT_TOKEN }}@github.com/${{ github.actor }}/kogito-online
+          git push origin gh-pages
+          cd -
+
+      - name: Publish artifacts to NPM registry
+          run: echo "Publish success."
+
