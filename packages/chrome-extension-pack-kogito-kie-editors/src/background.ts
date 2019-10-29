@@ -14,44 +14,6 @@
  * limitations under the License.
  */
 
-import HttpHeader = chrome.webRequest.HttpHeader;
-
 chrome.runtime.onInstalled.addListener(() => {
   console.log("Kogito Tooling extension is running.");
 });
-
-function removeHeader(headers: HttpHeader[], name: string) {
-  for (let i = 0; i < headers.length; i++) {
-    if (headers[i].name.toLowerCase() === name) {
-      headers.splice(i, 1);
-      break;
-    }
-  }
-}
-
-chrome.webRequest.onHeadersReceived.addListener(
-  details => {
-    const contentType = details.responseHeaders!.find(e => e.name.toLowerCase() === "content-type")!;
-
-    if (details.url.endsWith(".js")) {
-      contentType.value = "text/javascript";
-    } else if (details.url.endsWith(".css")) {
-      contentType.value = "text/css";
-    } else if (details.url.endsWith(".html")) {
-      contentType.value = "text/html";
-    }
-    return { responseHeaders: details.responseHeaders };
-  },
-  { urls: ["https://raw.githubusercontent.com/*"] },
-  ["blocking", "responseHeaders"]
-);
-
-chrome.webRequest.onHeadersReceived.addListener(
-  details => {
-    removeHeader(details.responseHeaders!, "content-security-policy");
-    removeHeader(details.responseHeaders!, "x-frame-options");
-    return { responseHeaders: details.responseHeaders };
-  },
-  { urls: ["https://github.com/*", "https://raw.githubusercontent.com/*"] },
-  ["blocking", "responseHeaders"]
-);
