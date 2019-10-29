@@ -58,7 +58,7 @@ jobs:
           git commit -am "${{ steps.prerelease-tag.outputs.tag }} resources"
           pwd
           echo "Tiago"
-          export GITHUB_TOKEN=${{ github.token }}
+          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           git push origin gh-pages
 
       - name: Create Release
