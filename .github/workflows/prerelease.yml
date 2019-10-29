@@ -34,7 +34,6 @@ jobs:
 
       - name: Build
         env:
-          ROUTER_targetOrigin: "https://kiegroup.github.io"
           ROUTER_relativePath: "kogito-online/editors/${{ steps.prerelease-tag.outputs.tag }}/"
           DISPLAY: ":99.0"
         run: yarn run init && yarn run build:prod
