@@ -38,15 +38,13 @@ jobs:
           DISPLAY: ":99.0"
         run: yarn run init && yarn run build:prod
 
-      - name: Checkout kogito-online
-#        working-directory: $HOME
+      - name: Checkout "kogito-online"
         uses: actions/checkout@v1
         with:
           repository: ${{ github.actor }}/kogito-online
           ref: gh-pages
 
-      - name: Update kogito-online resources
-#        working-directory: $HOME
+      - name: Update "kogito-online" resources
         env:
           KOGITO_ONLINE_DIR: ./editors/${{ steps.prerelease-tag.outputs.tag }}
         run: |
@@ -54,6 +52,8 @@ jobs:
           mkdir -p $KOGITO_ONLINE_DIR
           cp -r ../kogito-tooling/packages/unpacked-gwt-editors/* $KOGITO_ONLINE_DIR
           cp -r ../kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/envelope $KOGITO_ONLINE_DIR
+          git config --global user.email "actions@github.com"
+          git config --global user.name "${{ github.actor }}"
           git commit -am "${{ steps.prerelease-tag.outputs.tag }} resources"
           git push origin gh-pages
 
