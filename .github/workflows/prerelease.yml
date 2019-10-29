@@ -50,7 +50,6 @@ jobs:
         env:
           KOGITO_ONLINE_DIR: ./editors/${{ steps.prerelease-tag.outputs.tag }}
         run: |
-          pwd && find $HOME
           rm -rf $KOGITO_ONLINE_DIR
           mkdir -p $KOGITO_ONLINE_DIR
           cp -r ../kogito-tooling/packages/unpacked-gwt-editors/* $KOGITO_ONLINE_DIR
