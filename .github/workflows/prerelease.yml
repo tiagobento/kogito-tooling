@@ -38,6 +38,32 @@ jobs:
           DISPLAY: ":99.0"
         run: yarn run init && yarn run build:prod
 
+      - name: Checkout kogito-online
+        working-directory: $HOME
+        uses: actions/checkout@v1
+        with:
+          repository: tiagobento/kogito-online
+          ref: gh-pages
+
+      - name: Checkout kogito-online
+          working-directory: $HOME
+          uses: actions/checkout@v1
+          with:
+            repository: ${{ github.repository }}/kogito-online
+            ref: gh-pages
+
+      - name: Update kogito-online resources
+          working-directory: $HOME
+          env:
+            KOGITO_ONLINE_DIR: ./editors/${{ steps.prerelease-tag.outputs.tag }}
+          run: |
+            rm -rf $KOGITO_ONLINE_DIR
+            mkdir -p $KOGITO_ONLINE_DIR
+            cp -r ../kogito-tooling/packages/unpacked-gwt-editors/* $KOGITO_ONLINE_DIR
+            cp -r ../kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/envelope $KOGITO_ONLINE_DIR
+            git commit -am "${{ steps.prerelease-tag.outputs.tag }} resources"
+            git push origin gh-pages
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@master
