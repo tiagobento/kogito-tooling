@@ -57,6 +57,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "${{ github.actor }}"
           git add .
+          pwd
           git commit -m "${{ steps.prerelease-tag.outputs.tag }} resources"
           git remote set-url --push origin https://${{ github.actor }}:${{ secrets.KOGITO_ONLINE_TOKEN }}@github.com/${{ github.actor }}/kogito-online
           git push origin gh-pages
