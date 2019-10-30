@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Router } from "@kogito-tooling/core-api";
-import { GlobalDomDependencies } from "../../dependencies";
-import { Logger } from "../../../Logger";
-
-export interface GlobalContextType {
-  router: Router;
-  logger: Logger;
-  editorIndexPath: string;
-  dependencies: GlobalDomDependencies;
-}
-
-export const GlobalContext = React.createContext<GlobalContextType>({
-  router: undefined as any,
-  logger: undefined as any,
-  editorIndexPath: "envelope/index.html",
-  dependencies: {} as any
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Kogito Tooling extension is running.");
 });
