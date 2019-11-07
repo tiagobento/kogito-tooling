@@ -38,7 +38,17 @@ export function startExtension(args: {
   const editorFactory = new KogitoEditorFactory(args.context, args.router, args.webviewLocation, editorStore);
   const extension = new KogitoEditorsExtension(args.context, args.extensionName, editorStore, editorFactory);
 
-  extension.startReplacingTextEditorsByKogitoEditorsAsTheyOpenIfLanguageIsSupported();
+  vscode.window.registerWebviewEditorProvider(
+    "kogitoEditorWebview",
+    {
+      resolveWebviewEditor: (uri, webviewPanel) => {
+        editorFactory.configure(uri, webviewPanel);
+        return Promise.resolve();
+      }
+    },
+    { retainContextWhenHidden: true }
+  );
+
   extension.registerCustomSaveCommand();
   extension.registerCustomSaveAllCommand();
 }
