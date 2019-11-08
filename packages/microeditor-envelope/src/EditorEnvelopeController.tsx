@@ -23,13 +23,16 @@ import { EnvelopeBusApi } from "@kogito-tooling/microeditor-envelope-protocol";
 import { EditorFactory } from "./EditorFactory";
 import { SpecialDomElements } from "./SpecialDomElements";
 import { Renderer } from "./Renderer";
+import { ResourceContent, ResourcesList } from "@kogito-tooling/core-api";
+import { ResourceContentEditorService } from "./resourceContent/ResourceContentEditorService";
 
 export class EditorEnvelopeController {
   public static readonly ESTIMATED_TIME_TO_WAIT_AFTER_EMPTY_SET_CONTENT = 10;
 
   private readonly editorFactory: EditorFactory<any>;
   private readonly specialDomElements: SpecialDomElements;
-  public readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
+  private readonly envelopeBusInnerMessageHandler: EnvelopeBusInnerMessageHandler;
+  private readonly resourceContentEditorService: ResourceContentEditorService;
 
   private editorEnvelopeView?: EditorEnvelopeView;
   private renderer: Renderer;
@@ -38,11 +41,13 @@ export class EditorEnvelopeController {
     busApi: EnvelopeBusApi,
     editorFactory: EditorFactory<any>,
     specialDomElements: SpecialDomElements,
-    renderer: Renderer
+    renderer: Renderer,
+    resourceContentEditorService: ResourceContentEditorService
   ) {
     this.renderer = renderer;
     this.editorFactory = editorFactory;
     this.specialDomElements = specialDomElements;
+    this.resourceContentEditorService = resourceContentEditorService;
     this.envelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(busApi, self => ({
       receive_contentResponse: (content: string) => {
         const editor = this.getEditor();
@@ -66,11 +71,11 @@ export class EditorEnvelopeController {
           .then(editor => this.open(editor))
           .then(() => self.request_contentResponse());
       },
-      receive_resourceContentResponse: (content: string) => {
-        // TODO: Implement
+      receive_resourceContentResponse: (resourceContent: ResourceContent) => {
+        this.resourceContentEditorService.resolvePending(resourceContent);
       },
-      receive_resourceContentList: (pattern: string) => {
-        // TODO: Implement
+      receive_resourceContentList: (resourcesList: ResourcesList) => {
+        this.resourceContentEditorService.resolvePendingList(resourcesList);
       }
     }));
   }
@@ -112,9 +117,10 @@ export class EditorEnvelopeController {
     );
   }
 
-  public start(container: HTMLElement): Promise<void> {
+  public start(container: HTMLElement): Promise<EnvelopeBusInnerMessageHandler> {
     return this.render(container).then(() => {
       this.envelopeBusInnerMessageHandler.startListening();
+      return this.envelopeBusInnerMessageHandler;
     });
   }
 

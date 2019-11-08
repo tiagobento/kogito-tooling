@@ -21,7 +21,8 @@ import { SpecialDomElements } from "./SpecialDomElements";
 import { Renderer } from "./Renderer";
 import { ReactElement } from "react";
 import { EditorFactory } from "./EditorFactory";
-import { ResourceContentEditorService } from "./ResourceContentInnerService";
+import { ResourceContentEditorService } from "./resourceContent/ResourceContentEditorService";
+import { ResourceContentEditorServiceApi } from "./resourceContent/ResourceContentEditorServiceApi";
 
 export * from "./EditorFactory";
 export * from "./EnvelopeBusInnerMessageHandler";
@@ -29,8 +30,8 @@ export * from "./EnvelopeBusInnerMessageHandler";
 declare global {
   interface Window {
     envelope: {
-      resourceContentEditorService: ResourceContentEditorService;
-    }
+      resourceContentEditorService: ResourceContentEditorServiceApi;
+    };
   }
 }
 
@@ -52,16 +53,18 @@ export function init(args: { container: HTMLElement; busApi: EnvelopeBusApi; edi
   const specialDomElements = new SpecialDomElements();
 
   const renderer = new ReactDomRenderer();
+  const resourceContentEditorService = new ResourceContentEditorService();
   const editorEnvelopeController = new EditorEnvelopeController(
     args.busApi,
     args.editorFactory,
     specialDomElements,
-    renderer);
+    renderer,
+    resourceContentEditorService
+  );
 
-  window.envelope = {
-    resourceContentEditorService: new ResourceContentEditorService(editorEnvelopeController.envelopeBusInnerMessageHandler)
-  }
-
-  return editorEnvelopeController.start(args.container);
-
+  return editorEnvelopeController.start(args.container).then(messageBus => {
+    window.envelope = {
+      resourceContentEditorService: resourceContentEditorService.exposed(messageBus)
+    };
+  });
 }

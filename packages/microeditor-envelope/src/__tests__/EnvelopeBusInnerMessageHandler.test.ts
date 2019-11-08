@@ -16,7 +16,7 @@
 
 import { EnvelopeBusInnerMessageHandler } from "../EnvelopeBusInnerMessageHandler";
 import { EnvelopeBusMessageType } from "@kogito-tooling/microeditor-envelope-protocol";
-import { LanguageData } from "@kogito-tooling/core-api";
+import {LanguageData, ResourceContent, ResourcesList} from "@kogito-tooling/core-api";
 
 let handler: EnvelopeBusInnerMessageHandler;
 let receivedMessages: any[];
@@ -40,10 +40,10 @@ beforeEach(() => {
       receive_contentRequest: () => {
         receivedMessages.push(["contentRequest", undefined]);
       },
-      receive_resourceContentResponse: (content: string) => {
+      receive_resourceContentResponse: (content: ResourceContent) => {
         receivedMessages.push(["resourceContent", content]);
       },
-      receive_resourceContentList: (pattern: string) => {
+      receive_resourceContentList: (pattern: ResourcesList) => {
         receivedMessages.push(["resourceContentList", pattern]);
       }
     })

@@ -67,7 +67,8 @@ beforeEach(() => {
         mockComponent = mount(element);
         callback();
       }
-    }
+    },
+    undefined as any
   );
 });
 
