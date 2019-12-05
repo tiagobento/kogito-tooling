@@ -24,10 +24,10 @@ import { IsolatedEditorContext } from "../common/IsolatedEditorContext";
 import { iframeFullscreenContainer } from "../../utils";
 import { IsolatedEditor } from "../common/IsolatedEditor";
 import * as dependencies__ from "../../dependencies";
-import {useGlobals} from "../common/GlobalContext";
+import { useGlobals } from "../common/GlobalContext";
 
 function useFullScreenEditorTogglingEffect(fullscreen: boolean) {
-    const globals = useGlobals();
+  const globals = useGlobals();
   useLayoutEffect(
     () => {
       if (!fullscreen) {
@@ -81,7 +81,8 @@ export function SingleEditorApp(props: {
         value={{
           onEditorReady: () => setTextModeEnabled(true),
           fullscreen: fullscreen,
-          textMode: textMode
+          textMode: textMode,
+          isOriginal: true
         }}
       >
         {!fullscreen && (
