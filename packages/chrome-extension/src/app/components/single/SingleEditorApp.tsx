@@ -28,16 +28,13 @@ import { useGlobals } from "../common/GlobalContext";
 
 function useFullScreenEditorTogglingEffect(fullscreen: boolean) {
   const globals = useGlobals();
-  useLayoutEffect(
-    () => {
-      if (!fullscreen) {
-        iframeFullscreenContainer(globals.id, dependencies__.all.body()).classList.add("hidden");
-      } else {
-        iframeFullscreenContainer(globals.id, dependencies__.all.body()).classList.remove("hidden");
-      }
-    },
-    [fullscreen]
-  );
+  useLayoutEffect(() => {
+    if (!fullscreen) {
+      iframeFullscreenContainer(globals.id, dependencies__.all.body()).classList.add("hidden");
+    } else {
+      iframeFullscreenContainer(globals.id, dependencies__.all.body()).classList.remove("hidden");
+    }
+  }, [fullscreen]);
 }
 
 export function SingleEditorApp(props: {
@@ -82,7 +79,7 @@ export function SingleEditorApp(props: {
           onEditorReady: () => setTextModeEnabled(true),
           fullscreen: fullscreen,
           textMode: textMode,
-          isOriginal: true
+          repoInfo: {} as any //FIXME: WILLIAM
         }}
       >
         {!fullscreen && (
@@ -108,7 +105,10 @@ export function SingleEditorApp(props: {
               <FullScreenToolbar onExitFullScreen={exitFullScreen} />,
               iframeFullscreenContainer(globals.id, dependencies__.all.body())
             )}
-            {ReactDOM.createPortal(IsolatedEditorComponent, iframeFullscreenContainer(globals.id, dependencies__.all.body()))}
+            {ReactDOM.createPortal(
+              IsolatedEditorComponent,
+              iframeFullscreenContainer(globals.id, dependencies__.all.body())
+            )}
           </>
         )}
       </IsolatedEditorContext.Provider>
