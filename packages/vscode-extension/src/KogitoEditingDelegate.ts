@@ -20,7 +20,7 @@ import { KogitoEditType } from "./KogitoEditType";
 import { KogitoEditorStore } from "./KogitoEditorStore";
 
 export class KogitoEditingDelegate implements WebviewCustomEditorEditingDelegate<KogitoEditType> {
-  private readonly _onEdit = new vscode.EventEmitter<{
+  public readonly _onEdit = new vscode.EventEmitter<{
     readonly resource: vscode.Uri;
     readonly edit: KogitoEditType;
   }>();

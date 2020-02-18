@@ -23,13 +23,20 @@ export class KogitoWebviewProvider implements vscode.WebviewCustomEditorProvider
   private readonly editorFactory: KogitoEditorFactory;
   public readonly editingDelegate?: vscode.WebviewCustomEditorEditingDelegate<KogitoEditType>;
 
-  public constructor(editorFactory: KogitoEditorFactory, editingDelegate: KogitoEditingDelegate) {
+  public constructor(
+    editorFactory: KogitoEditorFactory,
+    editingDelegate: vscode.WebviewCustomEditorEditingDelegate<KogitoEditType>
+  ) {
     this.editorFactory = editorFactory;
     this.editingDelegate = editingDelegate;
   }
 
   public async resolveWebviewEditor(resource: vscode.Uri, webview: vscode.WebviewPanel) {
     this.editorFactory.configureNew(resource, webview);
+    setTimeout(
+      () => (this.editingDelegate as KogitoEditingDelegate)._onEdit.fire({ resource, edit: { foo: "tiago" } }),
+      2000
+    );
   }
 
   public register() {
