@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import { Component } from "./Component";
-import { ComponentTypes } from "./ComponentTypes";
+export function extractFileExtension(fileName: string) {
+  return fileName
+    .split(".")
+    .pop()
+    ?.match(/[\w\d]+/)
+    ?.pop();
+}
 
-/**
- * Editor component API. Implement this class to create an Editor.
- */
-export abstract class Editor extends Component {
-  public af_componentTitle?: string = undefined;
-  public af_subscriptions: Map<string, ((event: any) => void)> = new Map();
+export function removeFileExtension(fileName: string) {
+  const fileExtension = extractFileExtension(fileName);
 
-  protected constructor(componentId: string) {
-    super({ type: ComponentTypes.EDITOR, af_componentId: componentId });
+  if (!fileExtension) {
+    return fileName;
   }
 
-  public abstract setContent(path: string, content: string): Promise<void>; 
+  return fileName.substr(0, fileName.length - fileExtension.length - 1);
+}
 
-  public abstract getContent(): Promise<string>;
-
-  public abstract isDirty(): boolean;
+export function removeDirectories(filePath: string) {
+  return filePath.split("/").pop();
 }

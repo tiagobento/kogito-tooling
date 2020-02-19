@@ -125,10 +125,23 @@ export function HomePage(props: Props) {
     }
   }, [context, history, fileTypeSelect]);
 
+  const trySample = useCallback(() => {
+    if (fileTypeSelect?.value) {
+      const fileName = "sample";
+      const fileExtension = fileTypeSelect.value!.toLowerCase();
+      const filePath = `samples/${fileName}.${fileExtension}`;
+      props.onFileOpened({
+        fileName: fileName,
+        getFileContents: () => fetch(filePath).then(response => response.text())
+      });
+      history.replace(context.routes.editor.url({ type: fileExtension }));
+    }
+  }, [context, history, fileTypeSelect]);
+
   return (
     <Page>
-      <PageSection variant="light">
-        <Bullseye style={{ height: "calc(100vh - 5px)" }}>
+      <PageSection variant="light" style={{ flexBasis: "100%" }}>
+        <Bullseye>
           <Grid gutter="lg" className="pf-m-all-12-col pf-m-all-6-col-on-md">
             <GridItem className="pf-u-text-align-center pf-m-12-col">
               <img src={"images/kogito_logo.png"} alt="Kogito Logo" />
@@ -149,15 +162,17 @@ export function HomePage(props: Props) {
                         onToggle={onToggleFileType}
                         isExpanded={fileTypeSelect.isExpanded}
                         selections={fileTypeSelect.value}
+                        width={"7em"}
                       >
                         {editorTypeOptions.map((option, index) => (
                           <SelectOption key={index} value={option.value} />
                         ))}
                       </Select>
-                    </ToolbarItem>
-                    <ToolbarItem>
                       <Button className="pf-u-ml-md" variant="secondary" onClick={createFile}>
                         Create
+                      </Button>
+                      <Button className="pf-u-ml-md" variant="secondary" onClick={trySample}>
+                        Try Sample
                       </Button>
                     </ToolbarItem>
                   </Toolbar>
@@ -202,7 +217,11 @@ export function HomePage(props: Props) {
 }
 
 function extractFileExtension(fileName: string) {
-  return fileName.split(".").pop()?.match(/[\w\d]+/)?.pop();
+  return fileName
+    .split(".")
+    .pop()
+    ?.match(/[\w\d]+/)
+    ?.pop();
 }
 
 function removeFileExtension(fileName: string) {

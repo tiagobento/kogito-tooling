@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import * as AppFormer from "@kogito-tooling/core-api";
-import { LanguageData, ResourceContent, ResourcesList } from "@kogito-tooling/core-api";
+import { EditorContent, LanguageData, ResourceContent, ResourcesList } from "@kogito-tooling/core-api";
 import { EditorEnvelopeView } from "./EditorEnvelopeView";
 import { EnvelopeBusInnerMessageHandler } from "./EnvelopeBusInnerMessageHandler";
 import { EnvelopeBusApi } from "@kogito-tooling/microeditor-envelope-protocol";
@@ -48,20 +48,21 @@ export class EditorEnvelopeController {
     this.specialDomElements = specialDomElements;
     this.resourceContentEditorCoordinator = resourceContentEditorCoordinator;
     this.envelopeBusInnerMessageHandler = new EnvelopeBusInnerMessageHandler(busApi, self => ({
-      receive_contentResponse: (content: string) => {
+      receive_contentResponse: (editorContent: EditorContent) => {
+        const contentPath = editorContent.path || "";
         const editor = this.getEditor();
         if (editor) {
           this.editorEnvelopeView!.setLoading();
           editor
-            .setContent("")
+            .setContent("", "")
             .finally(() => this.waitForEmptySetContentThenSetLoadingFinished())
-            .then(() => editor.setContent(content));
+            .then(() => editor.setContent(contentPath, editorContent.content));
         }
       },
       receive_contentRequest: () => {
         const editor = this.getEditor();
         if (editor) {
-          editor.getContent().then(content => self.respond_contentRequest(content));
+          editor.getContent().then(content => self.respond_contentRequest({ content: content }));
         }
       },
       receive_languageResponse: (languageData: LanguageData) => {
@@ -126,5 +127,4 @@ export class EditorEnvelopeController {
   public stop() {
     this.envelopeBusInnerMessageHandler.stopListening();
   }
-
 }

@@ -18,12 +18,13 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import { EnvelopeBusOuterMessageHandler } from "@kogito-tooling/microeditor-envelope-protocol";
 import { KogitoEditorStore } from "./KogitoEditorStore";
-import { Router, ResourceContentService, ResourceContent } from "@kogito-tooling/core-api";
+import { EditorContent, ResourceContent, ResourceContentService, Router } from "@kogito-tooling/core-api";
 
 export class KogitoEditor {
   private static readonly DIRTY_INDICATOR = " *";
 
   private readonly path: string;
+  private readonly relativePath: string;
   private readonly webviewLocation: string;
   private readonly context: vscode.ExtensionContext;
   private readonly router: Router;
@@ -33,6 +34,7 @@ export class KogitoEditor {
   private readonly resourceContentService: ResourceContentService;
 
   public constructor(
+    relativePath: string,
     path: string,
     panel: vscode.WebviewPanel,
     context: vscode.ExtensionContext,
@@ -41,6 +43,7 @@ export class KogitoEditor {
     editorStore: KogitoEditorStore,
     resourceContentService: ResourceContentService
   ) {
+    this.relativePath = relativePath;
     this.path = path;
     this.panel = panel;
     this.context = context;
@@ -62,12 +65,15 @@ export class KogitoEditor {
           const pathFileExtension = this.path.split(".").pop()!;
           self.respond_languageRequest(this.router.getLanguageData(pathFileExtension));
         },
-        receive_contentResponse: (content: string) => {
-          fs.writeFileSync(this.path, content);
+        receive_contentResponse: (content: EditorContent) => {
+          fs.writeFileSync(this.path, content.content);
           vscode.window.setStatusBarMessage("Saved successfully!", 3000);
         },
         receive_contentRequest: () => {
-          self.respond_contentRequest(fs.readFileSync(this.path).toString());
+          self.respond_contentRequest({
+            content: fs.readFileSync(this.path).toString(),
+            path: this.relativePath
+          });
         },
         receive_setContentError: (errorMessage: string) => {
           vscode.window.showErrorMessage(errorMessage);

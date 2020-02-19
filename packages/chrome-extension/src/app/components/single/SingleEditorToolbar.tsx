@@ -15,7 +15,13 @@
  */
 
 import * as React from "react";
+import { useRef } from "react";
 import { useGlobals } from "../common/GlobalContext";
+import { useState } from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+
+const ALERT_AUTO_CLOSE_TIMEOUT = 3000;
 
 export function SingleEditorToolbar(props: {
   readonly: boolean;
@@ -25,8 +31,12 @@ export function SingleEditorToolbar(props: {
   onSeeAsSource: () => void;
   onSeeAsDiagram: () => void;
   onOpenInExternalEditor: () => void;
+  linkToExternalEditor: string | undefined;
 }) {
   const globals = useGlobals();
+  const [copyLinkSuccessAlertVisible, setCopyLinkSuccessAlertVisible] = useState(false);
+  const linkToExternalEditorTextAreaRef = useRef<HTMLTextAreaElement>(null);
+  const copyLinkSuccessAlertRef = useRef<HTMLDivElement>(null);
 
   const goFullScreen = (e: any) => {
     e.preventDefault();
@@ -47,7 +57,29 @@ export function SingleEditorToolbar(props: {
     e.preventDefault();
     props.onOpenInExternalEditor();
   };
-  
+
+  const copyLinkToExternalEditor = (e: any) => {
+    e.preventDefault();
+    linkToExternalEditorTextAreaRef.current?.select();
+    if (document.execCommand("copy")) {
+      setCopyLinkSuccessAlertVisible(true);
+    }
+    e.target.focus();
+  };
+
+  const closeCopyLinkSuccessAlert = useCallback(() => setCopyLinkSuccessAlertVisible(false), []);
+
+  useEffect(() => {
+    if (closeCopyLinkSuccessAlert) {
+      const autoCloseCopyLinkSuccessAlert = setTimeout(closeCopyLinkSuccessAlert, ALERT_AUTO_CLOSE_TIMEOUT);
+      return () => clearInterval(autoCloseCopyLinkSuccessAlert);
+    }
+
+    return () => {
+      /* Do nothing */
+    };
+  }, [copyLinkSuccessAlertVisible]);
+
   return (
     <>
       <div style={{ display: "flex" }}>
@@ -66,11 +98,34 @@ export function SingleEditorToolbar(props: {
             Open in {globals.externalEditorManager.name}
           </button>
         )}
+        {globals.externalEditorManager && props.linkToExternalEditor && (
+          <div className={"position-relative"}>
+            <button className={"btn btn-sm kogito-button"} onClick={copyLinkToExternalEditor}>
+              Copy link to {globals.externalEditorManager.name}
+            </button>
+            {copyLinkSuccessAlertVisible && (
+              <div
+                ref={copyLinkSuccessAlertRef}
+                className={"position-absolute"}
+                style={{ marginTop: "34px", right: "0" }}
+              >
+                <div className={"dropdown-menu dropdown-menu-sw kogito-github-action-alert"}>
+                  <span>Link copied to clipboard</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         {!props.textMode && (
           <button className={"btn btn-sm kogito-button"} onClick={goFullScreen}>
             Full screen
           </button>
         )}
+        <textarea
+          ref={linkToExternalEditorTextAreaRef}
+          defaultValue={props.linkToExternalEditor}
+          style={{ opacity: 0, width: 0, height: 0 }}
+        />
       </div>
       {props.readonly && !props.textMode && (
         <>
