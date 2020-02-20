@@ -22,11 +22,12 @@ import {
   EnvelopeBusMessage,
   EnvelopeBusMessageType
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import { LanguageData, StateControl } from "@kogito-tooling/core-api";
+import { LanguageData } from "@kogito-tooling/core-api";
 import { DummyEditor } from "./DummyEditor";
-import { ResourceContentEditorCoordinator } from "../ResourceContentEditorCoordinator";
+import { ResourceContentEditorCoordinator } from "../api/resourceContent";
 import { EditorFactory } from "../EditorFactory";
 import { Renderer } from "../Renderer";
+import { StateControl } from "../api/stateControl";
 
 const StateControlMock = jest.fn(() => ({
   undo: jest.fn(),
@@ -34,7 +35,7 @@ const StateControlMock = jest.fn(() => ({
   registry: jest.fn()
 }));
 
-let stateControl:any;
+let stateControl: any;
 
 let loadingScreenContainer: HTMLElement;
 let envelopeContainer: HTMLElement;
@@ -63,13 +64,14 @@ let controller: EditorEnvelopeController;
 let mockComponent: ReturnType<typeof mount>;
 
 class TestEditorEnvelopeController extends EditorEnvelopeController {
-
-  constructor(busApi: EnvelopeBusApi,
-              editorFactory: EditorFactory<any>,
-              specialDomElements: SpecialDomElements,
-              renderer: Renderer,
-              resourceContentEditorCoordinator: ResourceContentEditorCoordinator) {
-    super(busApi, editorFactory, specialDomElements, renderer, resourceContentEditorCoordinator);
+  constructor(
+    busApi: EnvelopeBusApi,
+    editorFactory: EditorFactory<any>,
+    specialDomElements: SpecialDomElements,
+    renderer: Renderer,
+    resourceContentEditorCoordinator: ResourceContentEditorCoordinator
+  ) {
+    super(busApi, editorFactory, specialDomElements,  undefined as any, renderer, resourceContentEditorCoordinator);
   }
 
   protected getStateControl(): StateControl {
@@ -101,7 +103,7 @@ beforeEach(() => {
       }
     },
     new ResourceContentEditorCoordinator()
-  )
+  );
 });
 
 afterEach(() => {
@@ -152,7 +154,7 @@ describe("EditorEnvelopeController", () => {
 
     await incomingMessage({ type: EnvelopeBusMessageType.RETURN_LANGUAGE, data: languageData });
     sentMessages = [];
-    await incomingMessage({ type: EnvelopeBusMessageType.RETURN_CONTENT, data: { content: "test content"} });
+    await incomingMessage({ type: EnvelopeBusMessageType.RETURN_CONTENT, data: { content: "test content" } });
 
     expect(sentMessages).toEqual([]);
     expect(render.update()).toMatchSnapshot();
@@ -180,5 +182,5 @@ describe("EditorEnvelopeController", () => {
 
     await incomingMessage({ type: EnvelopeBusMessageType.NOTIFY_EDITOR_REDO, data: "commandID" });
     expect(stateControl.redo).toBeCalledTimes(1);
-  })
+  });
 });
