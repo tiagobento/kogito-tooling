@@ -19,7 +19,14 @@ import {
   EnvelopeBusMessage,
   EnvelopeBusMessageType
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import { LanguageData, ResourceContent, ResourcesList, EditorContent, ChannelType } from "@kogito-tooling/core-api";
+import {
+  EditorContent,
+  KogitoEdit,
+  LanguageData,
+  ResourceContent,
+  ResourceContentOptions,
+  ResourcesList
+} from "@kogito-tooling/core-api";
 
 export interface Impl {
   receive_contentResponse(content: EditorContent): void;
@@ -27,6 +34,8 @@ export interface Impl {
   receive_contentRequest(): void;
   receive_resourceContentResponse(content: ResourceContent): void;
   receive_resourceContentList(list: ResourcesList): void;
+  receive_editorUndo(): void;
+  receive_editorRedo(): void;
 }
 
 export class EnvelopeBusInnerMessageHandler {
@@ -80,7 +89,7 @@ export class EnvelopeBusInnerMessageHandler {
   }
 
   public notify_setContentError(errorMessage: string) {
-    return this.send({ type: EnvelopeBusMessageType.NOTIFY_SET_CONTENT_ERROR, data: errorMessage })
+    return this.send({ type: EnvelopeBusMessageType.NOTIFY_SET_CONTENT_ERROR, data: errorMessage });
   }
 
   public notify_dirtyIndicatorChange(isDirty: boolean) {
@@ -91,12 +100,16 @@ export class EnvelopeBusInnerMessageHandler {
     return this.send({ type: EnvelopeBusMessageType.NOTIFY_READY, data: undefined });
   }
 
-  public request_resourceContent(uri: string) {
-    return this.send({ type: EnvelopeBusMessageType.REQUEST_RESOURCE_CONTENT, data: uri });
+  public request_resourceContent(path: string, opts?: ResourceContentOptions) {
+    return this.send({ type: EnvelopeBusMessageType.REQUEST_RESOURCE_CONTENT, data: { path: path, opts: opts } });
   }
 
   public request_resourceList(pattern: string) {
     return this.send({ type: EnvelopeBusMessageType.REQUEST_RESOURCE_LIST, data: pattern });
+  }
+
+  public notify_newEdit(edit: KogitoEdit) {
+    return this.send({ type: EnvelopeBusMessageType.NOTIFY_EDITOR_NEW_EDIT, data: edit });
   }
 
   private receive_initRequest(init: { origin: string; busId: string }) {
@@ -135,6 +148,12 @@ export class EnvelopeBusInnerMessageHandler {
       case EnvelopeBusMessageType.RETURN_RESOURCE_LIST:
         const resourcesList = message.data as ResourcesList;
         this.impl.receive_resourceContentList(resourcesList);
+        break;
+      case EnvelopeBusMessageType.NOTIFY_EDITOR_UNDO:
+        this.impl.receive_editorUndo();
+        break;
+      case EnvelopeBusMessageType.NOTIFY_EDITOR_REDO:
+        this.impl.receive_editorRedo();
         break;
       default:
         console.info(`[Bus ${this.id}]: Unknown message type received: ${message.type}`);

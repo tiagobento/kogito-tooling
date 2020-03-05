@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { LanguageData, ResourceContent, ResourcesList, EditorContent } from "@kogito-tooling/core-api";
+import {
+  EditorContent,
+  KogitoEdit,
+  LanguageData,
+  ResourceContent,
+  ResourceContentRequest,
+  ResourcesList
+} from "@kogito-tooling/core-api";
 import { EnvelopeBusMessage } from "./EnvelopeBusMessage";
 import { EnvelopeBusMessageType } from "./EnvelopeBusMessageType";
 import { EnvelopeBusApi } from "./EnvelopeBusApi";
@@ -26,7 +33,7 @@ export interface EnvelopeBusOuterMessageHandlerImpl {
   receive_contentResponse(content: EditorContent): void;
   receive_setContentError(errorMessage: string): void;
   receive_dirtyIndicatorChange(isDirty: boolean): void;
-  receive_resourceContentRequest(uri: string): void;
+  receive_resourceContentRequest(resourceContentService: ResourceContentRequest): void;
   receive_resourceListRequest(globPattern: string): void;
   receive_ready(): void;
 }
@@ -83,6 +90,14 @@ export class EnvelopeBusOuterMessageHandler {
     this.busApi.postMessage({ type: EnvelopeBusMessageType.REQUEST_CONTENT, data: undefined });
   }
 
+  public notify_editorUndo() {
+    this.busApi.postMessage({ type: EnvelopeBusMessageType.NOTIFY_EDITOR_UNDO, data: undefined });
+  }
+
+  public notify_editorRedo() {
+    this.busApi.postMessage({ type: EnvelopeBusMessageType.NOTIFY_EDITOR_REDO, data: undefined });
+  }
+
   public request_initResponse(origin: string) {
     this.busApi.postMessage({ busId: this.busId, type: EnvelopeBusMessageType.REQUEST_INIT, data: origin });
   }
@@ -123,10 +138,14 @@ export class EnvelopeBusOuterMessageHandler {
         this.impl.receive_ready();
         break;
       case EnvelopeBusMessageType.REQUEST_RESOURCE_CONTENT:
-        this.impl.receive_resourceContentRequest(message.data as string);
+        this.impl.receive_resourceContentRequest(message.data as ResourceContentRequest);
         break;
       case EnvelopeBusMessageType.REQUEST_RESOURCE_LIST:
         this.impl.receive_resourceListRequest(message.data as string);
+        break;
+      case EnvelopeBusMessageType.NOTIFY_EDITOR_NEW_EDIT:
+        const kogitoEdit = message.data as KogitoEdit;
+        console.info(`EnvelopeBusOuterMessageHandler: Received new edit: ${kogitoEdit.id}`);
         break;
       default:
         console.info(`Unknown message type received: ${message.type}`);
