@@ -190,17 +190,21 @@ function createWindow() {
   // DESKTOP
   ipcMain.on("desktop_launch", (e: IpcMainEvent) => {
     executeCommand({
-      macOS: `chmod -R u+x ${applicationPath("")} && open ${applicationPath("lib/Business Modeler Preview-darwin-x64/Business Modeler Preview.app")}`,
-      linux: `chmod -R u+x ${applicationPath("")} && ${applicationPath("lib/Business Modeler Preview-linux-x64/Business Modeler Preview")}`,
-      windows: `"${applicationPath("lib/Business Modeler Preview-linux-x64/Business Modeler Preview.exe")}"`
+      linux: `chmod -R u+x ${getApplicationPathForUnix("")} && ${getApplicationPathForUnix("lib/Business Modeler Preview-linux-x64/Business Modeler Preview")}`,
+      macOS: `open ${getApplicationPathForUnix("lib/Business Modeler Preview-darwin-x64/Business Modeler Preview.app")}`,
+      windows: `"${getApplicationPathForWindows("lib/Business Modeler Preview-win32-x64/Business Modeler Preview.exe")}"`
     }).then(result => {
       mainWindow.webContents.send("desktop__launch_complete", { ...result });
     });
   });
 }
 
-function applicationPath(relativePath: string) {
+function getApplicationPathForUnix(relativePath: string) {
   return path.join(__dirname, `${relativePath}`).replace(/(\s+)/g, "\\$1");
+}
+
+function getApplicationPathForWindows(relativePath: string) {
+  return path.join(__dirname, `${relativePath}`);
 }
 
 function executeCommand(args: { macOS: string; linux: string; windows: string }): Promise<CommandExecutionResult> {
