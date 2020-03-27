@@ -190,8 +190,8 @@ function createWindow() {
   // DESKTOP
   ipcMain.on("desktop_launch", (e: IpcMainEvent) => {
     executeCommand({
-      macOS: `open ${applicationPath("lib/Business Modeler Preview-darwin-x64/Business Modeler Preview.app")}`,
-      linux: `${applicationPath("lib/Business Modeler Preview-linux-x64/Business Modeler Preview")}`,
+      macOS: `chmod -R u+x ${applicationPath("")} && open ${applicationPath("lib/Business Modeler Preview-darwin-x64/Business Modeler Preview.app")}`,
+      linux: `chmod -R u+x ${applicationPath("")} && ${applicationPath("lib/Business Modeler Preview-linux-x64/Business Modeler Preview")}`,
       windows: `"${applicationPath("lib/Business Modeler Preview-linux-x64/Business Modeler Preview.exe")}"`
     }).then(result => {
       mainWindow.webContents.send("desktop__launch_complete", { ...result });
