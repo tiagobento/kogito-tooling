@@ -24,7 +24,7 @@ import { Constants } from "../common/Constants";
 import { CommandExecutionResult } from "../common/CommandExecutionResult";
 import IpcMainEvent = Electron.IpcMainEvent;
 
-const vscode_EXTENSION_PATH = applicationPath("lib/vscode_extension.vsix");
+const vscode_EXTENSION_PATH = getApplicationPathForUnix("lib/vscode_extension.vsix");
 
 app.on("ready", () => {
   createWindow();
