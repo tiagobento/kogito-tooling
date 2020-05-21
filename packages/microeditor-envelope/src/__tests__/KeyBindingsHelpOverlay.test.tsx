@@ -38,4 +38,23 @@ describe("KeyBindingsHelpOverlay", () => {
 
     expect(component.baseElement).toMatchSnapshot();
   });
+
+  test("macos has not ctrl", async () => {
+    const context = {
+      operatingSystem: OperatingSystem.MACOS,
+      channel: ChannelType.DESKTOP
+    };
+
+    const keyboardShortcutsApi = new DefaultKeyboardShortcutsService(context);
+    keyboardShortcutsApi.registerKeyPress("ctrl+c", "Copy", () => Promise.resolve(), {});
+    keyboardShortcutsApi.registerKeyPress("ctrl+c", "Copy", () => Promise.resolve(), {});
+
+    const component = render(<KeyBindingsHelpOverlay keyboardShortcuts={keyboardShortcutsApi} context={context} />);
+    fireEvent.click(component.getByTestId("keyboard-shortcuts-help-overlay-icon"));
+
+    await component.findByTestId("keyboard-shortcuts-help-overlay");
+    await component.findByText("Copy");
+
+    expect(component.baseElement).toMatchSnapshot();
+  });
 });
