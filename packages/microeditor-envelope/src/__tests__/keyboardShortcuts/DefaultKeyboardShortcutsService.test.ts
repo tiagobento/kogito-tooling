@@ -31,6 +31,20 @@ describe("DefaultKeyboardShortcutsService", () => {
     expect(keyboardShortcutsApi.registered().length).toStrictEqual(1);
   });
 
+  test("keyPress on WIN", async () => {
+    const keyboardShortcutsApi = new DefaultKeyboardShortcutsService({
+      operatingSystem: OperatingSystem.WINDOWS,
+      channel: ChannelType.ONLINE
+    });
+
+    const [wasFired] = resolveWhenKeyPressed("ctrl+a", keyboardShortcutsApi);
+    expect(keyboardShortcutsApi.registered().length).toStrictEqual(1);
+    fire("keydown", { metaKey: true, code: "KeyA" });
+    await wasFired;
+
+    expect(keyboardShortcutsApi.registered().length).toStrictEqual(1);
+  });
+
   test("keyDown then keyUp", async () => {
     const keyboardShortcutsApi = new DefaultKeyboardShortcutsService({
       operatingSystem: OperatingSystem.LINUX,
@@ -89,6 +103,26 @@ describe("DefaultKeyboardShortcutsService", () => {
 
     keyboardShortcutsApi.deregister(id);
     expect(keyboardShortcutsApi.registered().length).toStrictEqual(0);
+  });
+
+  test("deregister one of two shortcuts", async () => {
+    const keyboardShortcutsApi = new DefaultKeyboardShortcutsService({
+      operatingSystem: OperatingSystem.LINUX,
+      channel: ChannelType.ONLINE
+    });
+
+    const [wasFiredCopy, idCopy] = resolveWhenKeyPressed("ctrl+c", keyboardShortcutsApi);
+    const [wasFiredPaste, idPaste] = resolveWhenKeyPressed("ctrl+v", keyboardShortcutsApi);
+    expect(keyboardShortcutsApi.registered().length).toStrictEqual(2);
+
+    fire("keydown", { ctrlKey: true, code: "KeyC" });
+    await wasFiredCopy;
+    fire("keydown", { ctrlKey: true, code: "KeyV" });
+    await wasFiredPaste;
+
+    keyboardShortcutsApi.deregister(idCopy);
+    expect(keyboardShortcutsApi.registered().length).toStrictEqual(1);
+    expect(keyboardShortcutsApi.registered()[0].combination).toStrictEqual("ctrl+v");
   });
 });
 
