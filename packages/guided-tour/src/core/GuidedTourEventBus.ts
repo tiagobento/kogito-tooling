@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Rect, UserInteraction } from "../api";
+import { UserInteraction } from "../api";
 import { GuidedTourCookie } from "../core";
+import { Rect } from "@kogito-tooling/core-api";
 
 export type EventLabel = "GuidedTour.startTutorial" | "GuidedTour.userInteraction" | "GuidedTour.newPosition";
 

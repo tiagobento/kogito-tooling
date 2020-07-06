@@ -22,15 +22,14 @@ import {
   BlockMode,
   DemoMode,
   Mode,
-  Rect,
   Step,
   SubTutorialMode,
   Tutorial,
   UserInteraction,
-  DEFAULT_RECT
 } from "./api";
 import { GuidedTour } from "./components";
 import { GuidedTourDomUtils, GuidedTourEventBus, GuidedTourCookie } from "./core";
+import { Rect } from "@kogito-tooling/core-api";
 
 class KogitoGuidedTour {
   private static instance?: KogitoGuidedTour;
@@ -162,8 +161,6 @@ export {
   AutoMode,
   DemoMode,
   SubTutorialMode,
-  Rect,
   Step,
   Tutorial,
-  DEFAULT_RECT
 };

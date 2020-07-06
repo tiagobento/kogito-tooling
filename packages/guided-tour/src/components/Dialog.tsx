@@ -15,12 +15,12 @@
  */
 
 import * as React from "react";
-import { useState, useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import {
   calculatePositionStyle,
-  getCurrentStep,
   EmptyDialog,
+  getCurrentStep,
   NegativeReinforcementDialog,
   StepDialog,
   usePositionListener,
@@ -31,9 +31,10 @@ import {
 } from "./utils";
 import { KogitoGuidedTour } from "..";
 import { CurrentTutorialContext } from "../contexts";
-import { DEFAULT_RECT, AutoMode, DemoMode } from "../api";
+import { AutoMode, DemoMode } from "../api";
 
 import "./Dialog.sass";
+import { DEFAULT_RECT } from "@kogito-tooling/core-api";
 
 export const Dialog = (props: { isEnabled: boolean; tutorialLabel: string }) => {
   // Local state

@@ -21,6 +21,7 @@ import { KogitoEnvelopeBus } from "@kogito-tooling/microeditor-envelope";
 import { editors } from "./GwtEditorRoutes";
 import { XmlFormatter } from "./XmlFormatter";
 import { GwtStateControlService } from "./gwtStateControl";
+import {GwtGuidedTourService} from "./GwtEditorWrapperFactory";
 
 const KOGITO_JIRA_LINK = "https://issues.jboss.org/projects/KOGITO";
 
@@ -28,26 +29,18 @@ export class GwtEditorWrapper extends Core.Editor {
   public readonly af_componentTitle: string;
   public readonly editorId: string;
 
-  private readonly gwtEditor: GwtEditor;
-  private readonly xmlFormatter: XmlFormatter;
-  private readonly messageBus: KogitoEnvelopeBus;
-  private readonly stateControlService: GwtStateControlService;
-
   constructor(
     editorId: string,
-    gwtEditor: GwtEditor,
-    messageBus: KogitoEnvelopeBus,
-    xmlFormatter: XmlFormatter,
-    stateControlService: GwtStateControlService
+    private readonly gwtEditor: GwtEditor,
+    private readonly messageBus: KogitoEnvelopeBus,
+    private readonly xmlFormatter: XmlFormatter,
+    private readonly stateControlService: GwtStateControlService,
+    private readonly guidedTourService: GwtGuidedTourService
   ) {
     super("gwt-editor-wrapper");
     this.af_componentTitle = editorId;
-    this.stateControlService = stateControlService;
     this.af_isReact = true;
-    this.gwtEditor = gwtEditor;
-    this.messageBus = messageBus;
     this.editorId = editorId;
-    this.xmlFormatter = xmlFormatter;
   }
 
   public af_onOpen() {
@@ -88,6 +81,10 @@ export class GwtEditorWrapper extends Core.Editor {
 
   public getPreview(): Promise<string | undefined> {
     return this.gwtEditor.getPreview();
+  }
+
+  public getElementPosition(selector: string) {
+    return this.guidedTourService.getElementPosition(selector);
   }
 
   private removeBusinessCentralHeaderPanel() {

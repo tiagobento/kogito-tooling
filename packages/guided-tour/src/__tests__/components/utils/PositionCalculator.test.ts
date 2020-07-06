@@ -15,7 +15,7 @@
  */
 
 import { calculatePositionStyle } from "../../../components/utils";
-import { Rect } from "../../..";
+import { Rect } from "@kogito-tooling/core-api";
 
 describe("PositionCalculator", () => {
   describe("calculatePositionStyle", () => {

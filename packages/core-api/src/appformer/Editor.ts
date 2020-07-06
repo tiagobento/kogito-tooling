@@ -16,6 +16,7 @@
 
 import { Component } from "./Component";
 import { ComponentTypes } from "./ComponentTypes";
+import { Rect } from "./Rect";
 
 /**
  * Editor component API. Implement this class to create an Editor.
@@ -37,4 +38,6 @@ export abstract class Editor extends Component {
   public abstract undo(): Promise<void>;
 
   public abstract redo(): Promise<void>;
+
+  public abstract getElementPosition(selector: string): Promise<Rect>;
 }

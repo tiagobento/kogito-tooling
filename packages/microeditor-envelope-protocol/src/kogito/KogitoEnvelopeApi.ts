@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { EditorContent } from "@kogito-tooling/core-api";
-import { Rect } from "@kogito-tooling/guided-tour";
+import { EditorContent, Rect } from "@kogito-tooling/core-api";
 
 export interface Association {
   origin: string;

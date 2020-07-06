@@ -16,17 +16,15 @@
 
 import * as React from "react";
 import * as Core from "@kogito-tooling/core-api";
-import { EditorContent, EditorContext, LanguageData, ResourceContent, ResourcesList } from "@kogito-tooling/core-api";
+import { EditorContent, EditorContext } from "@kogito-tooling/core-api";
 import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
-import { EnvelopeBus } from "@kogito-tooling/microeditor-envelope-protocol";
+import { Association, EnvelopeBus } from "@kogito-tooling/microeditor-envelope-protocol";
 import { EditorEnvelopeView } from "./EditorEnvelopeView";
 import { KogitoEnvelopeBus } from "./KogitoEnvelopeBus";
 import { EditorFactory } from "./EditorFactory";
 import { SpecialDomElements } from "./SpecialDomElements";
 import { Renderer } from "./Renderer";
 import { ResourceContentServiceCoordinator } from "./api/resourceContent";
-import { getGuidedTourElementPosition } from "./handlers/GuidedTourRequestHandler";
-import { Association } from "@kogito-tooling/microeditor-envelope-protocol";
 
 export class EditorEnvelopeController {
   public readonly kogitoEnvelopeBus: KogitoEnvelopeBus;
@@ -89,7 +87,7 @@ export class EditorEnvelopeController {
           .then(previewSvg => previewSvg ?? "");
       },
       receive_guidedTourElementPositionRequest: async (selector: string) => {
-        return getGuidedTourElementPosition(selector);
+        return this.getEditor()!.getElementPosition(selector);
       }
     });
   }

@@ -15,7 +15,6 @@
  */
 
 export * from "./Mode";
-export * from "./Rect";
 export * from "./Step";
 export * from "./Tutorial";
 export * from "./UserInteraction";

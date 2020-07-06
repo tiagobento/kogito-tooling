@@ -16,8 +16,9 @@
 
 import { useLayoutEffect } from "react";
 
-import { Rect, UserInteraction } from "../../api";
+import { UserInteraction } from "../../api";
 import { EventLabel } from "../../core";
+import { Rect } from "@kogito-tooling/core-api";
 
 export const useStartTutorialListener = (onStartTutorial: (tutorialLabel: string) => void) => {
   const type = "GuidedTour.startTutorial";

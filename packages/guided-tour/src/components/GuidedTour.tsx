@@ -18,8 +18,9 @@ import * as React from "react";
 import { useState } from "react";
 
 import { Dialog, HighlightLayer } from ".";
-import { UserInteraction, Tutorial, Rect } from "../api";
+import { Tutorial, UserInteraction } from "../api";
 import { CurrentTutorialContext } from "../contexts";
+import { Rect } from "@kogito-tooling/core-api";
 
 export const GuidedTour = () => {
   const [currentTutorial, setCurrentTutorial] = useState<Tutorial>();

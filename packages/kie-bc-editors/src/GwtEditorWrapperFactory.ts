@@ -16,6 +16,7 @@
 
 import { GwtAppFormerApi } from "./GwtAppFormerApi";
 import * as Core from "@kogito-tooling/core-api";
+import { DEFAULT_RECT, Rect } from "@kogito-tooling/core-api";
 import * as MicroEditorEnvelope from "@kogito-tooling/microeditor-envelope";
 import { KogitoEnvelopeBus } from "@kogito-tooling/microeditor-envelope";
 import { GwtEditorWrapper } from "./GwtEditorWrapper";
@@ -29,6 +30,27 @@ declare global {
     gwt: {
       stateControl: GwtStateControlApi;
     };
+    JsInterop__Envelope__GuidedTour__GuidedTourCustomSelectorPositionProvider: GuidedTourCustomSelectorPositionProvider;
+  }
+}
+
+function getPositionProvider() {
+  return window.JsInterop__Envelope__GuidedTour__GuidedTourCustomSelectorPositionProvider.getInstance();
+}
+
+export const getGuidedTourElementPosition = (selector: string) => {
+  return getPositionProvider().getPosition(selector);
+};
+
+interface GuidedTourCustomSelectorPositionProvider {
+  getPosition(querySelector: string): Rect;
+
+  getInstance(): GuidedTourCustomSelectorPositionProvider;
+}
+
+export class GwtGuidedTourService {
+  public getElementPosition(selector: string) {
+    return Promise.resolve(DEFAULT_RECT);
   }
 }
 
@@ -36,9 +58,9 @@ export class GwtEditorWrapperFactory implements MicroEditorEnvelope.EditorFactor
   constructor(
     private readonly xmlFormatter: XmlFormatter = new DefaultXmlFormatter(),
     private readonly gwtAppFormerApi = new GwtAppFormerApi(),
-    private readonly gwtStateControlService = new GwtStateControlService()
+    private readonly gwtStateControlService = new GwtStateControlService(),
+    private readonly gwtGuidedTourService = new GwtGuidedTourService()
   ) {}
-
 
   public createEditor(languageData: GwtLanguageData, messageBus: KogitoEnvelopeBus) {
     this.gwtAppFormerApi.setClientSideOnly(true);
@@ -54,7 +76,8 @@ export class GwtEditorWrapperFactory implements MicroEditorEnvelope.EditorFactor
             this.gwtAppFormerApi.getEditor(languageData.editorId),
             messageBus,
             this.xmlFormatter,
-            this.gwtStateControlService
+            this.gwtStateControlService,
+            this.gwtGuidedTourService
           )
         );
         return Promise.resolve();

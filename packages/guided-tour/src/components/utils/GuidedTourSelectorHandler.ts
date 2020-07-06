@@ -18,7 +18,7 @@ import { useContext, useEffect, useMemo } from "react";
 
 import { getCurrentStep } from ".";
 import { KogitoGuidedTour } from "../..";
-import { DEFAULT_RECT } from "../../api";
+import { DEFAULT_RECT } from "@kogito-tooling/core-api";
 import { CurrentTutorialContext } from "../../contexts";
 
 function querySelector(query: string) {

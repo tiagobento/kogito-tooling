@@ -17,3 +17,4 @@
 export * from "./Component";
 export * from "./Editor";
 export * from "./ComponentTypes";
+export * from "./Rect";
