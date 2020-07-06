@@ -16,6 +16,7 @@
 
 import { KogitoEnvelopeBus } from "@kogito-tooling/microeditor-envelope";
 import { GwtCommandRegistry, GwtCommandRegistryImpl } from "./GwtCommandRegistry";
+import {KogitoChannelApi, MessageBusClient} from "@kogito-tooling/microeditor-envelope-protocol";
 
 /**
  * PUBLIC GWT EDITORS API
@@ -45,11 +46,11 @@ export class GwtStateControlService {
     }
   }
 
-  public exposeApi(messageBus: KogitoEnvelopeBus): GwtStateControlApi {
+  public exposeApi(kogitoChannelApiClient: MessageBusClient<KogitoChannelApi>): GwtStateControlApi {
     const stateControl = this;
 
     return {
-      registry: new GwtCommandRegistryImpl<unknown>(messageBus),
+      registry: new GwtCommandRegistryImpl<unknown>(kogitoChannelApiClient),
       setUndoCommand(undoCommand: () => void) {
         stateControl.undoCommand = undoCommand;
       },

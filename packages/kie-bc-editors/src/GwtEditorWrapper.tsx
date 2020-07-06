@@ -17,11 +17,11 @@
 import * as React from "react";
 import * as Core from "@kogito-tooling/core-api";
 import { GwtEditor } from "./GwtEditor";
-import { KogitoEnvelopeBus } from "@kogito-tooling/microeditor-envelope";
 import { editors } from "./GwtEditorRoutes";
 import { XmlFormatter } from "./XmlFormatter";
 import { GwtStateControlService } from "./gwtStateControl";
-import {GwtGuidedTourService} from "./GwtEditorWrapperFactory";
+import { GwtGuidedTourService } from "./GwtEditorWrapperFactory";
+import { KogitoChannelApi, MessageBusClient } from "@kogito-tooling/microeditor-envelope-protocol";
 
 const KOGITO_JIRA_LINK = "https://issues.jboss.org/projects/KOGITO";
 
@@ -32,7 +32,7 @@ export class GwtEditorWrapper extends Core.Editor {
   constructor(
     editorId: string,
     private readonly gwtEditor: GwtEditor,
-    private readonly messageBus: KogitoEnvelopeBus,
+    private readonly kogitoChannelApiClient: MessageBusClient<KogitoChannelApi>,
     private readonly xmlFormatter: XmlFormatter,
     private readonly stateControlService: GwtStateControlService,
     private readonly guidedTourService: GwtGuidedTourService
@@ -72,7 +72,8 @@ export class GwtEditorWrapper extends Core.Editor {
   public setContent(path: string, content: string) {
     setTimeout(() => this.removeBusinessCentralPanelHeader(), 100);
     return this.gwtEditor.setContent(path, content.trim()).catch(() => {
-      this.messageBus.notify_setContentError(
+      this.kogitoChannelApiClient.notify(
+        "receive_setContentError",
         `This file contains a construct that is not yet supported. Please refer to ${KOGITO_JIRA_LINK} and report an issue. Don't forget to upload the current file.`
       );
       return Promise.resolve();
@@ -84,7 +85,7 @@ export class GwtEditorWrapper extends Core.Editor {
   }
 
   public getElementPosition(selector: string) {
-    return this.guidedTourService.getElementPosition(selector);
+    return Promise.resolve(this.guidedTourService.getElementPosition(selector));
   }
 
   private removeBusinessCentralHeaderPanel() {

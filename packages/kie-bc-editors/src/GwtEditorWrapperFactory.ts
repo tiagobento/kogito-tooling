@@ -16,7 +16,7 @@
 
 import { GwtAppFormerApi } from "./GwtAppFormerApi";
 import * as Core from "@kogito-tooling/core-api";
-import { DEFAULT_RECT, Rect } from "@kogito-tooling/core-api";
+import { Rect } from "@kogito-tooling/core-api";
 import * as MicroEditorEnvelope from "@kogito-tooling/microeditor-envelope";
 import { KogitoEnvelopeBus } from "@kogito-tooling/microeditor-envelope";
 import { GwtEditorWrapper } from "./GwtEditorWrapper";
@@ -24,6 +24,7 @@ import { GwtLanguageData, Resource } from "./GwtLanguageData";
 import { XmlFormatter } from "./XmlFormatter";
 import { GwtStateControlApi, GwtStateControlService } from "./gwtStateControl";
 import { DefaultXmlFormatter } from "./DefaultXmlFormatter";
+import {KogitoChannelApi, MessageBusClient} from "@kogito-tooling/microeditor-envelope-protocol";
 
 declare global {
   interface Window {
@@ -50,7 +51,7 @@ interface GuidedTourCustomSelectorPositionProvider {
 
 export class GwtGuidedTourService {
   public getElementPosition(selector: string) {
-    return Promise.resolve(DEFAULT_RECT);
+    return getPositionProvider().getPosition(selector);
   }
 }
 
@@ -62,10 +63,10 @@ export class GwtEditorWrapperFactory implements MicroEditorEnvelope.EditorFactor
     private readonly gwtGuidedTourService = new GwtGuidedTourService()
   ) {}
 
-  public createEditor(languageData: GwtLanguageData, messageBus: KogitoEnvelopeBus) {
+  public createEditor(languageData: GwtLanguageData, kogitoChannelApiClient: MessageBusClient<KogitoChannelApi>) {
     this.gwtAppFormerApi.setClientSideOnly(true);
     window.gwt = {
-      stateControl: this.gwtStateControlService.exposeApi(messageBus)
+      stateControl: this.gwtStateControlService.exposeApi(kogitoChannelApiClient)
     };
 
     const gwtFinishedLoading = new Promise<Core.Editor>(res => {
@@ -74,7 +75,7 @@ export class GwtEditorWrapperFactory implements MicroEditorEnvelope.EditorFactor
           new GwtEditorWrapper(
             languageData.editorId,
             this.gwtAppFormerApi.getEditor(languageData.editorId),
-            messageBus,
+            kogitoChannelApiClient,
             this.xmlFormatter,
             this.gwtStateControlService,
             this.gwtGuidedTourService
