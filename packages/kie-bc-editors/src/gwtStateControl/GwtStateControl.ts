@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { KogitoEnvelopeBus } from "../../KogitoEnvelopeBus";
-import { DefaultKogitoCommandRegistry, KogitoCommandRegistry } from "./KogitoCommandRegistry";
+import { KogitoEnvelopeBus } from "@kogito-tooling/microeditor-envelope";
+import { GwtCommandRegistry, GwtCommandRegistryImpl } from "./GwtCommandRegistry";
 
 /**
- * PUBLIC ENVELOPE API
+ * PUBLIC GWT EDITORS API
  *
- * State Control API for command-based editors. It gives access to the {@link KogitoCommandRegistry} and allows setting
+ * GWT State Control API for command-based editors. It gives access to the {@link GwtCommandRegistry} and allows setting
  * the editor undo & redo commands for a correct integration with the envelope.
  */
-export interface StateControlApi {
-  registry: KogitoCommandRegistry<any>;
+export interface GwtStateControlApi {
+  registry: GwtCommandRegistry<any>;
   setUndoCommand(undoCommand: () => void): void;
   setRedoCommand(redoCommand: () => void): void;
 }
 
-export class StateControlService {
+export class GwtStateControlService {
   private undoCommand: () => void;
   private redoCommand: () => void;
 
@@ -40,16 +40,16 @@ export class StateControlService {
   }
 
   public redo(): void {
-    if(this.redoCommand) {
+    if (this.redoCommand) {
       this.redoCommand();
     }
   }
 
-  public exposeApi(messageBus: KogitoEnvelopeBus): StateControlApi {
+  public exposeApi(messageBus: KogitoEnvelopeBus): GwtStateControlApi {
     const stateControl = this;
 
     return {
-      registry: new DefaultKogitoCommandRegistry<unknown>(messageBus),
+      registry: new GwtCommandRegistryImpl<unknown>(messageBus),
       setUndoCommand(undoCommand: () => void) {
         stateControl.undoCommand = undoCommand;
       },

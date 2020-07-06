@@ -17,22 +17,11 @@
 import { EditorEnvelopeController } from "../EditorEnvelopeController";
 import { SpecialDomElements } from "../SpecialDomElements";
 import { mount } from "enzyme";
-import {
-  EnvelopeBusMessage,
-  EnvelopeBusMessagePurpose,
-} from "@kogito-tooling/microeditor-envelope-protocol";
+import { EnvelopeBusMessage, EnvelopeBusMessagePurpose } from "@kogito-tooling/microeditor-envelope-protocol";
 import { ChannelType, LanguageData, OperatingSystem } from "@kogito-tooling/core-api";
 import { DummyEditor } from "./DummyEditor";
 import { ResourceContentServiceCoordinator } from "../api/resourceContent";
 import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
-
-const StateControlMock = jest.fn(() => ({
-  undo: jest.fn(),
-  redo: jest.fn(),
-  registry: jest.fn()
-}));
-
-let stateControl: any;
 
 let loadingScreenContainer: HTMLElement;
 let envelopeContainer: HTMLElement;
@@ -60,11 +49,12 @@ const languageData = {
 let sentMessages: Array<EnvelopeBusMessage<any, any>>;
 let controller: EditorEnvelopeController;
 let mockComponent: ReturnType<typeof mount>;
+let dummyEditor: DummyEditor;
 
 beforeEach(() => {
   sentMessages = [];
 
-  stateControl = new StateControlMock();
+  dummyEditor = new DummyEditor();
 
   controller = new EditorEnvelopeController(
     {
@@ -74,11 +64,10 @@ beforeEach(() => {
     },
     {
       createEditor(_: LanguageData) {
-        return Promise.resolve(new DummyEditor());
+        return Promise.resolve(dummyEditor);
       }
     },
     new SpecialDomElements(),
-    stateControl,
     {
       render: (element, container, callback) => {
         mockComponent = mount(element);
@@ -216,7 +205,26 @@ describe("EditorEnvelopeController", () => {
   });
 
   test("test notify undo/redo", async () => {
-    const render = await startController();
+    jest.spyOn(dummyEditor, "undo");
+    jest.spyOn(dummyEditor, "redo");
+
+    await startController();
+
+    jest.spyOn(controller.kogitoEnvelopeBus.manager, "generateRandomId").mockReturnValueOnce("1");
+    await incomingMessage({
+      requestId: "0",
+      purpose: EnvelopeBusMessagePurpose.REQUEST,
+      type: "receive_initRequest",
+      data: [{ origin: "test-target-origin", busId: "someBusId" }]
+    });
+
+    jest.spyOn(controller.kogitoEnvelopeBus.manager, "generateRandomId").mockReturnValueOnce("2");
+    await incomingMessage({
+      requestId: "1",
+      purpose: EnvelopeBusMessagePurpose.RESPONSE,
+      type: "receive_languageRequest",
+      data: languageData
+    });
 
     await incomingMessage({
       requestId: "1",
@@ -224,7 +232,7 @@ describe("EditorEnvelopeController", () => {
       type: "receive_editorUndo",
       data: ["commandID"]
     });
-    expect(stateControl.undo).toBeCalledTimes(1);
+    expect(dummyEditor.undo).toBeCalledTimes(1);
 
     await incomingMessage({
       requestId: "2",
@@ -232,6 +240,6 @@ describe("EditorEnvelopeController", () => {
       type: "receive_editorRedo",
       data: ["commandID"]
     });
-    expect(stateControl.redo).toBeCalledTimes(1);
+    expect(dummyEditor.redo).toBeCalledTimes(1);
   });
 });

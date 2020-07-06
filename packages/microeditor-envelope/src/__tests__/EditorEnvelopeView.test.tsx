@@ -19,9 +19,8 @@ import { shallow } from "enzyme";
 import { EditorEnvelopeView } from "../EditorEnvelopeView";
 import { DummyEditor } from "./DummyEditor";
 import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
-import { ChannelType, OperatingSystem } from "@kogito-tooling/core-api";
-import { StateControlService } from "../api/stateControl";
 import { KogitoEnvelopeBus } from "../KogitoEnvelopeBus";
+import { ChannelType, OperatingSystem } from "@kogito-tooling/core-api";
 
 let loadingScreenContainer: HTMLElement;
 beforeEach(() => (loadingScreenContainer = document.body.appendChild(document.createElement("div"))));
@@ -52,7 +51,6 @@ function renderEditorEnvelopeView(): [EditorEnvelopeView, ReturnType<typeof shal
       context={context}
       exposing={self => (view = self)}
       loadingScreenContainer={loadingScreenContainer}
-      stateControlService={new StateControlService()}
       messageBus={kogitoEnvelopeBus}
     />
   );
