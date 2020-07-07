@@ -1,5 +1,5 @@
 {
-  "name": "@kogito-tooling/microeditor-envelope-protocol",
+  "name": "@kogito-tooling/workspace-service-api",
   "version": "0.5.2",
   "description": "",
   "license": "Apache-2.0",
@@ -13,13 +13,11 @@
     "url": "https://github.com/kiegroup/kogito-tooling.git"
   },
   "dependencies": {
-    "@kogito-tooling/core-api": "0.5.2",
-    "@kogito-tooling/guided-tour": "0.5.2",
-    "@kogito-tooling/workspace-service-api": "0.5.2"
+    "@kogito-tooling/core-api": "0.5.2"
   },
   "scripts": {
     "lint": "tslint -c ../../tslint.json 'src/**/*.{ts,tsx,js,jsx}'",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "build:fast": "rm -rf dist && webpack",
     "build": "yarn run lint && yarn test && yarn run build:fast",
     "build:prod": "yarn run build --mode production --devtool none"

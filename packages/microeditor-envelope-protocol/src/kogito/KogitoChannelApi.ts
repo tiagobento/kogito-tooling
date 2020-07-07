@@ -14,40 +14,26 @@
  * limitations under the License.
  */
 
-import { Tutorial, UserInteraction } from "@kogito-tooling/guided-tour";
-import {
-  EditorContent,
-  KogitoEdit,
-  LanguageData,
-  ResourceContent,
-  ResourceContentRequest,
-  ResourceListRequest,
-  ResourcesList,
-  StateControlCommand
-} from "@kogito-tooling/core-api";
+import { GuidedTourServiceChannelApi } from "@kogito-tooling/guided-tour-service-api";
+import { EditorContent, KogitoEdit, LanguageData, StateControlCommand } from "@kogito-tooling/core-api";
+import { WorkspaceServiceChannelApi } from "@kogito-tooling/workspace-service-api";
 
-export interface KogitoChannelApi {
-  //notification
-  receive_setContentError(errorMessage: string): void;
-
-  receive_ready(): void;
-
-  receive_openFile(path: string): void;
-
-  receive_guidedTourUserInteraction(userInteraction: UserInteraction): void;
-
-  receive_guidedTourRegisterTutorial(tutorial: Tutorial): void;
-
+interface StateControlChannelApi {
   receive_newEdit(edit: KogitoEdit): void;
-
   receive_stateControlCommandUpdate(command: StateControlCommand): void;
+}
 
-  //requests
+interface DefaultChannelApi {
+  receive_setContentError(errorMessage: string): void;
+  receive_ready(): void;
   receive_languageRequest(): Promise<LanguageData | undefined>;
-
   receive_contentRequest(): Promise<EditorContent>;
+}
 
-  receive_resourceContentRequest(request: ResourceContentRequest): Promise<ResourceContent | undefined>;
-
-  receive_resourceListRequest(request: ResourceListRequest): Promise<ResourcesList>;
+export interface KogitoChannelApi
+  extends DefaultChannelApi,
+    StateControlChannelApi,
+    GuidedTourServiceChannelApi,
+    WorkspaceServiceChannelApi {
+  /**/
 }

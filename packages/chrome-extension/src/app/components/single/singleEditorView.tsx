@@ -70,7 +70,7 @@ export function renderSingleEditorReadonlyApp(args: Globals & { fileInfo: FileIn
       githubAuthTokenCookieName={args.githubAuthTokenCookieName}
       extensionIconUrl={args.extensionIconUrl}
       editorIndexPath={args.editorIndexPath}
-      resourceContentServiceFactory={args.resourceContentServiceFactory}
+      workspaceServiceFactory={args.workspaceServiceFactory}
       externalEditorManager={args.externalEditorManager}
     >
       <SingleEditorViewApp fileInfo={args.fileInfo} openFileExtension={openFileExtension} />

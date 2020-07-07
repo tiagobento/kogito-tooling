@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@kogito-tooling/core-api": "0.5.2",
+    "@kogito-tooling/guided-tour-service-api": "0.5.2",
     "@kogito-tooling/patternfly-base": "0.5.2"
   },
   "peerDependencies": {

@@ -24,7 +24,6 @@ import { KogitoEnvelopeBus } from "./KogitoEnvelopeBus";
 import { EditorFactory } from "./EditorFactory";
 import { SpecialDomElements } from "./SpecialDomElements";
 import { Renderer } from "./Renderer";
-import { ResourceContentServiceCoordinator } from "./api/resourceContent";
 
 export class EditorEnvelopeController {
   public readonly kogitoEnvelopeBus: KogitoEnvelopeBus;
@@ -37,7 +36,6 @@ export class EditorEnvelopeController {
     private readonly editorFactory: EditorFactory<any>,
     private readonly specialDomElements: SpecialDomElements,
     private readonly renderer: Renderer,
-    private readonly resourceContentEditorCoordinator: ResourceContentServiceCoordinator,
     private readonly keyboardShortcutsService: DefaultKeyboardShortcutsService
   ) {
     this.kogitoEnvelopeBus = new KogitoEnvelopeBus(bus, {

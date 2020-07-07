@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-import { ResourceContentOptions } from "./ResourceContentOptions";
-
-export interface ResourceContentRequest {
-  path: string;
-  opts?: ResourceContentOptions;
-}
+export * from "./WorkspaceServiceChannelApi"

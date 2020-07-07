@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { KogitoGuidedTour, Tutorial, UserInteraction } from "..";
+import { KogitoGuidedTour } from "..";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { GuidedTour } from "../components";
 import { GuidedTourCookie, GuidedTourDomUtils, GuidedTourEventBus } from "../core";
+import { Tutorial, UserInteraction } from "@kogito-tooling/guided-tour-service-api";
 
 describe("KogitoGuidedTour", () => {
   beforeEach(() => jest.clearAllMocks());

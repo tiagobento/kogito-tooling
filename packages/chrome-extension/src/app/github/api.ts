@@ -15,7 +15,7 @@
  */
 
 import * as Octokit from "@octokit/rest";
-import { ContentType } from "@kogito-tooling/core-api";
+import { ContentType } from "@kogito-tooling/workspace-service-api";
 export function fetchFile(
   octokit: Octokit,
   org: string,

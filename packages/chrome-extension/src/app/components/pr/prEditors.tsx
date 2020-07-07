@@ -41,7 +41,7 @@ export function renderPrEditorsApp(args: Globals & { contentPath: string }) {
       githubAuthTokenCookieName={args.githubAuthTokenCookieName}
       extensionIconUrl={args.extensionIconUrl}
       editorIndexPath={args.editorIndexPath}
-      resourceContentServiceFactory={args.resourceContentServiceFactory}
+      workspaceServiceFactory={args.workspaceServiceFactory}
       externalEditorManager={args.externalEditorManager}
     >
       <PrEditorsApp prInfo={parsePrInfo(args.dependencies)} contentPath={args.contentPath} />

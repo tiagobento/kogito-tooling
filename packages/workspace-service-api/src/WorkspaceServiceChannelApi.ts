@@ -14,9 +14,26 @@
  * limitations under the License.
  */
 
-import { ResourceListOptions } from "./ResourceListOptions";
+export enum SearchType {
+  TRAVERSAL = "traversal",
+  ASSET_FOLDER = "asset-folder"
+}
 
-export interface ResourceListRequest {
-  pattern: string;
-  opts?: ResourceListOptions;
+export enum ContentType {
+  TEXT = "text",
+  BINARY = "binary"
+}
+
+export interface ResourceContentOptions {
+  type: ContentType;
+}
+
+export interface ResourceListOptions {
+  type: SearchType;
+}
+
+export interface WorkspaceServiceChannelApi {
+  receive_openFile(path: string): void;
+  receive_resourceContentRequest(path: string, opts?: ResourceContentOptions): Promise<string | undefined>;
+  receive_resourceListRequest(pattern: string, opts?: ResourceListOptions): Promise<string[]>;
 }

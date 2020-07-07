@@ -15,13 +15,11 @@
  */
 
 import {
-  ResourceContent,
-  ResourceContentService,
-  ResourcesList,
+  ContentType,
   ResourceContentOptions,
   ResourceListOptions,
-  ContentType
-} from "@kogito-tooling/core-api";
+  WorkspaceServiceChannelApi
+} from "@kogito-tooling/workspace-service-api";
 import { fetchFile } from "../../github/api";
 import * as minimatch from "minimatch";
 import { RepoInfo } from "./RepoInfo";
@@ -45,7 +43,7 @@ class GithubTreeResponse {
   public tree: GithubAsset[];
 }
 
-class ChromeResourceContentService implements ResourceContentService {
+class ChromeResourceContentService implements WorkspaceServiceChannelApi {
   private readonly repoInfo: RepoInfo;
   private readonly octokit: Octokit;
 
@@ -54,18 +52,23 @@ class ChromeResourceContentService implements ResourceContentService {
     this.repoInfo = repoInfo;
   }
 
-  public get(path: string, opts?: ResourceContentOptions): Promise<ResourceContent | undefined> {
+  public receive_resourceContentRequest(path: string, opts?: ResourceContentOptions): Promise<string | undefined> {
     opts = opts ?? { type: ContentType.TEXT };
-    return fetchFile(this.octokit, this.repoInfo.owner, this.repoInfo.repo, this.repoInfo.gitref, path, opts!.type)
-      .then(resourceContent => new ResourceContent(path, resourceContent, opts!.type))
-      .catch(e => {
-        console.debug(e);
-        console.debug(`Error retrieving content from URI ${path}`);
-        return undefined;
-      });
+    return fetchFile(
+      this.octokit,
+      this.repoInfo.owner,
+      this.repoInfo.repo,
+      this.repoInfo.gitref,
+      path,
+      opts!.type
+    ).catch(e => {
+      console.debug(e);
+      console.debug(`Error retrieving content from URI ${path}`);
+      return undefined;
+    });
   }
 
-  public list(pattern: string, opts?: ResourceListOptions): Promise<ResourcesList> {
+  public receive_resourceListRequest(pattern: string, opts?: ResourceListOptions): Promise<string[]> {
     return this.octokit.git
       .getTree({
         headers: {
@@ -77,13 +80,16 @@ class ChromeResourceContentService implements ResourceContentService {
       })
       .then((v: OctokitResponse) => {
         const filteredPaths = v.data.tree.filter(file => file.type === "blob").map(file => file.path);
-        const result = minimatch.match(filteredPaths, pattern);
-        return new ResourcesList(pattern, result);
+        return minimatch.match(filteredPaths, pattern);
       })
       .catch(e => {
         console.debug(`Error retrieving file list for pattern ${pattern}`);
-        return new ResourcesList(pattern, []);
+        return [];
       });
+  }
+
+  public receive_openFile(path: string): void {
+    throw new Error("Cannot open new file on Chrome Extension");
   }
 }
 

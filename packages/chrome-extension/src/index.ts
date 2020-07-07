@@ -48,7 +48,7 @@ export function startExtension(args: {
   externalEditorManager?: ExternalEditorManager;
 }) {
   const logger = new Logger(args.name);
-  const resourceContentServiceFactory = new ResourceContentServiceFactory();
+  const workspaceServiceFactory = new ResourceContentServiceFactory();
   const dependencies = new Dependencies();
 
   const runInit = () =>
@@ -60,7 +60,7 @@ export function startExtension(args: {
       editorIndexPath: args.editorIndexPath,
       extensionIconUrl: args.extensionIconUrl,
       router: args.router,
-      resourceContentServiceFactory: resourceContentServiceFactory,
+      workspaceServiceFactory: workspaceServiceFactory,
       externalEditorManager: args.externalEditorManager
     });
 
@@ -92,7 +92,7 @@ function init(args: Globals) {
       extensionIconUrl: args.extensionIconUrl,
       editorIndexPath: args.editorIndexPath,
       externalEditorManager: args.externalEditorManager,
-      resourceContentServiceFactory: args.resourceContentServiceFactory,
+      workspaceServiceFactory: args.workspaceServiceFactory,
       fileInfo: fileInfo
     });
   } else if (pageType === GitHubPageType.VIEW) {
@@ -105,7 +105,7 @@ function init(args: Globals) {
       extensionIconUrl: args.extensionIconUrl,
       editorIndexPath: args.editorIndexPath,
       fileInfo: fileInfo,
-      resourceContentServiceFactory: args.resourceContentServiceFactory,
+      workspaceServiceFactory: args.workspaceServiceFactory,
       externalEditorManager: args.externalEditorManager
     });
   } else if (pageType === GitHubPageType.PR) {
@@ -117,7 +117,7 @@ function init(args: Globals) {
       router: args.router,
       extensionIconUrl: args.extensionIconUrl,
       editorIndexPath: args.editorIndexPath,
-      resourceContentServiceFactory: args.resourceContentServiceFactory,
+      workspaceServiceFactory: args.workspaceServiceFactory,
       externalEditorManager: args.externalEditorManager,
       contentPath: fileInfo.path
     });
@@ -129,7 +129,7 @@ function init(args: Globals) {
       router: args.router,
       extensionIconUrl: args.extensionIconUrl,
       editorIndexPath: args.editorIndexPath,
-      resourceContentServiceFactory: args.resourceContentServiceFactory,
+      workspaceServiceFactory: args.workspaceServiceFactory,
       externalEditorManager: args.externalEditorManager,
       dependencies: args.dependencies
     });

@@ -16,7 +16,8 @@
 
 import { GuidedTourEventBus } from "../../core";
 import { act } from "react-dom/test-utils";
-import { Rect, UserInteraction } from "../..";
+import { UserInteraction } from "../..";
+import { Rect } from "@kogito-tooling/core-api";
 
 describe("GuidedTourEventBus", () => {
   beforeEach(() => {

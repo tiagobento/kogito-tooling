@@ -30,7 +30,7 @@ export function addExternalEditorLinks(args: Globals) {
         githubAuthTokenCookieName={args.githubAuthTokenCookieName}
         extensionIconUrl={args.extensionIconUrl}
         editorIndexPath={args.editorIndexPath}
-        resourceContentServiceFactory={args.resourceContentServiceFactory}
+        workspaceServiceFactory={args.workspaceServiceFactory}
         externalEditorManager={args.externalEditorManager}
         dependencies={args.dependencies}
       >

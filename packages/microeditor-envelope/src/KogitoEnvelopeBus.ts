@@ -23,8 +23,9 @@ import {
   KogitoEnvelopeApi,
   KogitoEnvelopeMessageTypes
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import { KogitoEdit, ResourceContentOptions, ResourceListOptions, StateControlCommand } from "@kogito-tooling/core-api";
+import { KogitoEdit, StateControlCommand } from "@kogito-tooling/core-api";
 import { Tutorial, UserInteraction } from "@kogito-tooling/guided-tour";
+import { ResourceContentOptions, ResourceListOptions } from "@kogito-tooling/workspace-service-api";
 
 export class KogitoEnvelopeBus {
   public targetOrigin: string;
@@ -104,11 +105,11 @@ export class KogitoEnvelopeBus {
   }
 
   public request_resourceContent(path: string, opts?: ResourceContentOptions) {
-    return this.manager.client.request("receive_resourceContentRequest", { path: path, opts: opts });
+    return this.manager.client.request("receive_resourceContentRequest", path, opts);
   }
 
   public request_resourceList(pattern: string, opts?: ResourceListOptions) {
-    return this.manager.client.request("receive_resourceListRequest", { pattern: pattern, opts: opts });
+    return this.manager.client.request("receive_resourceListRequest", pattern, opts);
   }
 
   public receive(message: EnvelopeBusMessage<any, KogitoEnvelopeMessageTypes>) {

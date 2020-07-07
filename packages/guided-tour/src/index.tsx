@@ -25,10 +25,10 @@ import {
   Step,
   SubTutorialMode,
   Tutorial,
-  UserInteraction,
-} from "./api";
+  UserInteraction
+} from "@kogito-tooling/guided-tour-service-api";
 import { GuidedTour } from "./components";
-import { GuidedTourDomUtils, GuidedTourEventBus, GuidedTourCookie } from "./core";
+import { GuidedTourCookie, GuidedTourDomUtils, GuidedTourEventBus } from "./core";
 import { Rect } from "@kogito-tooling/core-api";
 
 class KogitoGuidedTour {
@@ -153,14 +153,4 @@ class KogitoGuidedTour {
   }
 }
 
-export {
-  KogitoGuidedTour,
-  UserInteraction,
-  Mode,
-  BlockMode,
-  AutoMode,
-  DemoMode,
-  SubTutorialMode,
-  Step,
-  Tutorial,
-};
+export { KogitoGuidedTour, UserInteraction, Mode, BlockMode, AutoMode, DemoMode, SubTutorialMode, Step, Tutorial };

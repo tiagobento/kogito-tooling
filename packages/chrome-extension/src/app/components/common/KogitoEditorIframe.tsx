@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { ChannelType, ResourceContentRequest, ResourceListRequest } from "@kogito-tooling/core-api";
+import { ChannelType } from "@kogito-tooling/core-api";
 import { EditorType, EmbeddedEditor, EmbeddedEditorRef } from "@kogito-tooling/embedded-editor";
 import * as React from "react";
-import { useContext, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { runScriptOnPage } from "../../utils";
 import { useGitHubApi } from "../common/GitHubContext";
 import { useGlobals } from "./GlobalContext";
 import { IsolatedEditorContext } from "./IsolatedEditorContext";
 import { IsolatedEditorRef } from "./IsolatedEditorRef";
+import { ResourceContentOptions, ResourceListOptions } from "@kogito-tooling/workspace-service-api";
 
 const GITHUB_CODEMIRROR_EDITOR_SELECTOR = `.file-editor-textarea + .CodeMirror`;
 const GITHUB_EDITOR_SYNC_POLLING_INTERVAL = 1500;
@@ -40,12 +41,12 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
 ) => {
   const githubApi = useGitHubApi();
   const editorRef = useRef<EmbeddedEditorRef>(null);
-  const { router, editorIndexPath, resourceContentServiceFactory } = useGlobals();
+  const { router, editorIndexPath, workspaceServiceFactory } = useGlobals();
   const { repoInfo, textMode, fullscreen, onEditorReady } = useContext(IsolatedEditorContext);
 
   //Lookup ResourceContentService
   const resourceContentService = useMemo(() => {
-    return resourceContentServiceFactory.createNew(githubApi.octokit(), repoInfo);
+    return workspaceServiceFactory.createNew(githubApi.octokit(), repoInfo);
   }, [repoInfo]);
 
   //Wrap file content into object for EmbeddedEditor
@@ -112,6 +113,20 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
     []
   );
 
+  const onResourceContentRequest = useCallback(
+    (path: string, opts?: ResourceContentOptions) => {
+      return resourceContentService.receive_resourceContentRequest(path, opts);
+    },
+    [resourceContentService]
+  );
+
+  const onResourceListRequest = useCallback(
+    (pattern: string, opts?: ResourceListOptions) => {
+      return resourceContentService.receive_resourceListRequest(pattern, opts);
+    },
+    [resourceContentService]
+  );
+
   return (
     <>
       <div className={`kogito-iframe ${fullscreen ? "fullscreen" : "not-fullscreen"}`}>
@@ -121,12 +136,8 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
           router={router}
           channelType={ChannelType.GITHUB}
           onReady={onEditorReady}
-          onResourceContentRequest={(request: ResourceContentRequest) =>
-            resourceContentService.get(request.path, request.opts)
-          }
-          onResourceListRequest={(request: ResourceListRequest) =>
-            resourceContentService.list(request.pattern, request.opts)
-          }
+          onResourceContentRequest={onResourceContentRequest}
+          onResourceListRequest={onResourceListRequest}
           envelopeUri={router.getRelativePathTo(editorIndexPath)}
         />
       </div>

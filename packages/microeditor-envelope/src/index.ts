@@ -19,28 +19,36 @@ import { DefaultKeyboardShortcutsService, KeyboardShortcutsApi } from "@kogito-t
 import { EnvelopeBus } from "@kogito-tooling/microeditor-envelope-protocol";
 import { ReactElement } from "react";
 import * as ReactDOM from "react-dom";
-import { ResourceContentApi, ResourceContentServiceCoordinator } from "./api/resourceContent";
 import { EditorEnvelopeController } from "./EditorEnvelopeController";
 import { EditorFactory } from "./EditorFactory";
 import { Renderer } from "./Renderer";
 import { SpecialDomElements } from "./SpecialDomElements";
-import { WorkspaceService, WorkspaceServiceApi } from "./api/workspaceService";
-import { GuidedTourApi, GuidedTourServiceCoordinator } from "./api/tour";
+import { ResourceContentOptions, ResourceListOptions } from "@kogito-tooling/workspace-service-api";
+import { KogitoGuidedTour, Tutorial, UserInteraction } from "@kogito-tooling/guided-tour";
 
-export * from "./api/resourceContent";
 export { EditorEnvelopeController } from "./EditorEnvelopeController";
 export * from "./EditorFactory";
 export * from "./KogitoEnvelopeBus";
 export { SpecialDomElements } from "./SpecialDomElements";
 
+//FIXME: tiago Move this to kie-bc-editors
 declare global {
   interface Window {
     envelope: {
-      guidedTourService: GuidedTourApi;
+      guidedTourService: {
+        refresh(userInteraction: UserInteraction): void;
+        registerTutorial(tutorial: Tutorial): void;
+        isEnabled(): boolean;
+      };
       editorContext: EditorContext;
-      resourceContentEditorService?: ResourceContentApi;
+      resourceContentEditorService: {
+        get(path: string, opts?: ResourceContentOptions): Promise<string | undefined>;
+        list(pattern: string, opts?: ResourceListOptions): Promise<string[]>;
+      };
       keyboardShortcuts: KeyboardShortcutsApi;
-      workspaceService: WorkspaceServiceApi;
+      workspaceService: {
+        openFile(path: string): void;
+      };
     };
   }
 }
@@ -68,26 +76,48 @@ export function init(args: {
 }) {
   const specialDomElements = new SpecialDomElements();
   const renderer = new ReactDomRenderer();
-  const resourceContentEditorCoordinator = new ResourceContentServiceCoordinator();
-  const guidedTourService = new GuidedTourServiceCoordinator();
   const keyboardShortcutsService = new DefaultKeyboardShortcutsService({ editorContext: args.editorContext });
-  const workspaceService = new WorkspaceService();
   const editorEnvelopeController = new EditorEnvelopeController(
     args.bus,
     args.editorFactory,
     specialDomElements,
     renderer,
-    resourceContentEditorCoordinator,
     keyboardShortcutsService
   );
 
-  return editorEnvelopeController.start({ container: args.container, context: args.editorContext }).then(messageBus => {
-    window.envelope = {
-      guidedTourService: guidedTourService.exposeApi(messageBus),
-      resourceContentEditorService: resourceContentEditorCoordinator.exposeApi(messageBus),
-      editorContext: args.editorContext,
-      keyboardShortcuts: keyboardShortcutsService.exposeApi(),
-      workspaceService: workspaceService.exposeApi(messageBus)
-    };
-  });
+  return (
+    editorEnvelopeController
+      .start({ container: args.container, context: args.editorContext })
+      //FIXME: tiago Move this to kie-bc-editors
+      .then(messageBus => {
+        window.envelope = {
+          guidedTourService: {
+            refresh(userInteraction: UserInteraction): void {
+              messageBus.notify_guidedTourRefresh(userInteraction);
+            },
+            registerTutorial(tutorial: Tutorial): void {
+              messageBus.notify_guidedTourRegisterTutorial(tutorial);
+            },
+            isEnabled(): boolean {
+              return KogitoGuidedTour.getInstance().isEnabled();
+            }
+          },
+          resourceContentEditorService: {
+            get(path: string, opts?: ResourceContentOptions) {
+              return messageBus.request_resourceContent(path, opts);
+            },
+            list(pattern: string, opts?: ResourceListOptions) {
+              return messageBus.request_resourceList(pattern, opts);
+            }
+          },
+          editorContext: args.editorContext,
+          keyboardShortcuts: keyboardShortcutsService.exposeApi(),
+          workspaceService: {
+            openFile(path: string): void {
+              messageBus.notify_openFile(path);
+            }
+          }
+        };
+      })
+  );
 }

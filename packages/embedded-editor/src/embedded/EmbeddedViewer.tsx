@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  ChannelType,
-  ResourceContent,
-  ResourceContentRequest,
-  ResourceListRequest,
-  ResourcesList
-} from "@kogito-tooling/core-api";
+import { ChannelType } from "@kogito-tooling/core-api";
 import * as React from "react";
 import { useCallback } from "react";
 import { File } from "../common/File";
 import { EmbeddedEditor } from "./EmbeddedEditor";
 import { EmbeddedEditorRouter } from "./EmbeddedEditorRouter";
+import { ResourceContentOptions, ResourceListOptions } from "@kogito-tooling/workspace-service-api";
 
 /**
  * Properties supported by the `EmbeddedEditor`.
@@ -46,11 +41,11 @@ interface Props {
   /**
    * Optional callback for when the editor is requesting external content.
    */
-  onResourceContentRequest?: (request: ResourceContentRequest) => Promise<ResourceContent | undefined>;
+  onResourceContentRequest?: (path: string, opts?: ResourceContentOptions) => Promise<string | undefined>;
   /**
    * Optional callback for when the editor is requesting a list of external content.
    */
-  onResourceListRequest?: (request: ResourceListRequest) => Promise<ResourcesList>;
+  onResourceListRequest?: (pattern: string, opts?: ResourceListOptions) => Promise<string[]>;
   /**
    * Optional relative URL for the `envelope.html` used as the inner bus `IFRAME`. Defaults to `envelope/envelope.html`
    */
@@ -62,26 +57,6 @@ export const EmbeddedViewer = (props: Props) => {
     /*NO OP*/
   }, []);
 
-  const onResourceContentRequest = useCallback(
-    (request: ResourceContentRequest) => {
-      if (props.onResourceContentRequest) {
-        return props.onResourceContentRequest(request);
-      }
-      return Promise.resolve(new ResourceContent(request.path, undefined));
-    },
-    [props.onResourceContentRequest]
-  );
-
-  const onResourceListRequest = useCallback(
-    (request: ResourceListRequest) => {
-      if (props.onResourceListRequest) {
-        return props.onResourceListRequest(request);
-      }
-      return Promise.resolve(new ResourcesList(request.pattern, []));
-    },
-    [props.onResourceListRequest]
-  );
-
   return (
     <EmbeddedEditor
       file={props.file}
@@ -89,8 +64,8 @@ export const EmbeddedViewer = (props: Props) => {
       channelType={props.channelType}
       onSetContentError={noop}
       onReady={noop}
-      onResourceContentRequest={onResourceContentRequest}
-      onResourceListRequest={onResourceListRequest}
+      onResourceContentRequest={props.onResourceContentRequest}
+      onResourceListRequest={props.onResourceListRequest}
       onEditorUndo={noop}
       onEditorRedo={noop}
       onOpenFile={noop}

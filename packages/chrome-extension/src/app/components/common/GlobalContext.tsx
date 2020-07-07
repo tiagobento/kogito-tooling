@@ -29,7 +29,7 @@ export interface GlobalContextType {
   dependencies: Dependencies;
   extensionIconUrl: string;
   editorIndexPath: string;
-  resourceContentServiceFactory: ResourceContentServiceFactory;
+  workspaceServiceFactory: ResourceContentServiceFactory;
   externalEditorManager?: ExternalEditorManager;
 }
 

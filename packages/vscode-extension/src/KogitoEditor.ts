@@ -20,13 +20,8 @@ import * as fs from "fs";
 import * as __path from "path";
 import { KogitoChannelBus } from "@kogito-tooling/microeditor-envelope-protocol";
 import { KogitoEditorStore } from "./KogitoEditorStore";
-import {
-  KogitoEdit,
-  ResourceContentRequest,
-  ResourceContentService,
-  ResourceListRequest,
-  Router
-} from "@kogito-tooling/core-api";
+import { KogitoEdit, Router } from "@kogito-tooling/core-api";
+import { WorkspaceServiceChannelApi } from "@kogito-tooling/workspace-service-api";
 
 export class KogitoEditor {
   private readonly uri: vscode.Uri;
@@ -37,7 +32,6 @@ export class KogitoEditor {
   private readonly panel: vscode.WebviewPanel;
   private readonly editorStore: KogitoEditorStore;
   private readonly kogitoChannelBus: KogitoChannelBus;
-  private readonly resourceContentService: ResourceContentService;
   private readonly signalEdit: (edit: KogitoEdit) => void;
 
   private readonly encoder = new TextEncoder();
@@ -52,7 +46,7 @@ export class KogitoEditor {
     router: Router,
     webviewLocation: string,
     editorStore: KogitoEditorStore,
-    resourceContentService: ResourceContentService,
+    workspaceService: WorkspaceServiceChannelApi,
     signalEdit: (edit: KogitoEdit) => void
   ) {
     this.relativePath = relativePath;
@@ -62,7 +56,6 @@ export class KogitoEditor {
     this.router = router;
     this.webviewLocation = webviewLocation;
     this.editorStore = editorStore;
-    this.resourceContentService = resourceContentService;
     this.signalEdit = signalEdit;
     this.kogitoChannelBus = new KogitoChannelBus(
       {
@@ -89,9 +82,6 @@ export class KogitoEditor {
         receive_newEdit: (edit: KogitoEdit) => {
           this.notify_newEdit(edit);
         },
-        receive_openFile: (path: string) => {
-          this.notify_openFile(path);
-        },
         //requests
         receive_languageRequest: async () => {
           const pathFileExtension = this.uri.fsPath.split(".").pop()!;
@@ -103,12 +93,7 @@ export class KogitoEditor {
             return { content: this.decoder.decode(contentArray), path: this.relativePath };
           });
         },
-        receive_resourceContentRequest: (request: ResourceContentRequest) => {
-          return this.resourceContentService.get(request.path, request.opts);
-        },
-        receive_resourceListRequest: (request: ResourceListRequest) => {
-          return this.resourceContentService.list(request.pattern, request.opts);
-        }
+        ...workspaceService
       }
     );
   }
@@ -161,16 +146,6 @@ export class KogitoEditor {
 
   public notify_newEdit(edit: KogitoEdit) {
     this.signalEdit(edit);
-  }
-
-  public notify_openFile(filePath: string) {
-    const resolvedPath = __path.isAbsolute(filePath)
-      ? filePath
-      : __path.join(__path.dirname(this.uri.fsPath), filePath);
-    if (!fs.existsSync(resolvedPath)) {
-      throw new Error(`Cannot open file at: ${resolvedPath}.`);
-    }
-    vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(resolvedPath));
   }
 
   public requestPreview() {

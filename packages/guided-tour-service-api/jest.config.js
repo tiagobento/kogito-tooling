@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-import { Mode, DemoMode } from ".";
-
-export class Step {
-  constructor(
-    public mode: Mode,
-    public content?:
-      | React.ReactNode
-      | ((props: { dismiss?: () => void; nextStep?: () => void; prevStep?: () => void }) => React.ReactNode)
-      | string,
-    public selector?: string,
-    public highlightEnabled?: boolean,
-    public navigatorEnabled?: boolean,
-    public position?: "right" | "bottom" | "center" | "left",
-    public negativeReinforcementMessage?: string
-  ) {}
-}
-
-export const NONE: Step = {
-  mode: new DemoMode()
+module.exports = {
+    reporters: ["default"],
+    moduleDirectories: ["node_modules", "src"],
+    moduleFileExtensions: ["js", "jsx", "ts", "tsx"],
+    testRegex: "/__tests__/.*\\.test\\.(jsx?|tsx?)$",
+    transform: {
+        "^.+\\.jsx?$": "babel-jest",
+        "^.+\\.tsx?$": "ts-jest"
+    }
 };

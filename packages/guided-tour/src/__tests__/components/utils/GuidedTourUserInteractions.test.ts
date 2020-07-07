@@ -17,7 +17,7 @@
 import { act } from "react-dom/test-utils";
 
 import { useUserInteractions } from "../../../components/utils";
-import { BlockMode, DemoMode, UserInteraction } from "../../..";
+import { BlockMode, DemoMode, UserInteraction } from "@kogito-tooling/guided-tour-service-api";
 
 describe("GuidedTourUserInteractions", () => {
   describe("useUserInteractions", () => {

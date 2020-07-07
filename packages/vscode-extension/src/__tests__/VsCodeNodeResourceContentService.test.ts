@@ -15,91 +15,80 @@
  */
 
 import * as __path from "path";
-import { VsCodeNodeResourceContentService } from "../VsCodeNodeResourceContentService";
-import { ContentType } from "@kogito-tooling/core-api";
+import { VsCodeNodeWorkspaceService } from "../VsCodeNodeWorkspaceService";
+import { ContentType } from "@kogito-tooling/workspace-service-api";
 
 const testWorkspace = __path.resolve(__dirname, "test-workspace") + __path.sep;
 
-let resourceContentServie: VsCodeNodeResourceContentService;
+let workspaceService: VsCodeNodeWorkspaceService;
 
-describe("VsCodeNodeResourceContentService", () => {
-
+describe("VsCodeNodeWorkspaceService", () => {
   beforeEach(() => {
-    resourceContentServie = new VsCodeNodeResourceContentService(testWorkspace);
+    workspaceService = new VsCodeNodeWorkspaceService(testWorkspace, "some/path");
   });
 
   test("Test list", async () => {
     const txtPattern = "*.txt";
 
-    const resourcesListWithAssets = await resourceContentServie.list(txtPattern);
+    const resourcesListWithAssets = await workspaceService.receive_resourceListRequest(txtPattern);
 
     expect(resourcesListWithAssets).not.toBeNull();
-    expect(resourcesListWithAssets.pattern).toBe(txtPattern);
-    expect(resourcesListWithAssets.paths).toHaveLength(2);
-    expect(resourcesListWithAssets.paths).toContain(testWorkspace + "resource1.txt");
-    expect(resourcesListWithAssets.paths).toContain(testWorkspace + "resource2.txt");
+    expect(resourcesListWithAssets).toHaveLength(2);
+    expect(resourcesListWithAssets).toContain(testWorkspace + "resource1.txt");
+    expect(resourcesListWithAssets).toContain(testWorkspace + "resource2.txt");
 
     const pdfPattern = "*.pdf";
-    const resourcesListEmpty = await resourceContentServie.list(pdfPattern);
+    const resourcesListEmpty = await workspaceService.receive_resourceListRequest(pdfPattern);
     expect(resourcesListEmpty).not.toBeNull();
-    expect(resourcesListEmpty.pattern).toBe(pdfPattern);
-    expect(resourcesListEmpty.paths).toHaveLength(0);
+    expect(resourcesListEmpty).toHaveLength(0);
   });
 
   test("Test list with errors", async () => {
-    resourceContentServie = new VsCodeNodeResourceContentService("/probably/an/unexisting/path/");
+    workspaceService = new VsCodeNodeWorkspaceService("/probably/an/unexisting/path/", "some/path");
 
     const pattern = "*.txt";
-    const resourcesList = await resourceContentServie.list(pattern);
+    const resourcesList = await workspaceService.receive_resourceListRequest(pattern);
 
     expect(resourcesList).not.toBeNull();
-    expect(resourcesList.pattern).toBe(pattern);
-    expect(resourcesList.paths).toHaveLength(0);
+    expect(resourcesList).toHaveLength(0);
   });
 
   test("Test get", async () => {
     const resource1Path = "resource1.txt";
-    const resource1Content = await resourceContentServie.get(resource1Path);
+    const resource1Content = await workspaceService.receive_resourceContentRequest(resource1Path);
 
     expect(resource1Content).not.toBeNull();
-    expect(resource1Content?.path).toBe(resource1Path);
-    expect(resource1Content?.type).toBe(ContentType.TEXT);
-    expect(resource1Content?.content).toBe("content for resource 1");
+    expect(resource1Content).toBe("content for resource 1");
 
     const resource2Path = "resource2.txt";
-    const resource2Content = await resourceContentServie.get(resource2Path);
+    const resource2Content = await workspaceService.receive_resourceContentRequest(resource2Path);
 
     expect(resource2Content).not.toBeNull();
-    expect(resource2Content?.path).toBe(resource2Path);
-    expect(resource2Content?.type).toBe(ContentType.TEXT);
-    expect(resource2Content?.content).toBe("content for resource 2");
+    expect(resource2Content).toBe("content for resource 2");
 
     const iconPath = "icon.png";
-    const iconContent = await resourceContentServie.get(iconPath, { type: ContentType.BINARY });
+    const iconContent = await workspaceService.receive_resourceContentRequest(iconPath, {
+      type: ContentType.BINARY
+    });
 
     expect(iconContent).not.toBeNull();
-    expect(iconContent?.path).toBe(iconPath);
-    expect(iconContent?.type).toBe(ContentType.BINARY);
-    expect(iconContent?.content).not.toBeNull();
   });
 
   test("Test get with errors", async () => {
-    resourceContentServie = new VsCodeNodeResourceContentService("/probably/an/unexisting/path/");
+    workspaceService = new VsCodeNodeWorkspaceService("/probably/an/unexisting/path/", "some/path");
 
     const txtResourcePath = "resource1.txt";
-    const txtResourceContent = await resourceContentServie.get(txtResourcePath);
+    const txtResourceContent = await workspaceService.receive_resourceContentRequest(txtResourcePath);
 
     expect(txtResourceContent).not.toBeNull();
-    expect(txtResourceContent?.path).toBe(txtResourcePath);
-    expect(txtResourceContent?.type).toBe(ContentType.TEXT);
-    expect(txtResourceContent?.content).toBe(undefined);
+    expect(txtResourceContent).toBe(undefined);
 
     const binaryPath = "icon.png";
-    const binaryContent = await resourceContentServie.get(binaryPath, { type: ContentType.BINARY });
+    const binaryContent = await workspaceService.receive_resourceContentRequest(binaryPath, {
+      type: ContentType.BINARY
+    });
 
     expect(binaryContent).not.toBeNull();
-    expect(binaryContent?.path).toBe(binaryPath);
-    expect(binaryContent?.type).toBe(ContentType.BINARY);
-    expect(binaryContent?.content).toBe(undefined);
+    expect(binaryContent).toBe(undefined);
   });
 });

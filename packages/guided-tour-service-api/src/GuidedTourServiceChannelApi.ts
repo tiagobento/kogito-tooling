@@ -13,8 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from "react";
 
-import { UserInteraction } from ".";
+export class Step {
+  constructor(
+    public mode: Mode,
+    public content?:
+      | React.ReactNode
+      | ((props: { dismiss?: () => void; nextStep?: () => void; prevStep?: () => void }) => React.ReactNode)
+      | string,
+    public selector?: string,
+    public highlightEnabled?: boolean,
+    public navigatorEnabled?: boolean,
+    public position?: "right" | "bottom" | "center" | "left",
+    public negativeReinforcementMessage?: string
+  ) {}
+}
+
+export class DemoMode {
+  // Each step shows something, and waits for the "Next step" click
+}
+
+export class Tutorial {
+  constructor(public label: string, public steps: Step[]) {}
+}
+
+export class UserInteraction {
+  constructor(public action: string, public target: string) {}
+}
 
 export class BlockMode {
   // Each step shows something, and waits for some user interaction
@@ -26,13 +52,18 @@ export class AutoMode {
   constructor(public delay: number) {}
 }
 
-export class DemoMode {
-  // Each step shows something, and waits for the "Next step" click
-}
-
 export class SubTutorialMode {
   // This steps englobes an amount of other sub-steps
   constructor(public label: string) {}
 }
 
 export type Mode = BlockMode | AutoMode | DemoMode | SubTutorialMode;
+
+export const NONE: Step = {
+  mode: new DemoMode()
+};
+
+export interface GuidedTourServiceChannelApi {
+  receive_guidedTourUserInteraction(userInteraction: UserInteraction): void;
+  receive_guidedTourRegisterTutorial(tutorial: Tutorial): void;
+}

@@ -18,7 +18,7 @@ import * as React from "react";
 import { useState } from "react";
 
 import { Dialog, HighlightLayer } from ".";
-import { Tutorial, UserInteraction } from "../api";
+import { Tutorial, UserInteraction } from "@kogito-tooling/guided-tour-service-api";
 import { CurrentTutorialContext } from "../contexts";
 import { Rect } from "@kogito-tooling/core-api";
 

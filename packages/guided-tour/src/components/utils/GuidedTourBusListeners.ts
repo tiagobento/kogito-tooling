@@ -16,7 +16,7 @@
 
 import { useLayoutEffect } from "react";
 
-import { UserInteraction } from "../../api";
+import { UserInteraction } from "@kogito-tooling/guided-tour-service-api";
 import { EventLabel } from "../../core";
 import { Rect } from "@kogito-tooling/core-api";
 

@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ChannelType,
-  EditorContent,
-  KogitoEdit,
-  ResourceContent,
-  ResourceContentRequest,
-  ResourceListRequest,
-  ResourcesList,
-  StateControlCommand
-} from "@kogito-tooling/core-api";
+import { ChannelType, EditorContent, KogitoEdit, StateControlCommand } from "@kogito-tooling/core-api";
 import { KogitoChannelBus } from "@kogito-tooling/microeditor-envelope-protocol";
 import { KogitoGuidedTour, Tutorial, UserInteraction } from "@kogito-tooling/guided-tour";
 import * as CSS from "csstype";
@@ -32,6 +23,7 @@ import { useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "re
 import { File } from "../common";
 import { EmbeddedEditorRouter } from "./EmbeddedEditorRouter";
 import { StateControl } from "../stateControl";
+import { ResourceContentOptions, ResourceListOptions } from "@kogito-tooling/workspace-service-api";
 
 /**
  * Properties supported by the `EmbeddedEditor`.
@@ -61,11 +53,11 @@ export interface Props {
   /**
    * Optional callback for when the editor is requesting external content.
    */
-  onResourceContentRequest?: (request: ResourceContentRequest) => Promise<ResourceContent | undefined>;
+  onResourceContentRequest?: (path: string, opts?: ResourceContentOptions) => Promise<string | undefined>;
   /**
    * Optional callback for when the editor is requesting a list of external content.
    */
-  onResourceListRequest?: (request: ResourceListRequest) => Promise<ResourcesList>;
+  onResourceListRequest?: (pattern: string, opts?: ResourceListOptions) => Promise<string[]>;
   /**
    * Optional callback for when the editor signals an _undo_ operation.
    */
@@ -140,22 +132,12 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
 
   //Property functions default handling
   const onResourceContentRequest = useCallback(
-    (request: ResourceContentRequest) => {
-      if (props.onResourceContentRequest) {
-        return props.onResourceContentRequest(request);
-      }
-      return Promise.resolve(new ResourceContent(request.path, undefined));
-    },
+    (path, opts?) => props.onResourceContentRequest?.(path, opts) ?? Promise.resolve(undefined),
     [props.onResourceContentRequest]
   );
 
   const onResourceListRequest = useCallback(
-    (request: ResourceListRequest) => {
-      if (props.onResourceListRequest) {
-        return props.onResourceListRequest(request);
-      }
-      return Promise.resolve(new ResourcesList(request.pattern, []));
-    },
+    (pattern, opts?) => props.onResourceListRequest?.(pattern, opts) ?? Promise.resolve([]),
     [props.onResourceListRequest]
   );
 
@@ -217,11 +199,11 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
         receive_contentRequest() {
           return props.file.getFileContents().then(c => ({ content: c ?? "", path: props.file.fileName }));
         },
-        receive_resourceContentRequest(request: ResourceContentRequest) {
-          return onResourceContentRequest(request);
+        receive_resourceContentRequest(path, opts?) {
+          return onResourceContentRequest(path, opts);
         },
-        receive_resourceListRequest(request: ResourceListRequest) {
-          return onResourceListRequest(request);
+        receive_resourceListRequest(pattern, opts?) {
+          return onResourceListRequest(pattern, opts);
         }
       }
     );

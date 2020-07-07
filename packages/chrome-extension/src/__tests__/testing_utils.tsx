@@ -34,7 +34,7 @@ export function usingTestingGlobalContext(
     dependencies: new Dependencies(),
     extensionIconUrl: "/extension/icon.jpg",
     editorIndexPath: "https://my-url.com/",
-    resourceContentServiceFactory: new ResourceContentServiceFactory(),
+    workspaceServiceFactory: new ResourceContentServiceFactory(),
     externalEditorManager: {
       name: "Test Online Editor",
       getLink: jest.fn(path => `https://external-editor-link/${path}`),

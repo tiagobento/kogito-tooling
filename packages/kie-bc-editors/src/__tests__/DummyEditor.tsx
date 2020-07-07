@@ -15,6 +15,7 @@
  */
 
 import * as Core from "@kogito-tooling/core-api";
+import { DEFAULT_RECT } from "@kogito-tooling/core-api";
 import * as React from "react";
 
 export class DummyEditor extends Core.Editor {
@@ -48,6 +49,10 @@ export class DummyEditor extends Core.Editor {
 
   public getPreview(): Promise<string | undefined> {
     return Promise.resolve(undefined);
+  }
+
+  public getElementPosition(selector: string) {
+    return Promise.resolve(DEFAULT_RECT);
   }
 }
 

@@ -62,7 +62,7 @@ export function renderSingleEditorApp(args: Globals & { fileInfo: FileInfo }) {
       githubAuthTokenCookieName={args.githubAuthTokenCookieName}
       extensionIconUrl={args.extensionIconUrl}
       editorIndexPath={args.editorIndexPath}
-      resourceContentServiceFactory={args.resourceContentServiceFactory}
+      workspaceServiceFactory={args.workspaceServiceFactory}
       externalEditorManager={args.externalEditorManager}
     >
       <SingleEditorEditApp openFileExtension={openFileExtension} fileInfo={args.fileInfo} />

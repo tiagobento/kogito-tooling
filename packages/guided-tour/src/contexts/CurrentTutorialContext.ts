@@ -16,7 +16,7 @@
 
 import { createContext } from "react";
 
-import { Tutorial, UserInteraction } from "../api";
+import { Tutorial, UserInteraction } from "@kogito-tooling/guided-tour-service-api";
 import { Rect } from "@kogito-tooling/core-api";
 
 export interface CurrentTutorialContextType {

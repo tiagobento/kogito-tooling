@@ -16,51 +16,49 @@
 
 import {
   ContentType,
-  ResourceContent,
   ResourceContentOptions,
-  ResourceContentService,
   ResourceListOptions,
-  ResourcesList,
-  SearchType
-} from "@kogito-tooling/core-api";
+  SearchType,
+  WorkspaceServiceChannelApi
+} from "@kogito-tooling/workspace-service-api";
 
 import * as vscode from "vscode";
-import * as nodePath from "path";
 import { WorkspaceFolder } from "vscode";
+import * as nodePath from "path";
+import * as __path from "path";
+import * as fs from "fs";
 
 /**
  * Implementation of a ResourceContentService using the vscode apis to list/get assets.
  */
-export class VsCodeResourceContentService implements ResourceContentService {
-  private readonly currentAssetFolder: string;
+export class VsCodeWorkspaceService implements WorkspaceServiceChannelApi {
+  constructor(private readonly currentAssetFolder: string, private readonly path: string) {}
 
-  constructor(currentAssetFolder: string) {
-    this.currentAssetFolder = currentAssetFolder;
-  }
-
-  public async list(pattern: string, opts?: ResourceListOptions): Promise<ResourcesList> {
+  public async receive_resourceListRequest(pattern: string, opts?: ResourceListOptions): Promise<string[]> {
     const expr = opts?.type === SearchType.ASSET_FOLDER ? this.currentAssetFolder + pattern : pattern;
 
     const files = await vscode.workspace.findFiles(expr);
-    const paths = files.map(f => vscode.workspace.asRelativePath(f.path));
-    return new ResourcesList(pattern, paths);
+    return files.map(f => vscode.workspace.asRelativePath(f.path));
   }
 
-  public async get(path: string, opts?: ResourceContentOptions): Promise<ResourceContent | undefined> {
+  public async receive_resourceContentRequest(
+    path: string,
+    opts?: ResourceContentOptions
+  ): Promise<string | undefined> {
     const contentPath = this.resolvePath(path);
 
     if (!contentPath) {
-      return new ResourceContent(path, undefined);
+      return undefined;
     }
 
     try {
       await vscode.workspace.fs.stat(vscode.Uri.parse(contentPath));
     } catch (e) {
       console.warn(`Error checking file ${path}: ${e}`);
-      return new ResourceContent(path, undefined);
+      return undefined;
     }
 
-    return this.retrieveContent(opts?.type, path, contentPath);
+    return this.retrieveContent(opts?.type, contentPath);
   }
 
   private resolvePath(uri: string) {
@@ -75,15 +73,22 @@ export class VsCodeResourceContentService implements ResourceContentService {
     return null;
   }
 
-  private retrieveContent(type: ContentType | undefined, path: string, contentPath: string): Thenable<ResourceContent> {
+  private retrieveContent(type: ContentType | undefined, contentPath: string) {
     if (type === ContentType.BINARY) {
       return vscode.workspace.fs
         .readFile(vscode.Uri.parse(contentPath))
-        .then(content => new ResourceContent(path, Buffer.from(content).toString("base64"), ContentType.BINARY));
+        .then(content => Buffer.from(content).toString("base64"));
     } else {
-      return vscode.workspace
-        .openTextDocument(contentPath)
-        .then(textDoc => new ResourceContent(path, textDoc.getText(), ContentType.TEXT));
+      return vscode.workspace.openTextDocument(contentPath).then(textDoc => textDoc.getText());
     }
+  }
+
+  public receive_openFile(filePath: string): void {
+    const resolvedPath = __path.isAbsolute(filePath) ? filePath : __path.join(__path.dirname(this.path), filePath);
+    if (!fs.existsSync(resolvedPath)) {
+      throw new Error(`Cannot open file at: ${resolvedPath}.`);
+    }
+
+    vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(resolvedPath));
   }
 }

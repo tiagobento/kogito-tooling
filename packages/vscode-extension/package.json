@@ -25,6 +25,12 @@
   "jest-junit": {
     "outputDirectory": "./target"
   },
+  "babel": {
+    "presets": [
+      "@babel/env",
+      "@babel/react"
+    ]
+  },
   "dependencies": {
     "@kogito-tooling/core-api": "0.5.2",
     "@kogito-tooling/microeditor-envelope": "0.5.2",

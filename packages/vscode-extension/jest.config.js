@@ -22,5 +22,8 @@ module.exports = {
   transform: {
     "^.+\\.jsx?$": "babel-jest",
     "^.+\\.tsx?$": "ts-jest"
+  },
+  moduleNameMapper: {
+    vscode: "<rootDir>/__mocks__/vscodeMock.js"
   }
 };

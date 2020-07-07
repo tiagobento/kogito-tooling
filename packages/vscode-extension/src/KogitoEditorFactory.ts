@@ -16,13 +16,14 @@
 
 import { KogitoEditorStore } from "./KogitoEditorStore";
 import { KogitoEditor } from "./KogitoEditor";
-import { ResourceContentService, KogitoEdit, Routes } from "@kogito-tooling/core-api";
-import { VsCodeNodeResourceContentService } from "./VsCodeNodeResourceContentService";
-import { VsCodeResourceContentService } from "./VsCodeResourceContentService";
+import { KogitoEdit, Routes } from "@kogito-tooling/core-api";
+import { VsCodeNodeWorkspaceService } from "./VsCodeNodeWorkspaceService";
+import { VsCodeWorkspaceService } from "./VsCodeWorkspaceService";
 
 import * as vscode from "vscode";
 import * as nodePath from "path";
 import { DefaultVsCodeRouter } from "./DefaultVsCodeRouter";
+import { WorkspaceServiceChannelApi } from "@kogito-tooling/workspace-service-api";
 
 export class KogitoEditorFactory {
   private readonly context: vscode.ExtensionContext;
@@ -63,7 +64,7 @@ export class KogitoEditorFactory {
 
     const workspacePath = vscode.workspace.asRelativePath(path);
 
-    const resourceContentService = this.createResourceContentService(path, workspacePath);
+    const resourceContentService = this.createWorkspaceService(path, workspacePath);
 
     const editor = new KogitoEditor(
       workspacePath,
@@ -84,11 +85,11 @@ export class KogitoEditorFactory {
     editor.setupWebviewContent();
   }
 
-  public createResourceContentService(path: string, workspacePath: string): ResourceContentService {
+  public createWorkspaceService(path: string, workspacePath: string): WorkspaceServiceChannelApi {
     if (this.isAssetInWorkspace(path)) {
-      return new VsCodeResourceContentService(this.getParentFolder(workspacePath));
+      return new VsCodeWorkspaceService(this.getParentFolder(workspacePath), path);
     }
-    return new VsCodeNodeResourceContentService(this.getParentFolder(path));
+    return new VsCodeNodeWorkspaceService(this.getParentFolder(path), path);
   }
 
   private isAssetInWorkspace(path: string): boolean {

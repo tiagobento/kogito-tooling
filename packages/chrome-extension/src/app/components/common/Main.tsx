@@ -34,7 +34,7 @@ export interface Globals {
   githubAuthTokenCookieName: string;
   extensionIconUrl: string;
   editorIndexPath: string;
-  resourceContentServiceFactory: ResourceContentServiceFactory;
+  workspaceServiceFactory: ResourceContentServiceFactory;
   externalEditorManager?: ExternalEditorManager;
 }
 
@@ -64,7 +64,7 @@ export const Main: React.FunctionComponent<Globals> = props => {
         githubAuthTokenCookieName: props.githubAuthTokenCookieName,
         extensionIconUrl: props.extensionIconUrl,
         editorIndexPath: props.editorIndexPath,
-        resourceContentServiceFactory: props.resourceContentServiceFactory,
+        workspaceServiceFactory: props.workspaceServiceFactory,
         externalEditorManager: props.externalEditorManager
       }}
     >

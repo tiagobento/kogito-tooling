@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UserInteraction, Tutorial } from "@kogito-tooling/guided-tour";
 
-/**
- * PUBLIC ENVELOPE API
- */
-export interface GuidedTourApi {
-  refresh(userInteraction: UserInteraction): void;
-  registerTutorial(tutorial: Tutorial): void;
-  isEnabled(): boolean;
-}
+module.exports = {
+    reporters: ["default"],
+    moduleDirectories: ["node_modules", "src"],
+    moduleFileExtensions: ["js", "jsx", "ts", "tsx"],
+    testRegex: "/__tests__/.*\\.test\\.(jsx?|tsx?)$",
+    transform: {
+        "^.+\\.jsx?$": "babel-jest",
+        "^.+\\.tsx?$": "ts-jest"
+    }
+};

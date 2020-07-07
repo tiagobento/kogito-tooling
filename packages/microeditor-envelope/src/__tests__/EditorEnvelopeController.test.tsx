@@ -20,7 +20,6 @@ import { mount } from "enzyme";
 import { EnvelopeBusMessage, EnvelopeBusMessagePurpose } from "@kogito-tooling/microeditor-envelope-protocol";
 import { ChannelType, LanguageData, OperatingSystem } from "@kogito-tooling/core-api";
 import { DummyEditor } from "./DummyEditor";
-import { ResourceContentServiceCoordinator } from "../api/resourceContent";
 import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
 
 let loadingScreenContainer: HTMLElement;
@@ -74,7 +73,6 @@ beforeEach(() => {
         callback();
       }
     },
-    new ResourceContentServiceCoordinator(),
     new DefaultKeyboardShortcutsService({
       editorContext: { channel: ChannelType.VSCODE, operatingSystem: OperatingSystem.WINDOWS }
     })

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserInteraction } from "../api";
+import { UserInteraction } from "@kogito-tooling/guided-tour-service-api";
 import { GuidedTourCookie } from "../core";
 import { Rect } from "@kogito-tooling/core-api";
 

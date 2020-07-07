@@ -21,7 +21,8 @@ import {
   KogitoChannelBus,
   KogitoEnvelopeMessageTypes
 } from "../..";
-import { ContentType, ResourceContent, StateControlCommand } from "@kogito-tooling/core-api";
+import { StateControlCommand } from "@kogito-tooling/core-api";
+import { ContentType } from "@kogito-tooling/workspace-service-api";
 
 let sentMessages: Array<EnvelopeBusMessage<unknown, any>>;
 let channelBus: KogitoChannelBus;
@@ -241,8 +242,8 @@ describe("receive", () => {
   });
 
   test("resourceContent request", async () => {
-    const resourceContent = new ResourceContent("a/path", "the content", ContentType.TEXT);
-    const resourceContentRequest = { path: "a/path", opts: { type: ContentType.TEXT } };
+    const resourceContent = "the content";
+    const resourceContentRequest = ["a/path", { type: ContentType.TEXT }];
 
     jest.spyOn(api, "receive_resourceContentRequest").mockReturnValueOnce(Promise.resolve(resourceContent));
 
@@ -251,10 +252,10 @@ describe("receive", () => {
       requestId: "requestId",
       purpose: EnvelopeBusMessagePurpose.REQUEST,
       type: "receive_resourceContentRequest",
-      data: [resourceContentRequest]
+      data: [...resourceContentRequest]
     });
 
-    expect(api.receive_resourceContentRequest).toHaveBeenCalledWith(resourceContentRequest);
+    expect(api.receive_resourceContentRequest).toHaveBeenCalledWith(...resourceContentRequest);
     expect(sentMessages).toEqual([
       {
         requestId: "requestId",
@@ -266,8 +267,8 @@ describe("receive", () => {
   });
 
   test("resourceList request", async () => {
-    const resourceList = { pattern: "*", paths: ["a/resource/file.txt"] };
-    const resourceListRequest = { path: "a/path", opts: { type: ContentType.TEXT } };
+    const resourceList = ["a/resource/file.txt"];
+    const resourceListRequest = ["a/path", { type: ContentType.TEXT }];
 
     jest.spyOn(api, "receive_resourceListRequest").mockReturnValueOnce(Promise.resolve(resourceList));
 
@@ -276,10 +277,10 @@ describe("receive", () => {
       requestId: "requestId",
       purpose: EnvelopeBusMessagePurpose.REQUEST,
       type: "receive_resourceListRequest",
-      data: [resourceListRequest]
+      data: [...resourceListRequest]
     });
 
-    expect(api.receive_resourceListRequest).toHaveBeenCalledWith(resourceListRequest);
+    expect(api.receive_resourceListRequest).toHaveBeenCalledWith(...resourceListRequest);
     expect(sentMessages).toEqual([
       {
         requestId: "requestId",

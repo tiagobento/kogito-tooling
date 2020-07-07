@@ -31,7 +31,7 @@ import {
 } from "./utils";
 import { KogitoGuidedTour } from "..";
 import { CurrentTutorialContext } from "../contexts";
-import { AutoMode, DemoMode } from "../api";
+import { AutoMode, DemoMode } from "@kogito-tooling/guided-tour-service-api";
 
 import "./Dialog.sass";
 import { DEFAULT_RECT } from "@kogito-tooling/core-api";
