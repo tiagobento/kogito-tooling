@@ -36,15 +36,19 @@ async function run() {
     throw new Error(`There's no workflow file called '${workflowFile}'`);
   }
 
+  console.info(`Workflow '${workflowFile}' has id ${workflowId}`);
+
   const openPrs = await fetch(
     `https://api.github.com/repos/${owner}/${repo}/pulls?state=open&base=${branch}`,
     authHeaders
   ).then(c => c.json());
 
+  console.info(`Found ${openPrs.length} open PRs targeting ${branch}`);
+
   return Promise.all(
     openPrs.map(pr => {
       console.info(`Re-triggering ${workflowFile} on #${pr.number}: ${pr.title}`);
-      return fetch(`/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`, {
+      return fetch(`/repos/${owner}/${repo}/actions/workflows/${workflowId}/dispatches`, {
         ...authHeaders,
         method: "POST",
         body: JSON.stringify({ ref: pr.head.sha })
