@@ -16,4 +16,4 @@ jobs:
       - uses: ./.github/actions/retrigger-workflow-on-open-prs
         with:
           github_token: ${{ secrets.RETRIGGER_CI_ON_OPEN_PRS_GITHUB_TOKEN }}
-          workflow: "ci.yml"
+          workflow: "ci"
