@@ -38,7 +38,7 @@ async function run() {
       { headers: { Authorization: "x-oauth-basic " + githubToken } }
     ).then(c => c.json());
 
-    console.log(prs.length);
+    console.log(prs);
   } catch (error) {
     core.setFailed(error.message);
   }
