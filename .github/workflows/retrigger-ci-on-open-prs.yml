@@ -12,5 +12,6 @@ jobs:
 
     steps:
       - uses: ./.github/actions/retrigger-workflow-on-open-prs
-        github_token: ${{ GITHUB_TOKEN }}
-        workflow: "ci.yml"
+        with:
+          github_token: ${{ GITHUB_TOKEN }}
+          workflow: "ci.yml"
