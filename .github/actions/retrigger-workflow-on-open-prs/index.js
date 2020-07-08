@@ -16,13 +16,12 @@
 
 const core = require("@actions/core");
 const github = require("@actions/github");
-const Octokit = require("@octokit/rest");
+const fetch = require("node-fetch");
 
 async function run() {
   try {
     const workflow = core.getInput("workflow");
     const githubToken = core.getInput("github_token");
-    const octokit = new Octokit({auth: githubToken});
 
     console.info("Workflow: " + workflow);
     console.info("GitHub: ");
@@ -30,18 +29,16 @@ async function run() {
     console.info("Owner: " + github.context.repo.owner);
     console.info("Repo: " + github.context.repo.repo);
     console.info("Ref: " + github.context.ref);
-    
+
     const branch = github.context.ref.split("/").pop();
-    console.info("Brnach: " + branch);
+    console.info("Branch: " + branch);
 
-    const { data: prs } = await octokit.pulls.list({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      base: branch
-    });
+    const prs = await fetch(
+      `https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/pulls?state=open&base=${branch}`,
+      { headers: { Authorization: "x-oauth-basic " + githubToken } }
+    ).then(c => c.json());
 
-    console.log(prs);
-
+    console.log(prs.length);
   } catch (error) {
     core.setFailed(error.message);
   }
