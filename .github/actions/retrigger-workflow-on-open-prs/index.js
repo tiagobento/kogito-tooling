@@ -37,7 +37,7 @@ async function run() {
   const baseBranch = github.context.ref.split("/").pop();
 
   const openNonConflictingPrs = await fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders);
-  console.info(`Found ${openNonConflictingPrs.length} open mergeable PRs targeting ${baseBranch}`);
+  console.info(`Found ${openNonConflictingPrs.length} open non-conflicting PRs targeting ${baseBranch}`);
 
   return Promise.all(
     openNonConflictingPrs.map(pr => {
@@ -61,7 +61,10 @@ function fetchWorkflowRuns(owner, repo, workflowFile, headRefName, authHeaders) 
   return fetch(
     `${githubApiDomain}/repos/${owner}/${repo}/actions/workflows/${workflowFile}/runs?event=${workflowEvent}&branch=${headRefName}`,
     authHeaders
-  ).then(c => c.json());
+  ).then(c => c.json()).then(p => {
+    console.info(JSON.stringify(p, undefined, 2));
+    return p.workflow_runs;
+  });
 }
 
 async function fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders) {
@@ -74,6 +77,8 @@ async function fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders) 
           repository(owner: "${owner}", name: "${repo}") {
             pullRequests(last: 100, states: [OPEN], baseRefName: "${baseBranch}") {
               nodes {
+                number
+                title
                 mergeable
                 headRefName
                 headRefOid
