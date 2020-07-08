@@ -96,7 +96,9 @@ async function fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders) 
 }
 
 async function triggerWorkflowRerun(rerunUrl, authHeaders) {
-  return fetch(rerunUrl, { ...authHeaders, method: "POST" });
+  return fetch(rerunUrl, { ...authHeaders, method: "POST" })
+    .then(c => c.json())
+    .then(p => console.info(JSON.stringify(p, undefined, 2)));
 }
 
 run()
