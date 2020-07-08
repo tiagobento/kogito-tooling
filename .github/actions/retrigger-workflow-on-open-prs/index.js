@@ -38,18 +38,19 @@ async function run() {
       { headers: { Authorization: "x-oauth-basic " + githubToken } }
     ).then(c => c.json());
 
-    for (const pr in prs) {
-      console.info(`Re-triggering ${workflow} on #${pr.number}: ${pr.title}`);
-
-      await fetch(
-        `/repos/${github.context.repo.owner}/${github.context.repo.repo}/actions/workflows/${workflow}/dispatches`,
-        {
-          method: "POST",
-          headers: { Authorization: "x-oauth-basic " + githubToken },
-          body: JSON.stringify({ ref: pr.head.sha })
-        }
-      );
-    }
+    Promise.all(
+      prs.map(pr => {
+        console.info(`Re-triggering ${workflow} on #${pr.number}: ${pr.title}`);
+        return fetch(
+          `/repos/${github.context.repo.owner}/${github.context.repo.repo}/actions/workflows/${workflow}/dispatches`,
+          {
+            method: "POST",
+            headers: { Authorization: "x-oauth-basic " + githubToken },
+            body: JSON.stringify({ ref: pr.head.sha })
+          }
+        );
+      })
+    );
   } catch (error) {
     core.setFailed(error.message);
   }
