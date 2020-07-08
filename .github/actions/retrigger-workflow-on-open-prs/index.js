@@ -36,7 +36,7 @@ async function run() {
   const repo = github.context.repo.repo;
   const baseBranch = github.context.ref.split("/").pop();
 
-  const openMergeablePrs = fetchOpenMergeablePrs(owner, repo, baseBranch);
+  const openMergeablePrs = fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders);
   console.info(`Found ${openMergeablePrs.length} open mergeable PRs targeting ${baseBranch}`);
 
   return Promise.all(
