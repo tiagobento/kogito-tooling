@@ -71,8 +71,8 @@ async function fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders) {
     body: JSON.stringify({
       query: `
         query {
-          repository(owner:"${owner}", name:"${repo}") {
-            pullRequests(last: 100, states: [OPEN], baseRefName: ${baseBranch}) {
+          repository(owner: "${owner}", name: "${repo}") {
+            pullRequests(last: 100, states: [OPEN], baseRefName: "${baseBranch}") {
               nodes {
                 mergeable
                 headRefName
@@ -85,7 +85,10 @@ async function fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders) {
     })
   })
     .then(c => c.json())
-    .then(p => console.info(p));
+    .then(p => {
+      console.info(JSON.stringify(p, undefined, 2));
+      return p.data.repository.pullRequests.nodes
+    });
 
   return openPrs.filter(pr => pr.mergeable === "MERGEABLE");
 }
