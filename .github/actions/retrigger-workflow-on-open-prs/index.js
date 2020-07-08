@@ -59,7 +59,9 @@ async function run() {
         ...authHeaders,
         method: "POST",
         body: JSON.stringify({ ref: pr.head.sha })
-      });
+      })
+        .then(c => c.json())
+        .then(c => console.info(c));
     })
   );
 }
