@@ -61,10 +61,9 @@ function fetchWorkflowRuns(owner, repo, workflowFile, headRefName, authHeaders) 
   return fetch(
     `${githubApiDomain}/repos/${owner}/${repo}/actions/workflows/${workflowFile}/runs?event=${workflowEvent}&branch=${headRefName}`,
     authHeaders
-  ).then(c => c.json()).then(p => {
-    console.info(JSON.stringify(p, undefined, 2));
-    return p.workflow_runs;
-  });
+  )
+    .then(c => c.json())
+    .then(p => p.workflow_runs);
 }
 
 async function fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders) {
