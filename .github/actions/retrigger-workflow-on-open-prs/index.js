@@ -33,7 +33,10 @@ async function run() {
   };
 
   console.info(`Starting 3`);
-  const workflows = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows`, authHeaders).then(c => c.json());
+  const workflows = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows`, authHeaders).then(
+    c => c.json().workflows
+  );
+  
   const workflow = workflows.filter(w => w.path.endsWith(workflowFile)).pop();
   if (!workflow) {
     throw new Error(`There's no workflow file called '${workflowFile}'`);
