@@ -85,7 +85,7 @@ async function fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders) {
     })
   })
     .then(c => c.json())
-    .then(p => p.data.repository.pullRequests.nodes);
+    .then(p => console.info(p));
 
   return openPrs.filter(pr => pr.mergeable === "MERGEABLE");
 }
