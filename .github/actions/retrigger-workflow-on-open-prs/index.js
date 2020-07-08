@@ -45,11 +45,16 @@ async function run() {
       return fetchWorkflowRuns(owner, repo, workflowFile, pr.headRefName, authHeaders).then(runs => {
         runs
           .filter(run => run.head_sha === pr.headRefOid)
-          .map(runOnPrsLastCommit => {
-            console.info(
-              `Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${runOnPrsLastCommit.head_sha}`
-            );
-            triggerWorkflowRerun(runOnPrsLastCommit.rerun_url, authHeaders);
+          .map(run => {
+            if (run.status === "in_progress") {
+              console.info(
+                `Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`
+              );
+              trigger(run.cancel_url, authHeaders).then(() => trigger(run.rerun_url));
+            } else {
+              console.info(`Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`);
+              trigger(run.rerun_url, authHeaders);
+            }
           });
       });
     })
@@ -95,7 +100,7 @@ async function fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders) 
   return openPrs.filter(pr => pr.mergeable !== "CONFLICTING");
 }
 
-async function triggerWorkflowRerun(rerunUrl, authHeaders) {
+async function trigger(rerunUrl, authHeaders) {
   return fetch(rerunUrl, { ...authHeaders, method: "POST" })
     .then(c => c.json())
     .then(p => console.info(JSON.stringify(p, undefined, 2)));
