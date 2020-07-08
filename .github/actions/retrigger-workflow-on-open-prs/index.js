@@ -36,7 +36,7 @@ async function run() {
   const repo = github.context.repo.repo;
   const baseBranch = github.context.ref.split("/").pop();
 
-  const openMergeablePrs = fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders);
+  const openMergeablePrs = await fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders);
   console.info(`Found ${openMergeablePrs.length} open mergeable PRs targeting ${baseBranch}`);
 
   return Promise.all(
@@ -89,6 +89,8 @@ async function fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders) {
       console.info(JSON.stringify(p, undefined, 2));
       return p.data.repository.pullRequests.nodes
     });
+
+  console.info(openPrs);
 
   return openPrs.filter(pr => pr.mergeable === "MERGEABLE");
 }
