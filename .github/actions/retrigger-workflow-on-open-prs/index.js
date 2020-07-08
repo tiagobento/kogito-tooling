@@ -33,7 +33,7 @@ async function run() {
   };
 
   console.info(`Starting 3`);
-  const workflows = await fetch(`/repos/${owner}/${repo}/actions/workflows`, authHeaders).then(c => c.json());
+  const workflows = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows`, authHeaders).then(c => c.json());
   const workflow = workflows.filter(w => w.path.endsWith(workflowFile)).pop();
   if (!workflow) {
     throw new Error(`There's no workflow file called '${workflowFile}'`);
@@ -51,7 +51,7 @@ async function run() {
   return Promise.all(
     openPrs.map(pr => {
       console.info(`Re-triggering ${workflow.name} on #${pr.number}: ${pr.title}`);
-      return fetch(`/repos/${owner}/${repo}/actions/workflows/${workflow.id}/dispatches`, {
+      return fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflow.id}/dispatches`, {
         ...authHeaders,
         method: "POST",
         body: JSON.stringify({ ref: pr.head.sha })
