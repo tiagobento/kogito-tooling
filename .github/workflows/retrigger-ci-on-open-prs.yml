@@ -1,0 +1,16 @@
+name: Retrigger CI on open PRs
+
+on:
+  push:
+
+jobs:
+  retrigger-ci-on-open-prs:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+
+    steps:
+      - uses: ./.github/actions/retrigger-workflow-on-open-prs
+        github_token: ${{ GITHUB_TOKEN }}
+        workflow: "ci.yml"

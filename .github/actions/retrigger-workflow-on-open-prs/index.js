@@ -16,27 +16,30 @@
 
 const core = require("@actions/core");
 const github = require("@actions/github");
-const { Octokit } = require("@octokit/rest");
 
-try {
-  const workflow = core.getInput("workflow");
-  const githubToken = core.getInput("github_token");
-  const octokit = new Octokit({ auth: githubToken });
-  console.info("Workflow: " + workflow);
-  console.info("GitHub: " + github);
-  console.info("Owner: " + github.owner);
-  console.info("Repo: " + github.repo);
-  console.info("Branch: " + github.branch);
+async function run() {
+  try {
+    const workflow = core.getInput("workflow");
+    const githubToken = core.getInput("github_token");
+    const octokit = new github(githubToken);
 
-  octokit.pulls
-    .list({
-      owner: github.owner,
-      repo: github.repo,
-      base: github.branch
-    })
-    .then(({ data }) => {
-      console.log(data);
+    console.info("Workflow: " + workflow);
+    console.info("GitHub: " + github);
+    console.info("Owner: " + github.context.repo.owner);
+    console.info("Repo: " + github.context.repo.repo);
+    console.info("Branch: " + github.context.ref);
+
+    const { data: prs } = await octokit.pulls.list({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      base: github.context.ref
     });
-} catch (error) {
-  core.setFailed(error.message);
+
+    console.log(prs);
+
+  } catch (error) {
+    core.setFailed(error.message);
+  }
 }
+
+run();
