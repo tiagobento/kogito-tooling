@@ -26,9 +26,9 @@ async function run() {
 
     console.info("Workflow: " + workflow);
     console.info("GitHub: ");
-    console.info(github);
+    console.info(JSON.stringify(github));
     console.info("GitHub.Context: ");
-    console.info(githubContext);
+    console.info(JSON.stringify(github.context));
     console.info("Owner: " + github.context.repo.owner);
     console.info("Repo: " + github.context.repo.repo);
     console.info("Branch: " + github.context.ref);
