@@ -21,7 +21,7 @@ async function run() {
   try {
     const workflow = core.getInput("workflow");
     const githubToken = core.getInput("github_token");
-    const octokit = new github(githubToken);
+    const octokit = github.getOctokit(githubToken);
 
     console.info("Workflow: " + workflow);
     console.info("GitHub: " + github);
