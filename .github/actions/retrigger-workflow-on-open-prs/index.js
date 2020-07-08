@@ -25,7 +25,10 @@ async function run() {
     const octokit = new Octokit({auth: githubToken});
 
     console.info("Workflow: " + workflow);
-    console.info("GitHub: " + github);
+    console.info("GitHub: ");
+    console.info(github);
+    console.info("GitHub.Context: ");
+    console.info(githubContext);
     console.info("Owner: " + github.context.repo.owner);
     console.info("Repo: " + github.context.repo.repo);
     console.info("Branch: " + github.context.ref);
@@ -33,7 +36,7 @@ async function run() {
     const { data: prs } = await octokit.pulls.list({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
-      base: github.context.ref
+      base: github.context.ref.split("/").pop()
     });
 
     console.log(prs);
