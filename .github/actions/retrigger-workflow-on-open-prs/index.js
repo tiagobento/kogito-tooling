@@ -16,12 +16,13 @@
 
 const core = require("@actions/core");
 const github = require("@actions/github");
+const Octokit = require("@octokit/rest");
 
 async function run() {
   try {
     const workflow = core.getInput("workflow");
     const githubToken = core.getInput("github_token");
-    const octokit = github.getOctokit(githubToken);
+    const octokit = new Octokit({auth: githubToken});
 
     console.info("Workflow: " + workflow);
     console.info("GitHub: " + github);
