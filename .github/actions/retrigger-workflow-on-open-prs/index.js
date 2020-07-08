@@ -19,31 +19,40 @@ const github = require("@actions/github");
 const fetch = require("node-fetch");
 
 async function run() {
-  try {
-    const workflow = core.getInput("workflow");
-    const githubToken = core.getInput("github_token");
+  const workflowFile = core.getInput("workflow_file");
+  const githubToken = core.getInput("github_token");
 
-    const owner = github.context.repo.owner;
-    const repo = github.context.repo.repo;
-    const branch = github.context.ref.split("/").pop();
+  const owner = github.context.repo.owner;
+  const repo = github.context.repo.repo;
+  const branch = github.context.ref.split("/").pop();
 
-    const openPrs = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls?state=open&base=${branch}`, {
-      headers: { Authorization: "x-oauth-basic " + githubToken }
-    }).then(c => c.json());
+  const authHeaders = {
+    headers: { Authorization: "x-oauth-basic " + githubToken, Accept: "application/vnd.github.v3+json" }
+  };
 
-    await Promise.all(
-      openPrs.map(pr => {
-        console.info(`Re-triggering ${workflow} on #${pr.number}: ${pr.title}`);
-        return fetch(`/repos/${owner}/${repo}/actions/workflows/${workflow}/dispatches`, {
-          method: "POST",
-          headers: { Authorization: "x-oauth-basic " + githubToken, Accept: "application/vnd.github.v3+json" },
-          body: JSON.stringify({ ref: pr.head.sha })
-        });
-      })
-    );
-  } catch (error) {
-    core.setFailed(error.message);
+  const workflows = await fetch(`/repos/${owner}/${repo}/actions/workflows`, authHeaders).then(c => c.json());
+  const workflowId = workflows.filter(workflow => workflow.path.endsWith(workflowFile)).pop();
+  if (!workflowId) {
+    throw new Error(`There's no workflow file called '${workflowFile}'`);
   }
+
+  const openPrs = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/pulls?state=open&base=${branch}`,
+    authHeaders
+  ).then(c => c.json());
+
+  return Promise.all(
+    openPrs.map(pr => {
+      console.info(`Re-triggering ${workflowFile} on #${pr.number}: ${pr.title}`);
+      return fetch(`/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`, {
+        ...authHeaders,
+        method: "POST",
+        body: JSON.stringify({ ref: pr.head.sha })
+      });
+    })
+  );
 }
 
-run().then(() => console.info("Finished."));
+run()
+  .then(() => console.info("Finished."))
+  .catch(e => core.setFailed(e.message));
