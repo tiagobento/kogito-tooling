@@ -36,11 +36,11 @@ async function run() {
   const repo = github.context.repo.repo;
   const baseBranch = github.context.ref.split("/").pop();
 
-  const openMergeablePrs = await fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders);
-  console.info(`Found ${openMergeablePrs.length} open mergeable PRs targeting ${baseBranch}`);
+  const openNonConflictingPrs = await fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders);
+  console.info(`Found ${openNonConflictingPrs.length} open mergeable PRs targeting ${baseBranch}`);
 
   return Promise.all(
-    openMergeablePrs.map(pr => {
+    openNonConflictingPrs.map(pr => {
       console.info(`Fetching workflow runs for ${workflowFile} on #${pr.number}: ${pr.title}`);
       return fetchWorkflowRuns(owner, repo, workflowFile, pr.headRefName, authHeaders).then(runs => {
         runs
@@ -64,7 +64,7 @@ function fetchWorkflowRuns(owner, repo, workflowFile, headRefName, authHeaders) 
   ).then(c => c.json());
 }
 
-async function fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders) {
+async function fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders) {
   const openPrs = await fetch(`${gitHubGraphQlEndpoint}`, {
     ...authHeaders,
     method: "POST",
@@ -85,14 +85,10 @@ async function fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders) {
     })
   })
     .then(c => c.json())
-    .then(p => {
-      console.info(JSON.stringify(p, undefined, 2));
-      return p.data.repository.pullRequests.nodes
-    });
+    .then(p => p.data.repository.pullRequests.nodes);
 
   console.info(openPrs);
-
-  return openPrs.filter(pr => pr.mergeable === "MERGEABLE");
+  return openPrs.filter(pr => pr.mergeable !== "CONFLICTING");
 }
 
 async function triggerWorkflowRerun(rerunUrl, authHeaders) {
