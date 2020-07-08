@@ -19,9 +19,11 @@ const github = require("@actions/github");
 const fetch = require("node-fetch");
 
 async function run() {
+  console.info(`Starting`);
   const workflowFile = core.getInput("workflow_file");
   const githubToken = core.getInput("github_token");
 
+  console.info(`Starting 2`);
   const owner = github.context.repo.owner;
   const repo = github.context.repo.repo;
   const branch = github.context.ref.split("/").pop();
@@ -30,13 +32,14 @@ async function run() {
     headers: { Authorization: "x-oauth-basic " + githubToken, Accept: "application/vnd.github.v3+json" }
   };
 
+  console.info(`Starting 3`);
   const workflows = await fetch(`/repos/${owner}/${repo}/actions/workflows`, authHeaders).then(c => c.json());
-  const workflowId = workflows.filter(workflow => workflow.path.endsWith(workflowFile)).pop();
-  if (!workflowId) {
+  const workflow = workflows.filter(w => w.path.endsWith(workflowFile)).pop();
+  if (!workflow) {
     throw new Error(`There's no workflow file called '${workflowFile}'`);
   }
 
-  console.info(`Workflow '${workflowFile}' has id ${workflowId}`);
+  console.info(`Workflow '${workflowFile}' has id ${workflow.id}`);
 
   const openPrs = await fetch(
     `https://api.github.com/repos/${owner}/${repo}/pulls?state=open&base=${branch}`,
@@ -47,8 +50,8 @@ async function run() {
 
   return Promise.all(
     openPrs.map(pr => {
-      console.info(`Re-triggering ${workflowFile} on #${pr.number}: ${pr.title}`);
-      return fetch(`/repos/${owner}/${repo}/actions/workflows/${workflowId}/dispatches`, {
+      console.info(`Re-triggering ${workflow.name} on #${pr.number}: ${pr.title}`);
+      return fetch(`/repos/${owner}/${repo}/actions/workflows/${workflow.id}/dispatches`, {
         ...authHeaders,
         method: "POST",
         body: JSON.stringify({ ref: pr.head.sha })
