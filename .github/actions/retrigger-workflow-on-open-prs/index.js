@@ -18,52 +18,80 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 const fetch = require("node-fetch");
 
+const githubApiDomain = `https://api.github.com`;
+const gitHubGraphQlEndpoint = `${githubApiDomain}/graphql`;
+
 async function run() {
   const workflowFile = core.getInput("workflow_file");
   const githubToken = core.getInput("github_token");
 
-  const owner = github.context.repo.owner;
-  const repo = github.context.repo.repo;
-  const branch = github.context.ref.split("/").pop();
-
-  const githubApiDomain = `https://api.github.com`;
   const authHeaders = {
     headers: {
-      Authorization: "x-oauth-basic " + githubToken,
+      Authorization: "token " + githubToken,
       Accept: "application/vnd.github.v3+json"
     }
   };
 
-  const workflows = await fetch(`${githubApiDomain}/repos/${owner}/${repo}/actions/workflows`, authHeaders)
-    .then(c => c.json())
-    .then(c => c.workflows);
+  const owner = github.context.repo.owner;
+  const repo = github.context.repo.repo;
+  const baseBranch = github.context.ref.split("/").pop();
 
-  const workflow = workflows.filter(w => w.path.endsWith(workflowFile)).pop();
-  if (!workflow) {
-    throw new Error(`There's no workflow file called '${workflowFile}'`);
-  }
-
-  console.info(`Workflow '${workflowFile}' has id ${workflow.id}`);
-
-  const openPrs = await fetch(
-    `${githubApiDomain}/repos/${owner}/${repo}/pulls?state=open&base=${branch}`,
-    authHeaders
-  ).then(c => c.json());
-
-  console.info(`Found ${openPrs.length} open PRs targeting ${branch}`);
+  const openMergeablePrs = fetchOpenMergeablePrs(owner, repo, baseBranch);
+  console.info(`Found ${openMergeablePrs.length} open mergeable PRs targeting ${baseBranch}`);
 
   return Promise.all(
-    openPrs.map(pr => {
-      console.info(`Re-triggering ${workflow.name} on #${pr.number}: ${pr.title}`);
-      return fetch(`${githubApiDomain}/repos/${owner}/${repo}/actions/workflows/${workflow.id}/dispatches`, {
-        ...authHeaders,
-        method: "POST",
-        body: JSON.stringify({ ref: pr.head.sha })
-      })
-        .then(c => c.json())
-        .then(c => console.info(c));
+    openMergeablePrs.map(pr => {
+      console.info(`Fetching workflow runs for ${workflowFile} on #${pr.number}: ${pr.title}`);
+      return fetchWorkflowRuns(owner, repo, workflowFile, pr.headRefName, authHeaders).then(runs => {
+        runs
+          .filter(run => run.head_sha === pr.headRefOid)
+          .map(runOnPrsLastCommit => {
+            console.info(
+              `Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${runOnPrsLastCommit.head_sha}`
+            );
+            triggerWorkflowRerun(runOnPrsLastCommit.rerun_url, authHeaders);
+          });
+      });
     })
   );
+}
+
+function fetchWorkflowRuns(owner, repo, workflowFile, headRefName, authHeaders) {
+  const workflowEvent = "pull_request";
+  return fetch(
+    `${githubApiDomain}/repos/${owner}/${repo}/actions/workflows/${workflowFile}/runs?event=${workflowEvent}&branch=${headRefName}`,
+    authHeaders
+  ).then(c => c.json());
+}
+
+async function fetchOpenMergeablePrs(owner, repo, baseBranch, authHeaders) {
+  const openPrs = await fetch(`${gitHubGraphQlEndpoint}`, {
+    ...authHeaders,
+    method: "POST",
+    body: JSON.stringify({
+      query: `
+        query {
+          repository(owner:"${owner}", name:"${repo}") {
+            pullRequests(last: 100, states: [OPEN], baseRefName: ${baseBranch}) {
+              nodes {
+                mergeable
+                headRefName
+                headRefOid
+              }
+            }
+          }
+        }
+	  `
+    })
+  })
+    .then(c => c.json())
+    .then(p => p.data.repository.pullRequests.nodes);
+
+  return openPrs.filter(pr => pr.mergeable === "MERGEABLE");
+}
+
+async function triggerWorkflowRerun(rerunUrl, authHeaders) {
+  return fetch(rerunUrl, { ...authHeaders, method: "POST" });
 }
 
 run()
