@@ -23,32 +23,22 @@ async function run() {
     const workflow = core.getInput("workflow");
     const githubToken = core.getInput("github_token");
 
-    console.info("Workflow: " + workflow);
-    console.info("GitHub: ");
-    console.info(JSON.stringify(github));
-    console.info("Owner: " + github.context.repo.owner);
-    console.info("Repo: " + github.context.repo.repo);
-    console.info("Ref: " + github.context.ref);
-
+    const owner = github.context.repo.owner;
+    const repo = github.context.repo.repo;
     const branch = github.context.ref.split("/").pop();
-    console.info("Branch: " + branch);
 
-    const prs = await fetch(
-      `https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/pulls?state=open&base=${branch}`,
-      { headers: { Authorization: "x-oauth-basic " + githubToken } }
-    ).then(c => c.json());
+    const openPrs = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls?state=open&base=${branch}`, {
+      headers: { Authorization: "x-oauth-basic " + githubToken }
+    }).then(c => c.json());
 
-    Promise.all(
-      prs.map(pr => {
+    await Promise.all(
+      openPrs.map(pr => {
         console.info(`Re-triggering ${workflow} on #${pr.number}: ${pr.title}`);
-        return fetch(
-          `/repos/${github.context.repo.owner}/${github.context.repo.repo}/actions/workflows/${workflow}/dispatches`,
-          {
-            method: "POST",
-            headers: { Authorization: "x-oauth-basic " + githubToken },
-            body: JSON.stringify({ ref: pr.head.sha })
-          }
-        );
+        return fetch(`/repos/${owner}/${repo}/actions/workflows/${workflow}/dispatches`, {
+          method: "POST",
+          headers: { Authorization: "x-oauth-basic " + githubToken, Accept: "application/vnd.github.v3+json" },
+          body: JSON.stringify({ ref: pr.head.sha })
+        });
       })
     );
   } catch (error) {
@@ -56,4 +46,4 @@ async function run() {
   }
 }
 
-run();
+run().then(() => console.info("Finished."));
