@@ -42,21 +42,25 @@ async function run() {
   return Promise.all(
     openNonConflictingPrs.map(pr => {
       console.info(`Fetching workflow runs for ${workflowFile} on #${pr.number}: ${pr.title}`);
-      return fetchWorkflowRuns(owner, repo, workflowFile, pr.headRefName, authHeaders).then(runs => {
-        runs
-          .filter(run => run.head_sha === pr.headRefOid)
-          .map(run => {
-            if (run.status === "in_progress") {
-              console.info(
-                `Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`
-              );
-              trigger(run.cancel_url, authHeaders).then(() => trigger(run.rerun_url, authHeaders));
-            } else {
-              console.info(`Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`);
-              trigger(run.rerun_url, authHeaders);
-            }
-          });
-      });
+      return retriggerWorkflowsOnLastCommitOfPr(owner, repo, workflowFile, pr, authHeaders);
+    })
+  );
+}
+
+async function retriggerWorkflowsOnLastCommitOfPr(owner, repo, workflowFile, pr, authHeaders) {
+  const runs = await fetchWorkflowRuns(owner, repo, workflowFile, pr.headRefName, authHeaders);
+
+  const runsOnLastCommit = runs.filter(run => run.head_sha === pr.headRefOid);
+
+  return Promise.all(
+    runsOnLastCommit.map(run => {
+      if (run.status === "in_progress") {
+        console.info(`Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`);
+        trigger(run.cancel_url, authHeaders).then(() => trigger(run.rerun_url, authHeaders));
+      } else {
+        console.info(`Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`);
+        trigger(run.rerun_url, authHeaders);
+      }
     })
   );
 }
