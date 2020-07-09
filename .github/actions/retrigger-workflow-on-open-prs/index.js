@@ -50,7 +50,7 @@ async function run() {
               console.info(
                 `Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`
               );
-              trigger(run.cancel_url, authHeaders).then(() => trigger(run.rerun_url));
+              trigger(run.cancel_url, authHeaders).then(() => trigger(run.rerun_url, authHeaders));
             } else {
               console.info(`Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`);
               trigger(run.rerun_url, authHeaders);
