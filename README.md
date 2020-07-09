@@ -5,6 +5,9 @@ Kogito
 
 <p align="center"><img width=55% height=55% src="docs/kogito.png"></p>
 
+
+
+
 [![GitHub Stars](https://img.shields.io/github/stars/kiegroup/kogito-tooling.svg)](https://github.com/kiegroup/kogito-tooling/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/kiegroup/kogito-tooling.svg)](https://github.com/kiegroup/kogito-tooling/network/members)
 [![GitHub Issues](https://img.shields.io/github/issues/kiegroup/kogito-tooling.svg)]()
