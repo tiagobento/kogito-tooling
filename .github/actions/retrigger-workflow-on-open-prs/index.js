@@ -55,13 +55,16 @@ async function retriggerWorkflowsOnLastCommitOfPr(owner, repo, workflowFile, pr,
   return Promise.all(
     runsOnLastCommit.map(run => {
       if (run.status !== "completed") {
-        console.info(`Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`);
-        return trigger(run.cancel_url, authHeaders).then(() => {
-          //FIXME: Cancelling takes a while.
-          return trigger(run.rerun_url, authHeaders)
-        });
+        console.info(
+          `Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`
+        );
+        return trigger(run.cancel_url, authHeaders)
+          .then(() => wait(2000)) //Canceling takes a while
+          .then(() => trigger(run.rerun_url, authHeaders));
       } else {
-        console.info(`Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`);
+        console.info(
+          `Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`
+        );
         return trigger(run.rerun_url, authHeaders);
       }
     })
@@ -110,6 +113,14 @@ async function trigger(rerunUrl, authHeaders) {
   return fetch(rerunUrl, { ...authHeaders, method: "POST" })
     .then(c => c.json())
     .then(p => console.info(JSON.stringify(p, undefined, 2)));
+}
+
+function wait(ms) {
+  return new Promise(res => {
+    setTimeout(() => {
+      res();
+    }, ms);
+  });
 }
 
 run()
