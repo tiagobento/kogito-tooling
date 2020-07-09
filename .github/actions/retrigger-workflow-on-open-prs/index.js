@@ -54,7 +54,7 @@ async function retriggerWorkflowsOnLastCommitOfPr(owner, repo, workflowFile, pr,
 
   return Promise.all(
     runsOnLastCommit.map(run => {
-      if (run.status === "in_progress") {
+      if (run.status !== "completed") {
         console.info(`Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`);
         trigger(run.cancel_url, authHeaders).then(() => trigger(run.rerun_url, authHeaders));
       } else {
