@@ -56,10 +56,13 @@ async function retriggerWorkflowsOnLastCommitOfPr(owner, repo, workflowFile, pr,
     runsOnLastCommit.map(run => {
       if (run.status !== "completed") {
         console.info(`Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`);
-        trigger(run.cancel_url, authHeaders).then(() => trigger(run.rerun_url, authHeaders));
+        return trigger(run.cancel_url, authHeaders).then(() => {
+          //FIXME: Cancelling takes a while.
+          return trigger(run.rerun_url, authHeaders)
+        });
       } else {
         console.info(`Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`);
-        trigger(run.rerun_url, authHeaders);
+        return trigger(run.rerun_url, authHeaders);
       }
     })
   );
