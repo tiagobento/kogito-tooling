@@ -55,10 +55,10 @@ async function retriggerWorkflowsOnLastCommitOfPr(owner, repo, workflowFile, pr,
   return Promise.all(
     runsOnLastCommit.map(run => {
       if (run.status === "in_progress") {
-        console.info(`Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`);
+        console.info(`Canceling and re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`);
         trigger(run.cancel_url, authHeaders).then(() => trigger(run.rerun_url, authHeaders));
       } else {
-        console.info(`Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}`);
+        console.info(`Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`);
         trigger(run.rerun_url, authHeaders);
       }
     })
@@ -100,7 +100,6 @@ async function fetchOpenNonConflictingPrs(owner, repo, baseBranch, authHeaders) 
     .then(c => c.json())
     .then(p => p.data.repository.pullRequests.nodes);
 
-  console.info(openPrs);
   return openPrs.filter(pr => pr.mergeable !== "CONFLICTING");
 }
 
