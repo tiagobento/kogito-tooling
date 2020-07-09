@@ -59,7 +59,7 @@ async function retriggerWorkflowsOnLastCommitOfPr(owner, repo, workflowFile, pr,
           `Canceling ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`
         );
         return trigger(run.cancel_url, authHeaders)
-          .then(() => wait(30000)) //Canceling takes a while, 30s sounds like a reasonable time to wait
+          .then(() => wait(120000)) //Canceling takes a while, 2min sounds like a reasonable time to wait
           .then(() =>
             console.info(
               `Re-running ${workflowFile} on #${pr.number}: ${pr.title}; SHA=${run.head_sha}; status=${run.status}`
