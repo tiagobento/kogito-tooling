@@ -1,5 +1,5 @@
 {
-  "name": "@kogito-tooling/microeditor-envelope",
+  "name": "@kogito-tooling/editor-api",
   "version": "0.6.1",
   "description": "",
   "license": "Apache-2.0",
@@ -13,15 +13,11 @@
     "url": "https://github.com/kiegroup/kogito-tooling.git"
   },
   "dependencies": {
-    "@kogito-tooling/core-api": "0.6.1",
-    "@kogito-tooling/guided-tour": "0.6.1",
-    "@kogito-tooling/keyboard-shortcuts": "0.6.1",
-    "@kogito-tooling/editor-api": "0.6.1",
-    "@kogito-tooling/patternfly-base": "0.6.1"
+    "@kogito-tooling/microeditor-envelope-protocol": "0.6.1"
   },
   "scripts": {
     "lint": "tslint -c ../../tslint.json 'src/**/*.{ts,tsx,js,jsx}'",
-    "test": "jest",
+    "test": "echo 'No tests to run'",
     "build:fast": "rm -rf dist && webpack",
     "build": "yarn run lint && yarn test && yarn run build:fast",
     "build:prod": "yarn run build --mode production --devtool none"
@@ -31,8 +27,5 @@
       "@babel/env",
       "@babel/react"
     ]
-  },
-  "jest-junit": {
-    "outputDirectory": "./target"
   }
 }
