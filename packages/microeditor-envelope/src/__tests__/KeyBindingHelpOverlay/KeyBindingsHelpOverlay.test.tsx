@@ -19,7 +19,7 @@ import { KeyBindingsHelpOverlay } from "../../KeyBindingsHelpOverlay";
 import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
 import { ChannelType, OperatingSystem } from "@kogito-tooling/microeditor-envelope-protocol";
 import { fireEvent, render } from "@testing-library/react";
-import { DEFAULT_TESTING_ENVELOPE_CONTEXT, usingEnvelopeContext } from "../envelopeApiUtils";
+import { DEFAULT_TESTING_ENVELOPE_CONTEXT, usingEnvelopeContext } from "../utils";
 
 describe("KeyBindingsHelpOverlay", () => {
   test("minimal setup", async () => {
