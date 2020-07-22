@@ -16,23 +16,16 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import * as Core from "@kogito-tooling/microeditor-envelope-protocol";
-import { ChannelType, StateControlCommand } from "@kogito-tooling/microeditor-envelope-protocol";
 import { Editor } from "@kogito-tooling/editor-api";
 import { LoadingScreen } from "./LoadingScreen";
-import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
 import "@patternfly/patternfly/patternfly-variables.css";
 import "@patternfly/patternfly/patternfly-addons.css";
 import "@patternfly/patternfly/patternfly.css";
-import { KogitoEnvelopeBus } from "./KogitoEnvelopeBus";
 import { KeyBindingsHelpOverlay } from "./KeyBindingsHelpOverlay";
 
 interface Props {
   exposing: (self: EditorEnvelopeView) => void;
   loadingScreenContainer: HTMLElement;
-  keyboardShortcutsService: DefaultKeyboardShortcutsService;
-  context: Core.EditorContext;
-  messageBus: KogitoEnvelopeBus;
 }
 
 interface State {
@@ -41,9 +34,6 @@ interface State {
 }
 
 export class EditorEnvelopeView extends React.Component<Props, State> {
-  private redoShortcutKeybindingId: number;
-  private undoShortcutKeybindingId: number;
-
   constructor(props: Props) {
     super(props);
     this.state = { editor: undefined, loading: true };
@@ -64,42 +54,6 @@ export class EditorEnvelopeView extends React.Component<Props, State> {
 
   public setLoading() {
     return this.setState({ loading: true });
-  }
-
-  public componentDidMount() {
-    if (this.props.context.channel !== ChannelType.VSCODE) {
-      this.registerRedoShortcut();
-      this.registerUndoShortcut();
-    }
-  }
-
-  public componentWillUnmount() {
-    if (this.props.context.channel !== ChannelType.VSCODE) {
-      this.props.keyboardShortcutsService.deregister(this.redoShortcutKeybindingId);
-      this.props.keyboardShortcutsService.deregister(this.undoShortcutKeybindingId);
-    }
-  }
-
-  private registerRedoShortcut() {
-    this.redoShortcutKeybindingId = this.props.keyboardShortcutsService.registerKeyPress(
-      "shift+ctrl+z",
-      "Edit | Redo last edit",
-      async () => {
-        this.getEditor()!.redo();
-        this.props.messageBus.client.notify("receive_stateControlCommandUpdate", StateControlCommand.REDO);
-      }
-    );
-  }
-
-  private registerUndoShortcut() {
-    this.undoShortcutKeybindingId = this.props.keyboardShortcutsService.registerKeyPress(
-      "ctrl+z",
-      "Edit | Undo last edit",
-      async () => {
-        this.getEditor()!.undo();
-        this.props.messageBus.client.notify("receive_stateControlCommandUpdate", StateControlCommand.UNDO);
-      }
-    );
   }
 
   public render() {

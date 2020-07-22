@@ -19,7 +19,7 @@ import { KeyBindingsHelpOverlay } from "../../KeyBindingsHelpOverlay";
 import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
 import { ChannelType, OperatingSystem } from "@kogito-tooling/microeditor-envelope-protocol";
 import { fireEvent, render } from "@testing-library/react";
-import { DEFAULT_TESTING_ENVELOPE_CONTEXT, usingEnvelopeApi } from "../envelopeApiUtils";
+import { DEFAULT_TESTING_ENVELOPE_CONTEXT, usingEnvelopeContext } from "../envelopeApiUtils";
 
 describe("KeyBindingsHelpOverlay", () => {
   test("minimal setup", async () => {
@@ -28,7 +28,7 @@ describe("KeyBindingsHelpOverlay", () => {
     keyboardShortcutsService.registerKeyPress("ctrl+c", "Copy", () => Promise.resolve(), {});
 
     const component = render(
-      usingEnvelopeApi(<KeyBindingsHelpOverlay />, {
+      usingEnvelopeContext(<KeyBindingsHelpOverlay />, {
         context: context,
         services: {
           ...DEFAULT_TESTING_ENVELOPE_CONTEXT.services,

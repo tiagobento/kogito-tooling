@@ -18,39 +18,14 @@ import * as React from "react";
 import { cleanup, fireEvent, getByTestId, render } from "@testing-library/react";
 import { EditorEnvelopeView } from "../EditorEnvelopeView";
 import { DummyEditor } from "./DummyEditor";
-import { KogitoEnvelopeBus } from "../KogitoEnvelopeBus";
-import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
-import { ChannelType, OperatingSystem } from "@kogito-tooling/microeditor-envelope-protocol";
-import { usingEnvelopeApi } from "./envelopeApiUtils";
+import { usingEnvelopeContext } from "./envelopeApiUtils";
 
 function renderEditorEnvelopeView(): EditorEnvelopeView {
   let view: EditorEnvelopeView;
-  const context = { channel: ChannelType.VSCODE, operatingSystem: OperatingSystem.WINDOWS };
-  const kogitoEnvelopeBus = new KogitoEnvelopeBus(
-    {
-      postMessage: jest.fn()
-    },
-    {
-      receive_initRequest: jest.fn(),
-      receive_contentChanged: jest.fn(),
-      receive_contentRequest: jest.fn(),
-      receive_editorUndo: jest.fn(),
-      receive_editorRedo: jest.fn(),
-      receive_previewRequest: jest.fn(),
-      receive_guidedTourElementPositionRequest: jest.fn(),
-      receive_channelKeyboardEvent: jest.fn()
-    }
-  );
 
   render(
-    usingEnvelopeApi(
-      <EditorEnvelopeView
-        keyboardShortcutsService={new DefaultKeyboardShortcutsService({ editorContext: context })}
-        context={context}
-        exposing={self => (view = self)}
-        loadingScreenContainer={loadingScreenContainer}
-        messageBus={kogitoEnvelopeBus}
-      />
+    usingEnvelopeContext(
+      <EditorEnvelopeView exposing={self => (view = self)} loadingScreenContainer={loadingScreenContainer} />
     ).wrapper
   );
 

@@ -37,10 +37,10 @@ export class KogitoChannelBus {
     return this.manager.client;
   }
 
-  public constructor(public bus: EnvelopeBus, api: KogitoChannelApi) {
+  public constructor(bus: EnvelopeBus, private readonly api: KogitoChannelApi) {
     this.initPolling = undefined;
     this.initPollingTimeout = undefined;
-    this.manager = new EnvelopeBusMessageManager(message => this.bus.postMessage(message), api, "KogitoChannelBus");
+    this.manager = new EnvelopeBusMessageManager(message => bus.postMessage(message), "KogitoChannelBus");
     this.busId = this.generateRandomId();
   }
 
@@ -69,7 +69,7 @@ export class KogitoChannelBus {
       return;
     }
 
-    this.manager.server.receive(message);
+    this.manager.server.receive(message, this.api);
   }
 
   public notify_editorUndo() {

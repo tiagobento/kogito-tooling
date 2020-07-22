@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-import { KogitoEnvelopeBus } from "../KogitoEnvelopeBus";
+import { EnvelopeBusController } from "@kogito-tooling/microeditor-envelope/dist/src/EnvelopeBusController";
 import {
   EnvelopeBusMessage,
   EnvelopeBusMessagePurpose,
+  KogitoChannelApi,
   KogitoEnvelopeApi,
+  KogitoEnvelopeMessageTypes,
   StateControlCommand
 } from "@kogito-tooling/microeditor-envelope-protocol";
 
 let api: KogitoEnvelopeApi;
-let envelopeBus: KogitoEnvelopeBus;
-let sentMessages: Array<[EnvelopeBusMessage<any, any>, string]>;
+let envelopeBus: EnvelopeBusController<KogitoEnvelopeApi, KogitoChannelApi>;
+let sentMessages: Array<[EnvelopeBusMessage<any, KogitoEnvelopeMessageTypes>, string]>;
 
 beforeEach(() => {
   sentMessages = [];
   api = {
-    receive_initRequest: async init => {
-      envelopeBus.targetOrigin = init.origin;
-      envelopeBus.associatedBusId = init.busId;
-    },
+    receive_initRequest: async a => envelopeBus.associate(a),
     receive_contentRequest: jest.fn(),
     receive_previewRequest: jest.fn(),
     receive_guidedTourElementPositionRequest: jest.fn(),
@@ -42,12 +41,11 @@ beforeEach(() => {
     receive_channelKeyboardEvent: jest.fn()
   };
 
-  envelopeBus = new KogitoEnvelopeBus(
-    {
-      postMessage: (message, targetOrigin) => sentMessages.push([message, targetOrigin!])
-    },
-    api
-  );
+  envelopeBus = new EnvelopeBusController<KogitoEnvelopeApi, KogitoChannelApi>({
+    postMessage<D, T>(message: EnvelopeBusMessage<D, T>, targetOrigin?: string, _?: any): void {
+      sentMessages.push([message as any, targetOrigin!]);
+    }
+  });
 });
 
 afterEach(() => {
@@ -68,7 +66,7 @@ describe("new instance", () => {
 describe("event listening", () => {
   test("activates when requested", async () => {
     spyOn(envelopeBus, "receive");
-    envelopeBus.startListening();
+    envelopeBus.startListening(api);
 
     await incomingMessage("a-message");
     expect(envelopeBus.receive).toHaveBeenCalledTimes(1);
@@ -76,7 +74,7 @@ describe("event listening", () => {
 
   test("deactivates when requested", async () => {
     spyOn(envelopeBus, "receive");
-    envelopeBus.startListening();
+    envelopeBus.startListening(api);
     envelopeBus.stopListening();
 
     await incomingMessage("a-message");
@@ -85,8 +83,8 @@ describe("event listening", () => {
 
   test("activation is idempotent", async () => {
     spyOn(envelopeBus, "receive");
-    envelopeBus.startListening();
-    envelopeBus.startListening();
+    envelopeBus.startListening(api);
+    envelopeBus.startListening(api);
 
     await incomingMessage("a-message");
     expect(envelopeBus.receive).toHaveBeenCalledTimes(1);
@@ -94,7 +92,7 @@ describe("event listening", () => {
 
   test("deactivation is idempotent", async () => {
     spyOn(envelopeBus, "receive");
-    envelopeBus.startListening();
+    envelopeBus.startListening(api);
     envelopeBus.stopListening();
     envelopeBus.stopListening();
 
@@ -113,7 +111,7 @@ describe("event listening", () => {
 
 describe("receive", () => {
   beforeEach(async () => {
-    envelopeBus.startListening();
+    envelopeBus.startListening(api);
     await incomingMessage({
       requestId: "any",
       purpose: EnvelopeBusMessagePurpose.REQUEST,
@@ -278,7 +276,7 @@ describe("send without being initialized", () => {
 
 describe("send", () => {
   beforeEach(async () => {
-    envelopeBus.startListening();
+    envelopeBus.startListening(api);
     await incomingMessage({
       requestId: "2",
       purpose: EnvelopeBusMessagePurpose.REQUEST,

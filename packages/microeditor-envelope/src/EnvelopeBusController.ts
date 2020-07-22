@@ -15,27 +15,29 @@
  */
 
 import {
+  ApiDefinition,
   Association,
   EnvelopeBus,
   EnvelopeBusMessage,
   EnvelopeBusMessageManager,
-  KogitoChannelApi,
-  KogitoEnvelopeApi,
-  KogitoEnvelopeMessageTypes
+  FunctionPropertyNames
 } from "@kogito-tooling/microeditor-envelope-protocol";
 
-export class KogitoEnvelopeBus {
+export class EnvelopeBusController<
+  ApiToProvide extends ApiDefinition<ApiToProvide>,
+  ApiToConsume extends ApiDefinition<ApiToConsume>
+> {
   public targetOrigin?: string;
   public associatedBusId?: string;
   public eventListener?: any;
-  public readonly manager: EnvelopeBusMessageManager<KogitoEnvelopeApi, KogitoChannelApi>;
+  public readonly manager: EnvelopeBusMessageManager<ApiToProvide, ApiToConsume>;
 
   public get client() {
     return this.manager.client;
   }
 
-  constructor(private readonly bus: EnvelopeBus, private readonly api: KogitoEnvelopeApi) {
-    this.manager = new EnvelopeBusMessageManager(message => this.send(message), api, "KogitoEnvelopeBus");
+  constructor(private readonly bus: EnvelopeBus) {
+    this.manager = new EnvelopeBusMessageManager(message => this.send(message), "KogitoEnvelopeBus");
   }
 
   public associate(association: Association) {
@@ -43,12 +45,12 @@ export class KogitoEnvelopeBus {
     this.associatedBusId = association.busId;
   }
 
-  public startListening() {
+  public startListening(api: ApiToProvide) {
     if (this.eventListener) {
       return;
     }
 
-    this.eventListener = (event: any) => this.receive(event.data);
+    this.eventListener = (event: any) => this.receive(event.data, api);
     window.addEventListener("message", this.eventListener);
   }
 
@@ -56,14 +58,19 @@ export class KogitoEnvelopeBus {
     window.removeEventListener("message", this.eventListener);
   }
 
-  public send<T>(message: EnvelopeBusMessage<T, KogitoEnvelopeMessageTypes>) {
+  public send<T>(
+    message: EnvelopeBusMessage<T, FunctionPropertyNames<ApiToProvide> | FunctionPropertyNames<ApiToConsume>>
+  ) {
     if (!this.targetOrigin) {
       throw new Error("Tried to send message without targetOrigin set");
     }
     this.bus.postMessage({ ...message, busId: this.associatedBusId }, this.targetOrigin);
   }
 
-  public receive(message: EnvelopeBusMessage<any, KogitoEnvelopeMessageTypes>) {
-    this.manager.server.receive(message);
+  public receive(
+    message: EnvelopeBusMessage<any, FunctionPropertyNames<ApiToProvide> | FunctionPropertyNames<ApiToConsume>>,
+    api: ApiToProvide,
+  ) {
+    this.manager.server.receive(message, api);
   }
 }

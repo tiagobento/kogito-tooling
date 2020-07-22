@@ -29,7 +29,7 @@ export const DEFAULT_TESTING_ENVELOPE_CONTEXT: EnvelopeContextType = {
   }
 };
 
-export function usingEnvelopeApi(children: React.ReactElement, ctx?: Partial<EnvelopeContextType>) {
+export function usingEnvelopeContext(children: React.ReactElement, ctx?: Partial<EnvelopeContextType>) {
   const usedCtx = { ...DEFAULT_TESTING_ENVELOPE_CONTEXT, ...ctx };
   return {
     ctx: usedCtx,
