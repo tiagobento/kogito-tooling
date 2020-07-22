@@ -18,29 +18,17 @@ import * as React from "react";
 import { cleanup, fireEvent, getByTestId, render } from "@testing-library/react";
 import { EditorEnvelopeView } from "../EditorEnvelopeView";
 import { DummyEditor } from "./DummyEditor";
-import { usingEnvelopeContext } from "./envelopeApiUtils";
+import { usingEnvelopeContext } from "./utils";
 
 function renderEditorEnvelopeView(): EditorEnvelopeView {
   let view: EditorEnvelopeView;
-
-  render(
-    usingEnvelopeContext(
-      <EditorEnvelopeView exposing={self => (view = self)} loadingScreenContainer={loadingScreenContainer} />
-    ).wrapper
-  );
-
+  render(usingEnvelopeContext(<EditorEnvelopeView exposing={self => (view = self)} />).wrapper);
   return view!;
 }
-let loadingScreenContainer: HTMLElement;
 
 describe("EditorEnvelopeView", () => {
-  beforeEach(() => {
-    loadingScreenContainer = document.body.appendChild(document.createElement("div"));
-  });
-
   afterEach(() => {
     cleanup();
-    loadingScreenContainer.remove();
   });
 
   test("first open", async () => {

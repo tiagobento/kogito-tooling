@@ -15,7 +15,6 @@
  */
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { Editor } from "@kogito-tooling/editor-api";
 import { LoadingScreen } from "./LoadingScreen";
 import "@patternfly/patternfly/patternfly-variables.css";
@@ -25,7 +24,6 @@ import { KeyBindingsHelpOverlay } from "./KeyBindingsHelpOverlay";
 
 interface Props {
   exposing: (self: EditorEnvelopeView) => void;
-  loadingScreenContainer: HTMLElement;
 }
 
 interface State {
@@ -60,7 +58,9 @@ export class EditorEnvelopeView extends React.Component<Props, State> {
     return (
       <>
         {!this.state.loading && <KeyBindingsHelpOverlay />}
-        {ReactDOM.createPortal(<LoadingScreen visible={this.state.loading} />, this.props.loadingScreenContainer!)}
+        <div id="loading-screen" style={{ zIndex: 100, position: "relative" }}>
+          <LoadingScreen visible={this.state.loading} />
+        </div>
         {this.state.editor && this.state.editor.af_isReact && this.state.editor.af_componentRoot()}
       </>
     );

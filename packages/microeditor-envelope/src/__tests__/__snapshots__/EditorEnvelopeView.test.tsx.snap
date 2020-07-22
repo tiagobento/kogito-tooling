@@ -2,7 +2,6 @@
 
 exports[`EditorEnvelopeView after loading stops 1`] = `
 <body>
-  <div />
   <div>
     <div
       class="kogito-tooling--keyboard-shortcuts-icon"
@@ -23,6 +22,10 @@ exports[`EditorEnvelopeView after loading stops 1`] = `
         />
       </svg>
     </div>
+    <div
+      id="loading-screen"
+      style="z-index: 100; position: relative;"
+    />
   </div>
   <div />
 </body>
@@ -30,7 +33,6 @@ exports[`EditorEnvelopeView after loading stops 1`] = `
 
 exports[`EditorEnvelopeView after loading stops and editor is set 1`] = `
 <body>
-  <div />
   <div>
     <div
       class="kogito-tooling--keyboard-shortcuts-icon"
@@ -51,6 +53,10 @@ exports[`EditorEnvelopeView after loading stops and editor is set 1`] = `
         />
       </svg>
     </div>
+    <div
+      id="loading-screen"
+      style="z-index: 100; position: relative;"
+    />
     <div
       data-testid="dummy-editor"
     >
@@ -64,7 +70,6 @@ exports[`EditorEnvelopeView after loading stops and editor is set 1`] = `
 
 exports[`EditorEnvelopeView after set content 1`] = `
 <body>
-  <div />
   <div>
     <div
       class="kogito-tooling--keyboard-shortcuts-icon"
@@ -85,6 +90,10 @@ exports[`EditorEnvelopeView after set content 1`] = `
         />
       </svg>
     </div>
+    <div
+      id="loading-screen"
+      style="z-index: 100; position: relative;"
+    />
     <div
       data-testid="dummy-editor"
     >
@@ -100,57 +109,61 @@ exports[`EditorEnvelopeView first open 1`] = `
 <body>
   <div>
     <div
-      class="kogito-tooling--loading-screen"
-      data-testid="loading-screen-div"
-      style="opacity: 1;"
+      id="loading-screen"
+      style="z-index: 100; position: relative;"
     >
       <div
-        class="pf-c-page"
+        class="kogito-tooling--loading-screen"
+        data-testid="loading-screen-div"
+        style="opacity: 1;"
       >
-        <main
-          class="pf-c-page__main"
-          role="main"
-          tabindex="-1"
+        <div
+          class="pf-c-page"
         >
-          <div
-            class="pf-l-bullseye"
+          <main
+            class="pf-c-page__main"
+            role="main"
+            tabindex="-1"
           >
             <div
-              class="pf-c-empty-state pf-m-lg"
+              class="pf-l-bullseye"
             >
               <div
-                class="pf-u-mb-lg"
+                class="pf-c-empty-state pf-m-lg"
               >
                 <div
-                  aria-valuetext="Loading..."
-                  class="pf-c-spinner"
-                  role="progressbar"
+                  class="pf-u-mb-lg"
                 >
                   <div
-                    class="pf-c-spinner__clipper"
-                  />
-                  <div
-                    class="pf-c-spinner__lead-ball"
-                  />
-                  <div
-                    class="pf-c-spinner__tail-ball"
-                  />
+                    aria-valuetext="Loading..."
+                    class="pf-c-spinner"
+                    role="progressbar"
+                  >
+                    <div
+                      class="pf-c-spinner__clipper"
+                    />
+                    <div
+                      class="pf-c-spinner__lead-ball"
+                    />
+                    <div
+                      class="pf-c-spinner__tail-ball"
+                    />
+                  </div>
                 </div>
+                <h5
+                  class="pf-c-title pf-m-lg"
+                >
+                  Loading...
+                </h5>
+                <div
+                  class="pf-c-empty-state__body"
+                />
               </div>
-              <h5
-                class="pf-c-title pf-m-lg"
-              >
-                Loading...
-              </h5>
-              <div
-                class="pf-c-empty-state__body"
-              />
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   </div>
-  <div />
 </body>
 `;

@@ -267,7 +267,6 @@ export class KogitoEditor {
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         </head>
         <body>
-        <div id="loading-screen" style="z-index:100;position:relative"></div>
         <div id="envelope-app"></div>
         <script src="${this.getWebviewIndexJsPath()}"></script>
         </body>

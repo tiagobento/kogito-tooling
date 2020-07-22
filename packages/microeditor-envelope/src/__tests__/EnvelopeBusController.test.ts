@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EnvelopeBusController } from "@kogito-tooling/microeditor-envelope/dist/src/EnvelopeBusController";
+import { EnvelopeBusController } from "../EnvelopeBusController";
 import {
   EnvelopeBusMessage,
   EnvelopeBusMessagePurpose,
@@ -125,7 +125,7 @@ describe("receive", () => {
     envelopeBus.stopListening();
   });
 
-  test("contentChanged notifcation", async () => {
+  test("contentChanged notification", async () => {
     jest.spyOn(api, "receive_contentChanged");
     const newContent = { content: "this is the new content", path: "a/path" };
     await incomingMessage({

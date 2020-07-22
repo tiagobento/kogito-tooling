@@ -24,7 +24,6 @@ import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortc
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { EditorFactory, EnvelopeContext, EnvelopeContextType } from "@kogito-tooling/editor-api";
-import { SpecialDomElements } from "./SpecialDomElements";
 import { KogitoEnvelopeApiFactory } from "./KogitoEnvelopeApiImpl";
 import { EnvelopeBusController } from "./EnvelopeBusController";
 import { KogitoGuidedTour } from "@kogito-tooling/guided-tour";
@@ -45,7 +44,6 @@ export function init(args: {
 }) {
   const apiFactory = new KogitoEnvelopeApiFactory(args.editorFactory);
 
-  const specialDomElements = new SpecialDomElements();
   const envelopeBusController = new EnvelopeBusController<KogitoEnvelopeApi, KogitoChannelApi>(args.bus);
 
   const envelopeContext: EnvelopeContextType = {
@@ -59,26 +57,19 @@ export function init(args: {
     }
   };
 
-  return renderEnvelope(args.container, specialDomElements, envelopeContext).then(view => {
+  return renderEnvelope(args.container, envelopeContext).then(view => {
     const api = apiFactory.createNew({ view, envelopeBusController, envelopeContext });
     envelopeBusController.startListening(api);
     return envelopeBusController;
   });
 }
 
-function renderEnvelope(
-    container: HTMLElement,
-    specialDomElements: SpecialDomElements,
-    envelopeContext: EnvelopeContextType
-) {
+function renderEnvelope(container: HTMLElement, envelopeContext: EnvelopeContextType) {
   let view: EditorEnvelopeView;
 
   const envelope = (
     <EnvelopeContext.Provider value={envelopeContext}>
-      <EditorEnvelopeView
-        exposing={self => (view = self)}
-        loadingScreenContainer={specialDomElements.loadingScreenContainer}
-      />
+      <EditorEnvelopeView exposing={self => (view = self)} />
     </EnvelopeContext.Provider>
   );
 

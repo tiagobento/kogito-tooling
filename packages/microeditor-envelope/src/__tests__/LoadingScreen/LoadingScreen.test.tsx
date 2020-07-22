@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { LoadingScreen } from "../LoadingScreen";
+import { LoadingScreen } from "../../LoadingScreen";
 
 describe("LoadingScreen", () => {
   test("when visible", () => {
