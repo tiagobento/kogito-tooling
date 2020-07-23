@@ -15,9 +15,9 @@
  */
 
 import {
-  ApiDefinition,
   EditorContext,
   EnvelopeBus,
+  KogitoChannelApi,
   KogitoEditorEnvelopeApi
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import {
@@ -33,7 +33,7 @@ import * as React from "react";
 import { Envelope } from "../envelope/Envelope";
 import { KogitoEditorEnvelopeApiFactory } from "./KogitoEditorEnvelopeApiImpl";
 
-export class KogitoEditorEnvelope<ApiToConsume extends ApiDefinition<ApiToConsume>> {
+export class KogitoEditorEnvelope {
   constructor(
     private readonly args: {
       container: HTMLElement;
@@ -41,39 +41,35 @@ export class KogitoEditorEnvelope<ApiToConsume extends ApiDefinition<ApiToConsum
       editorFactory: EditorFactory<any>;
       editorContext: EditorContext;
     },
-    private readonly kogitoEditorEnvelopeApiFactory = new KogitoEditorEnvelopeApiFactory<ApiToConsume>(
-      args.editorFactory
-    ),
+    private readonly kogitoEditorEnvelopeApiFactory = new KogitoEditorEnvelopeApiFactory(args.editorFactory),
     private readonly keyboardShortcutsService = new DefaultKeyboardShortcutsService({
       editorContext: args.editorContext
-    })
-  ) {}
-
-  public init() {
-    const envelope: Envelope<
+    }),
+    private readonly envelope: Envelope<
       KogitoEditorEnvelopeApi,
-      ApiToConsume,
+      KogitoChannelApi,
       EditorEnvelopeView,
       KogitoEditorEnvelopeContextType
-    > = new Envelope(this.args.bus);
-
-    const context: KogitoEditorEnvelopeContextType = {
+    > = new Envelope(args.bus),
+    private readonly context: KogitoEditorEnvelopeContextType = {
       channelApi: envelope.busClient,
-      context: this.args.editorContext,
+      context: args.editorContext,
       services: {
-        keyboardShortcuts: this.keyboardShortcutsService,
+        keyboardShortcuts: keyboardShortcutsService,
         guidedTour: { isEnabled: () => KogitoGuidedTour.getInstance().isEnabled() }
       }
-    };
+    }
+  ) {}
 
-    return envelope.start(() => this.renderView(context), context, this.kogitoEditorEnvelopeApiFactory);
+  public start() {
+    return this.envelope.start(this.renderView, this.context, this.kogitoEditorEnvelopeApiFactory);
   }
 
-  private renderView(context: KogitoEditorEnvelopeContextType) {
+  private renderView() {
     let view: EditorEnvelopeView;
 
     const app = (
-      <KogitoEditorEnvelopeContext.Provider value={context}>
+      <KogitoEditorEnvelopeContext.Provider value={this.context}>
         <EditorEnvelopeView exposing={self => (view = self)} />
       </KogitoEditorEnvelopeContext.Provider>
     );

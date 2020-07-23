@@ -31,5 +31,5 @@ export function init(args: {
   editorFactory: EditorFactory<any>;
   editorContext: EditorContext;
 }) {
-  return new KogitoEditorEnvelope(args).init();
+  return new KogitoEditorEnvelope(args).start();
 }

@@ -15,41 +15,48 @@
  */
 
 import {
-  ApiDefinition,
   Association,
+  ChannelKeyboardEvent,
   ChannelType,
   DEFAULT_RECT,
   EditorContent,
+  KogitoChannelApi,
   KogitoEditorEnvelopeApi,
-  StateControlCommand,
-  ChannelKeyboardEvent
+  StateControlCommand
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import { Editor, EditorFactory, KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor-api";
 import { EnvelopeApiFactory, EnvelopeApiFactoryArgs } from "../envelope/EnvelopeApiFactory";
 import { EditorEnvelopeView } from "./EditorEnvelopeView";
 
-export class KogitoEditorEnvelopeApiFactory<ApiToConsume extends ApiDefinition<ApiToConsume>>
-  implements EnvelopeApiFactory<KogitoEditorEnvelopeApi, ApiToConsume, EditorEnvelopeView, KogitoEditorEnvelopeContextType> {
+export class KogitoEditorEnvelopeApiFactory
+  implements
+    EnvelopeApiFactory<KogitoEditorEnvelopeApi, KogitoChannelApi, EditorEnvelopeView, KogitoEditorEnvelopeContextType> {
   constructor(private readonly editorFactory: EditorFactory<any>) {}
 
-  public createNew<A extends KogitoEditorEnvelopeApi & ApiDefinition<A>>(
-    args: EnvelopeApiFactoryArgs<A, ApiToConsume, EditorEnvelopeView, KogitoEditorEnvelopeContextType>
+  public createNew(
+    args: EnvelopeApiFactoryArgs<
+      KogitoEditorEnvelopeApi,
+      KogitoChannelApi,
+      EditorEnvelopeView,
+      KogitoEditorEnvelopeContextType
+    >
   ) {
-    return new KogitoEditorEnvelopeApiImpl(this.editorFactory, args);
+    return new KogitoEditorEnvelopeApiImpl(args, this.editorFactory);
   }
 }
 
-export class KogitoEditorEnvelopeApiImpl<
-  A extends KogitoEditorEnvelopeApi & ApiDefinition<A>,
-  ApiToConsume extends ApiDefinition<ApiToConsume>
-> implements KogitoEditorEnvelopeApi {
-  //
+export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
   private capturedInitRequestYet = false;
   private editor: Editor;
 
   constructor(
-    private readonly editorFactory: EditorFactory<any>,
-    private readonly args: EnvelopeApiFactoryArgs<A, ApiToConsume, EditorEnvelopeView, KogitoEditorEnvelopeContextType>
+    private readonly args: EnvelopeApiFactoryArgs<
+      KogitoEditorEnvelopeApi,
+      KogitoChannelApi,
+      EditorEnvelopeView,
+      KogitoEditorEnvelopeContextType
+    >,
+    private readonly editorFactory: EditorFactory<any>
   ) {}
 
   public receive_initRequest = async (association: Association) => {
@@ -65,6 +72,7 @@ export class KogitoEditorEnvelopeApiImpl<
     this.editor = await this.editorFactory.createEditor(language, this.args.envelopeContext);
 
     await this.args.view.setEditor(this.editor);
+
     await this.editor.af_onStartup();
     await this.editor.af_onOpen();
 
