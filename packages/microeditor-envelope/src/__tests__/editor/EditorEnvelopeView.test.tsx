@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 import * as React from "react";
 import { cleanup, fireEvent, getByTestId, render } from "@testing-library/react";
-import { EditorEnvelopeView } from "../EditorEnvelopeView";
+import { EditorEnvelopeView } from "../../editor/EditorEnvelopeView";
 import { DummyEditor } from "./DummyEditor";
-import { usingEnvelopeContext } from "./utils";
+import { usingEnvelopeContext } from "../utils";
 
 function renderEditorEnvelopeView(): EditorEnvelopeView {
   let view: EditorEnvelopeView;

@@ -15,19 +15,17 @@
  */
 
 import {
+  ApiDefinition,
+  ChannelKeyboardEvent,
   EditorContext,
   EnvelopeBus,
-  KogitoChannelApi,
-  KogitoEnvelopeApi
+  KeyboardShortcutsEnvelopeApi,
+  KogitoChannelApi
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { EditorFactory, EnvelopeContext, EnvelopeContextType } from "@kogito-tooling/editor-api";
-import { KogitoEnvelopeApiFactory } from "./KogitoEnvelopeApiImpl";
-import { EnvelopeBusController } from "./EnvelopeBusController";
-import { KogitoGuidedTour } from "@kogito-tooling/guided-tour";
-import { EditorEnvelopeView } from "./EditorEnvelopeView";
+import { EditorFactory } from "@kogito-tooling/editor-api";
+import { EnvelopeApiFactory, EnvelopeApiFactoryArgs } from "./EnvelopeApiFactory";
+import { EditorEnvelope } from "./editor/EditorEnvelope";
 
 /**
  * Starts the envelope at a container. Uses bus to send messages out of the envelope and creates editors based on the editorFactory provided.
@@ -42,40 +40,40 @@ export function init(args: {
   editorFactory: EditorFactory<any>;
   editorContext: EditorContext;
 }) {
-  const apiFactory = new KogitoEnvelopeApiFactory(args.editorFactory);
-
-  const envelopeBusController = new EnvelopeBusController<KogitoEnvelopeApi, KogitoChannelApi>(args.bus);
-
-  const envelopeContext: EnvelopeContextType = {
-    channelApi: envelopeBusController.client,
-    context: args.editorContext,
-    services: {
-      keyboardShortcuts: new DefaultKeyboardShortcutsService({ editorContext: args.editorContext }),
-      guidedTour: {
-        isEnabled: () => KogitoGuidedTour.getInstance().isEnabled()
-      }
-    }
-  };
-
-  return renderEnvelope(args.container, envelopeContext).then(view => {
-    const api = apiFactory.createNew({ view, envelopeBusController, envelopeContext });
-    envelopeBusController.startListening(api);
-    return envelopeBusController;
-  });
+  const customApiFactory = new KeyboardShortcutsEnvelopeApiFactory();
+  return initCustom({ ...args, customApiFactory });
 }
 
-function renderEnvelope(container: HTMLElement, envelopeContext: EnvelopeContextType) {
-  let view: EditorEnvelopeView;
+class KeyboardShortcutsEnvelopeApiFactory
+  implements EnvelopeApiFactory<KeyboardShortcutsEnvelopeApi, KogitoChannelApi> {
+  public createNew<T extends ApiDefinition<T>>(args: EnvelopeApiFactoryArgs<T, KogitoChannelApi>) {
+    return new KeyboardShortcutsEnvelopeApiImpl();
+  }
+}
 
-  const envelope = (
-    <EnvelopeContext.Provider value={envelopeContext}>
-      <EditorEnvelopeView exposing={self => (view = self)} />
-    </EnvelopeContext.Provider>
-  );
+class KeyboardShortcutsEnvelopeApiImpl implements KeyboardShortcutsEnvelopeApi {
+  public receive_channelKeyboardEvent = (channelKeyboardEvent: ChannelKeyboardEvent) => {
+    window.dispatchEvent(new CustomEvent(channelKeyboardEvent.type, { detail: channelKeyboardEvent }));
+  };
+}
 
-  return new Promise<EditorEnvelopeView>(res => {
-    setTimeout(() => {
-      ReactDOM.render(envelope, container, () => res(view!));
-    }, 0);
-  });
+/**
+ * Starts the envelope at a container. Uses bus to send messages out of the envelope and creates Editors based on the editorFactory provided.
+ * @param args.container The DOM element where the envelope should be rendered.
+ * @param args.bus The implementation of EnvelopeBus to send messages out of the envelope.
+ * @param args.editorFactory The factory of Editors using a LanguageData implementation.
+ * @param args.editorContext The context for Editors with information about the running channel.
+ * @param args.customApiFactory The factory for an API implementation that composes with MinimalEditorEnvelopeApi.
+ */
+function initCustom<
+  CustomApiToProvide extends ApiDefinition<CustomApiToProvide>,
+  ApiToConsume extends ApiDefinition<ApiToConsume>
+>(args: {
+  container: HTMLElement;
+  bus: EnvelopeBus;
+  editorFactory: EditorFactory<any>;
+  editorContext: EditorContext;
+  customApiFactory?: EnvelopeApiFactory<CustomApiToProvide, ApiToConsume>;
+}) {
+  return new EditorEnvelope(args).init();
 }

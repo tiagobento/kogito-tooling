@@ -15,55 +15,42 @@
  */
 
 import {
+  ApiDefinition,
   Association,
-  ChannelKeyboardEvent,
   ChannelType,
   DEFAULT_RECT,
   EditorContent,
-  KogitoChannelApi,
-  KogitoEnvelopeApi,
+  MinimalEditorEnvelopeApi,
   StateControlCommand
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import { Editor, EditorFactory } from "@kogito-tooling/editor-api";
-import { ApiFactory, ApiFactoryArgs } from "./ApiFactory";
+import { EnvelopeApiFactory, EnvelopeApiFactoryArgs } from "../EnvelopeApiFactory";
 
-export class KogitoEnvelopeApiFactory implements ApiFactory<KogitoEnvelopeApi, KogitoChannelApi> {
+export class MinimalEditorEnvelopeApiFactory<ApiToConsume extends ApiDefinition<ApiToConsume>>
+  implements EnvelopeApiFactory<MinimalEditorEnvelopeApi, ApiToConsume> {
   constructor(private readonly editorFactory: EditorFactory<any>) {}
 
-  public createNew(args: ApiFactoryArgs<KogitoEnvelopeApi, KogitoChannelApi>) {
-    return new KogitoEnvelopeApiImpl(this.editorFactory, args);
+  public createNew<A extends MinimalEditorEnvelopeApi & ApiDefinition<A>>(
+    args: EnvelopeApiFactoryArgs<A, ApiToConsume>
+  ) {
+    return new MinimalEditorEnvelopeApiImpl(this.editorFactory, args);
   }
 }
 
-export class KogitoEnvelopeApiImpl implements KogitoEnvelopeApi {
+export class MinimalEditorEnvelopeApiImpl<
+  A extends MinimalEditorEnvelopeApi & ApiDefinition<A>,
+  ApiToConsume extends ApiDefinition<ApiToConsume>
+> implements MinimalEditorEnvelopeApi {
+  //
   private capturedInitRequestYet = false;
   private editor: Editor;
 
   constructor(
     private readonly editorFactory: EditorFactory<any>,
-    private readonly args: ApiFactoryArgs<KogitoEnvelopeApi, KogitoChannelApi>
+    private readonly args: EnvelopeApiFactoryArgs<A, ApiToConsume>
   ) {}
 
-  public registerDefaultShortcuts() {
-    this.args.envelopeContext.services.keyboardShortcuts.registerKeyPress(
-      "shift+ctrl+z",
-      "Edit | Redo last edit",
-      async () => {
-        this.editor.redo();
-        this.args.envelopeContext.channelApi.notify("receive_stateControlCommandUpdate", StateControlCommand.REDO);
-      }
-    );
-    this.args.envelopeContext.services.keyboardShortcuts.registerKeyPress(
-      "ctrl+z",
-      "Edit | Undo last edit",
-      async () => {
-        this.editor.undo();
-        this.args.envelopeContext.channelApi.notify("receive_stateControlCommandUpdate", StateControlCommand.UNDO);
-      }
-    );
-  }
-
-  public async receive_initRequest(association: Association) {
+  public receive_initRequest = async (association: Association) => {
     this.args.envelopeBusController.associate(association);
 
     if (this.capturedInitRequestYet) {
@@ -92,36 +79,51 @@ export class KogitoEnvelopeApiImpl implements KogitoEnvelopeApi {
       .finally(() => this.args.view.setLoadingFinished());
 
     this.args.envelopeContext.channelApi.notify("receive_ready");
-  }
+  };
 
-  public receive_contentChanged(editorContent: EditorContent) {
+  public receive_contentChanged = (editorContent: EditorContent) => {
     this.args.view.setLoading();
     this.editor
       .setContent(editorContent.path ?? "", editorContent.content)
       .finally(() => this.args.view.setLoadingFinished());
-  }
+  };
 
   public receive_editorUndo() {
     this.editor.undo();
-  }
+  };
 
   public receive_editorRedo() {
     this.editor.redo();
-  }
+  };
 
   public receive_contentRequest() {
     return this.editor.getContent().then(content => ({ content: content }));
-  }
+  };
 
   public receive_previewRequest() {
     return this.editor.getPreview().then(previewSvg => previewSvg ?? "");
-  }
+  };
 
-  public async receive_guidedTourElementPositionRequest(selector: string) {
+  public receive_guidedTourElementPositionRequest = async (selector: string) => {
     return this.editor.getElementPosition(selector).then(rect => rect ?? DEFAULT_RECT);
-  }
+  };
 
-  public receive_channelKeyboardEvent(channelKeyboardEvent: ChannelKeyboardEvent) {
-    window.dispatchEvent(new CustomEvent(channelKeyboardEvent.type, { detail: channelKeyboardEvent }));
+  private registerDefaultShortcuts() {
+    this.args.envelopeContext.services.keyboardShortcuts.registerKeyPress(
+      "shift+ctrl+z",
+      "Edit | Redo last edit",
+      async () => {
+        this.editor.redo();
+        this.args.envelopeContext.channelApi.notify("receive_stateControlCommandUpdate", StateControlCommand.REDO);
+      }
+    );
+    this.args.envelopeContext.services.keyboardShortcuts.registerKeyPress(
+      "ctrl+z",
+      "Edit | Undo last edit",
+      async () => {
+        this.editor.undo();
+        this.args.envelopeContext.channelApi.notify("receive_stateControlCommandUpdate", StateControlCommand.UNDO);
+      }
+    );
   }
 }
