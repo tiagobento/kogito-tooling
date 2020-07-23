@@ -33,7 +33,7 @@ export class KogitoEditorEnvelopeApiFactory
     EnvelopeApiFactory<KogitoEditorEnvelopeApi, KogitoChannelApi, EditorEnvelopeView, KogitoEditorEnvelopeContextType> {
   constructor(private readonly editorFactory: EditorFactory<any>) {}
 
-  public createNew(
+  public create(
     args: EnvelopeApiFactoryArgs<
       KogitoEditorEnvelopeApi,
       KogitoChannelApi,

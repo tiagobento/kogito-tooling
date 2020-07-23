@@ -34,13 +34,13 @@ export class Envelope<
   }
 
   public async start(
-    viewFactory: () => Promise<ViewType>,
+    viewDelegate: () => Promise<ViewType>,
     context: ContextType,
     apiFactory: EnvelopeApiFactory<ApiToProvide, ApiToConsume, ViewType, ContextType>
   ) {
-    const view = await viewFactory();
+    const view = await viewDelegate();
 
-    const api = apiFactory.createNew({
+    const api = apiFactory.create({
       view: view,
       envelopeContext: context,
       envelopeBusController: this.envelopeBusController
