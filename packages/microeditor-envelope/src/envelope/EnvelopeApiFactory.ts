@@ -15,22 +15,26 @@
  */
 
 import { ApiDefinition } from "@kogito-tooling/microeditor-envelope-protocol";
-import { EditorEnvelopeView } from "./editor/EditorEnvelopeView";
-import { EnvelopeContextType } from "@kogito-tooling/editor-api";
 import { EnvelopeBusController } from "./EnvelopeBusController";
 
 export interface EnvelopeApiFactoryArgs<
   ApiToProvide extends ApiDefinition<ApiToProvide>,
-  ApiToConsume extends ApiDefinition<ApiToConsume>
+  ApiToConsume extends ApiDefinition<ApiToConsume>,
+  ViewType,
+  ContextType
 > {
-  view: EditorEnvelopeView; //FIXME: This should be generic
-  envelopeContext: EnvelopeContextType; //FIXME: This should be generic
+  view: ViewType;
+  envelopeContext: ContextType;
   envelopeBusController: EnvelopeBusController<ApiToProvide, ApiToConsume>;
 }
 
 export interface EnvelopeApiFactory<
   ApiToProvide extends ApiDefinition<ApiToProvide>,
-  ApiToConsume extends ApiDefinition<ApiToConsume>
+  ApiToConsume extends ApiDefinition<ApiToConsume>,
+  ViewType,
+  ContextType
 > {
-  createNew<T extends ApiToProvide & ApiDefinition<T>>(args: EnvelopeApiFactoryArgs<T, ApiToConsume>): ApiToProvide;
+  createNew<T extends ApiToProvide & ApiDefinition<T>>(
+    args: EnvelopeApiFactoryArgs<T, ApiToConsume, ViewType, ContextType>
+  ): ApiToProvide;
 }

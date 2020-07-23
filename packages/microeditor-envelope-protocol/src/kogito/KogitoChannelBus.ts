@@ -17,17 +17,17 @@
 import { EditorContent } from "../kogito/api";
 import { EnvelopeBus, EnvelopeBusMessage, EnvelopeBusMessageManager, FunctionPropertyNames } from "../bus";
 import { KogitoChannelApi } from "./KogitoChannelApi";
-import { KogitoEnvelopeApi } from "./KogitoEnvelopeApi";
+import { KogitoEditorEnvelopeApi } from "./KogitoEditorEnvelopeApi";
 
 export type KogitoEnvelopeMessageTypes =
   | FunctionPropertyNames<KogitoChannelApi>
-  | FunctionPropertyNames<KogitoEnvelopeApi>;
+  | FunctionPropertyNames<KogitoEditorEnvelopeApi>;
 
 export class KogitoChannelBus {
   public static INIT_POLLING_TIMEOUT_IN_MS = 10000;
   public static INIT_POLLING_INTERVAL_IN_MS = 100;
 
-  public readonly manager: EnvelopeBusMessageManager<KogitoChannelApi, KogitoEnvelopeApi>;
+  public readonly manager: EnvelopeBusMessageManager<KogitoChannelApi, KogitoEditorEnvelopeApi>;
 
   public initPolling?: ReturnType<typeof setInterval>;
   public initPollingTimeout?: ReturnType<typeof setTimeout>;

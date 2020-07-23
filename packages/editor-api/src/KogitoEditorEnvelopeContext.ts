@@ -19,19 +19,17 @@ import { useContext } from "react";
 import { EditorContext, KogitoChannelApi, MessageBusClient } from "@kogito-tooling/microeditor-envelope-protocol";
 import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
 
-export interface EnvelopeContextType {
+export interface KogitoEditorEnvelopeContextType {
   channelApi: MessageBusClient<KogitoChannelApi>;
   context: EditorContext;
   services: {
     keyboardShortcuts: DefaultKeyboardShortcutsService;
-    guidedTour: {
-      isEnabled: () => boolean;
-    };
+    guidedTour: { isEnabled: () => boolean };
   };
 }
 
-export const EnvelopeContext = React.createContext<EnvelopeContextType>({} as any);
+export const KogitoEditorEnvelopeContext = React.createContext<KogitoEditorEnvelopeContextType>({} as any);
 
-export function useEnvelopeContext() {
-  return useContext(EnvelopeContext);
+export function useKogitoEditorEnvelopeContext() {
+  return useContext(KogitoEditorEnvelopeContext);
 }

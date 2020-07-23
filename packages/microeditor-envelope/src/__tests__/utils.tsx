@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { EnvelopeContext, EnvelopeContextType } from "@kogito-tooling/editor-api";
+import { KogitoEditorEnvelopeContext, KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor-api";
 import { DefaultKeyboardShortcutsService } from "@kogito-tooling/keyboard-shortcuts";
 import * as React from "react";
 
-export const DEFAULT_TESTING_ENVELOPE_CONTEXT: EnvelopeContextType = {
+export const DEFAULT_TESTING_ENVELOPE_CONTEXT: KogitoEditorEnvelopeContextType = {
   channelApi: {} as any,
   context: {} as any,
   services: {
@@ -29,14 +29,14 @@ export const DEFAULT_TESTING_ENVELOPE_CONTEXT: EnvelopeContextType = {
   }
 };
 
-export function usingEnvelopeContext(children: React.ReactElement, ctx?: Partial<EnvelopeContextType>) {
+export function usingEnvelopeContext(children: React.ReactElement, ctx?: Partial<KogitoEditorEnvelopeContextType>) {
   const usedCtx = { ...DEFAULT_TESTING_ENVELOPE_CONTEXT, ...ctx };
   return {
     ctx: usedCtx,
     wrapper: (
-      <EnvelopeContext.Provider key={""} value={usedCtx}>
+      <KogitoEditorEnvelopeContext.Provider key={""} value={usedCtx}>
         {children}
-      </EnvelopeContext.Provider>
+      </KogitoEditorEnvelopeContext.Provider>
     )
   };
 }

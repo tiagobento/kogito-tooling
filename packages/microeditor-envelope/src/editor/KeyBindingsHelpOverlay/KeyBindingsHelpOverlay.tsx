@@ -29,11 +29,11 @@ import {
 import { KeyboardIcon } from "@patternfly/react-icons";
 import { EditorContext, OperatingSystem } from "@kogito-tooling/microeditor-envelope-protocol";
 import "./styles.scss";
-import { useEnvelopeContext } from "@kogito-tooling/editor-api";
+import { useKogitoEditorEnvelopeContext } from "@kogito-tooling/editor-api";
 
 export function KeyBindingsHelpOverlay() {
   const [showing, setShowing] = useState(false);
-  const envelopeContext = useEnvelopeContext();
+  const envelopeContext = useKogitoEditorEnvelopeContext();
 
   const toggle = useCallback(() => {
     setShowing(!showing);

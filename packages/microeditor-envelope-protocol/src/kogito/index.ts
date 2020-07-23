@@ -16,6 +16,6 @@
 
 export * from "./KogitoChannelBus";
 export * from "./KogitoChannelApi";
-export * from "./KogitoEnvelopeApi";
+export * from "./KogitoEditorEnvelopeApi";
 export * from "./api";
 export * from "./Hooks";

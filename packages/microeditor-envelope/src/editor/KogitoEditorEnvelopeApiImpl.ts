@@ -20,34 +20,36 @@ import {
   ChannelType,
   DEFAULT_RECT,
   EditorContent,
-  MinimalEditorEnvelopeApi,
-  StateControlCommand
+  KogitoEditorEnvelopeApi,
+  StateControlCommand,
+  ChannelKeyboardEvent
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import { Editor, EditorFactory } from "@kogito-tooling/editor-api";
-import { EnvelopeApiFactory, EnvelopeApiFactoryArgs } from "../EnvelopeApiFactory";
+import { Editor, EditorFactory, KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor-api";
+import { EnvelopeApiFactory, EnvelopeApiFactoryArgs } from "../envelope/EnvelopeApiFactory";
+import { EditorEnvelopeView } from "./EditorEnvelopeView";
 
-export class MinimalEditorEnvelopeApiFactory<ApiToConsume extends ApiDefinition<ApiToConsume>>
-  implements EnvelopeApiFactory<MinimalEditorEnvelopeApi, ApiToConsume> {
+export class KogitoEditorEnvelopeApiFactory<ApiToConsume extends ApiDefinition<ApiToConsume>>
+  implements EnvelopeApiFactory<KogitoEditorEnvelopeApi, ApiToConsume, EditorEnvelopeView, KogitoEditorEnvelopeContextType> {
   constructor(private readonly editorFactory: EditorFactory<any>) {}
 
-  public createNew<A extends MinimalEditorEnvelopeApi & ApiDefinition<A>>(
-    args: EnvelopeApiFactoryArgs<A, ApiToConsume>
+  public createNew<A extends KogitoEditorEnvelopeApi & ApiDefinition<A>>(
+    args: EnvelopeApiFactoryArgs<A, ApiToConsume, EditorEnvelopeView, KogitoEditorEnvelopeContextType>
   ) {
-    return new MinimalEditorEnvelopeApiImpl(this.editorFactory, args);
+    return new KogitoEditorEnvelopeApiImpl(this.editorFactory, args);
   }
 }
 
-export class MinimalEditorEnvelopeApiImpl<
-  A extends MinimalEditorEnvelopeApi & ApiDefinition<A>,
+export class KogitoEditorEnvelopeApiImpl<
+  A extends KogitoEditorEnvelopeApi & ApiDefinition<A>,
   ApiToConsume extends ApiDefinition<ApiToConsume>
-> implements MinimalEditorEnvelopeApi {
+> implements KogitoEditorEnvelopeApi {
   //
   private capturedInitRequestYet = false;
   private editor: Editor;
 
   constructor(
     private readonly editorFactory: EditorFactory<any>,
-    private readonly args: EnvelopeApiFactoryArgs<A, ApiToConsume>
+    private readonly args: EnvelopeApiFactoryArgs<A, ApiToConsume, EditorEnvelopeView, KogitoEditorEnvelopeContextType>
   ) {}
 
   public receive_initRequest = async (association: Association) => {
@@ -90,22 +92,26 @@ export class MinimalEditorEnvelopeApiImpl<
 
   public receive_editorUndo() {
     this.editor.undo();
-  };
+  }
 
   public receive_editorRedo() {
     this.editor.redo();
-  };
+  }
 
   public receive_contentRequest() {
     return this.editor.getContent().then(content => ({ content: content }));
-  };
+  }
 
   public receive_previewRequest() {
     return this.editor.getPreview().then(previewSvg => previewSvg ?? "");
-  };
+  }
 
   public receive_guidedTourElementPositionRequest = async (selector: string) => {
     return this.editor.getElementPosition(selector).then(rect => rect ?? DEFAULT_RECT);
+  };
+
+  public receive_channelKeyboardEvent = (channelKeyboardEvent: ChannelKeyboardEvent) => {
+    window.dispatchEvent(new CustomEvent(channelKeyboardEvent.type, { detail: channelKeyboardEvent }));
   };
 
   private registerDefaultShortcuts() {

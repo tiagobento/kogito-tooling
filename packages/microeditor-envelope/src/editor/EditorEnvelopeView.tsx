@@ -16,11 +16,11 @@
 
 import * as React from "react";
 import { Editor } from "@kogito-tooling/editor-api";
-import { LoadingScreen } from "../LoadingScreen";
+import { LoadingScreen } from "./LoadingScreen";
 import "@patternfly/patternfly/patternfly-variables.css";
 import "@patternfly/patternfly/patternfly-addons.css";
 import "@patternfly/patternfly/patternfly.css";
-import { KeyBindingsHelpOverlay } from "../KeyBindingsHelpOverlay";
+import { KeyBindingsHelpOverlay } from "./KeyBindingsHelpOverlay";
 
 interface Props {
   exposing: (self: EditorEnvelopeView) => void;

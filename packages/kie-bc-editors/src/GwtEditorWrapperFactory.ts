@@ -16,7 +16,7 @@
 
 import { GwtAppFormerApi } from "./GwtAppFormerApi";
 import { GwtEditorWrapper } from "./GwtEditorWrapper";
-import { Editor, EditorFactory, EnvelopeContextType } from "@kogito-tooling/editor-api";
+import { Editor, EditorFactory, KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor-api";
 import { GwtLanguageData, Resource } from "./GwtLanguageData";
 import { XmlFormatter } from "./XmlFormatter";
 import { GwtStateControlService } from "./gwtStateControl";
@@ -61,7 +61,7 @@ export class GwtEditorWrapperFactory implements EditorFactory<GwtLanguageData> {
     private readonly gwtStateControlService = new GwtStateControlService()
   ) {}
 
-  public createEditor(languageData: GwtLanguageData, envelopeContext: EnvelopeContextType) {
+  public createEditor(languageData: GwtLanguageData, envelopeContext: KogitoEditorEnvelopeContextType) {
     this.gwtAppFormerApi.setClientSideOnly(true);
 
     this.exposeEnvelopeContext(envelopeContext);
@@ -78,7 +78,7 @@ export class GwtEditorWrapperFactory implements EditorFactory<GwtLanguageData> {
     });
   }
 
-  private newGwtEditorWrapper(languageData: GwtLanguageData, envelopeContext: EnvelopeContextType) {
+  private newGwtEditorWrapper(languageData: GwtLanguageData, envelopeContext: KogitoEditorEnvelopeContextType) {
     return new GwtEditorWrapper(
       languageData.editorId,
       this.gwtAppFormerApi.getEditor(languageData.editorId),
@@ -88,7 +88,7 @@ export class GwtEditorWrapperFactory implements EditorFactory<GwtLanguageData> {
     );
   }
 
-  private exposeEnvelopeContext(envelopeContext: EnvelopeContextType) {
+  private exposeEnvelopeContext(envelopeContext: KogitoEditorEnvelopeContextType) {
     window.gwt = {
       stateControl: this.gwtStateControlService.exposeApi(envelopeContext.channelApi)
     };

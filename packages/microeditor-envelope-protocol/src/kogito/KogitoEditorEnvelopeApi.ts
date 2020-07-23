@@ -22,7 +22,7 @@ export interface Association {
   busId: string;
 }
 
-export interface MinimalEditorEnvelopeApi extends ApiDefinition<MinimalEditorEnvelopeApi> {
+export interface KogitoEditorEnvelopeApi extends ApiDefinition<KogitoEditorEnvelopeApi> {
   receive_contentChanged(content: EditorContent): void;
   receive_editorUndo(): void;
   receive_editorRedo(): void;
@@ -30,10 +30,5 @@ export interface MinimalEditorEnvelopeApi extends ApiDefinition<MinimalEditorEnv
   receive_contentRequest(): Promise<EditorContent>;
   receive_previewRequest(): Promise<string>;
   receive_guidedTourElementPositionRequest(selector: string): Promise<Rect>;
-}
-
-export interface KeyboardShortcutsEnvelopeApi extends ApiDefinition<KeyboardShortcutsEnvelopeApi> {
   receive_channelKeyboardEvent(channelKeyboardEvent: ChannelKeyboardEvent): void;
 }
-
-export type KogitoEnvelopeApi = MinimalEditorEnvelopeApi & KeyboardShortcutsEnvelopeApi;
