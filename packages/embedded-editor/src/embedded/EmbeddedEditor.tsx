@@ -242,7 +242,11 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
   useSyncedKeyboardEvents(kogitoChannelBus.client);
 
   //Attach/detach bus when component attaches/detaches from DOM
-  useConnectedKogitoChannelBus(window.location.origin, kogitoChannelBus);
+  useConnectedKogitoChannelBus(
+    window.location.origin,
+    { fileExtension: props.file.editorType, resourcesRelativePath: props.router.getRelativePathTo("") },
+    kogitoChannelBus
+  );
 
   useEffect(() => {
     KogitoGuidedTour.getInstance().registerPositionProvider((selector: string) =>

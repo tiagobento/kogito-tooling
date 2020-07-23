@@ -18,14 +18,15 @@ import * as vscode from "vscode";
 import { Uri } from "vscode";
 import * as fs from "fs";
 import * as __path from "path";
-import { KogitoChannelBus, Router } from "@kogito-tooling/microeditor-envelope-protocol";
-import { KogitoEditorStore } from "./KogitoEditorStore";
 import {
+  KogitoChannelBus,
   KogitoEdit,
   ResourceContentRequest,
   ResourceContentService,
   ResourceListRequest,
+  Router
 } from "@kogito-tooling/microeditor-envelope-protocol";
+import { KogitoEditorStore } from "./KogitoEditorStore";
 
 export class KogitoEditor {
   private readonly uri: vscode.Uri;
@@ -93,8 +94,7 @@ export class KogitoEditor {
         },
         //requests
         receive_languageRequest: async () => {
-          const pathFileExtension = this.uri.fsPath.split(".").pop()!;
-          return this.router.getLanguageData(pathFileExtension);
+          return this.router.getLanguageData(this.getFileExtension());
         },
         receive_contentRequest: async () => {
           return vscode.workspace.fs.readFile(initialBackup ?? this.uri).then(contentArray => {
@@ -110,6 +110,10 @@ export class KogitoEditor {
         }
       }
     );
+  }
+
+  private getFileExtension() {
+    return this.uri.fsPath.split(".").pop()!;
   }
 
   public asWebviewUri(absolutePath: Uri) {
@@ -190,7 +194,10 @@ export class KogitoEditor {
       )
     );
 
-    this.kogitoChannelBus.startInitPolling("vscode");
+    this.kogitoChannelBus.startInitPolling("vscode", {
+      fileExtension: this.getFileExtension(),
+      resourcesRelativePath: this.router.getRelativePathTo("")
+    });
   }
 
   public setupPanelActiveStatusChange() {

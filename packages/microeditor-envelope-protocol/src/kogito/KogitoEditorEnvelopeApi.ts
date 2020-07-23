@@ -22,11 +22,16 @@ export interface Association {
   busId: string;
 }
 
+export interface EditorInitArgs {
+  resourcesRelativePath: string;
+  fileExtension: string;
+}
+
 export interface KogitoEditorEnvelopeApi extends ApiDefinition<KogitoEditorEnvelopeApi> {
   receive_contentChanged(content: EditorContent): void;
   receive_editorUndo(): void;
   receive_editorRedo(): void;
-  receive_initRequest(association: Association): Promise<void>;
+  receive_initRequest(association: Association, editorInit: EditorInitArgs): Promise<void>;
   receive_contentRequest(): Promise<EditorContent>;
   receive_previewRequest(): Promise<string>;
   receive_guidedTourElementPositionRequest(selector: string): Promise<Rect>;

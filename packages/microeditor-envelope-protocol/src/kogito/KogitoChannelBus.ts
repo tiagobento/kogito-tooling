@@ -17,7 +17,7 @@
 import { EditorContent } from "../kogito/api";
 import { EnvelopeBus, EnvelopeBusMessage, EnvelopeBusMessageManager, FunctionPropertyNames } from "../bus";
 import { KogitoChannelApi } from "./KogitoChannelApi";
-import { KogitoEditorEnvelopeApi } from "./KogitoEditorEnvelopeApi";
+import { EditorInitArgs, KogitoEditorEnvelopeApi } from "./KogitoEditorEnvelopeApi";
 
 export type KogitoEnvelopeMessageTypes =
   | FunctionPropertyNames<KogitoChannelApi>
@@ -44,9 +44,9 @@ export class KogitoChannelBus {
     this.busId = this.generateRandomId();
   }
 
-  public startInitPolling(origin: string) {
+  public startInitPolling(origin: string, initArgs: EditorInitArgs) {
     this.initPolling = setInterval(() => {
-      this.request_initResponse(origin).then(() => {
+      this.request_initResponse(origin, initArgs).then(() => {
         this.stopInitPolling();
       });
     }, KogitoChannelBus.INIT_POLLING_INTERVAL_IN_MS);
@@ -92,8 +92,8 @@ export class KogitoChannelBus {
     return this.client.request("receive_previewRequest");
   }
 
-  public request_initResponse(origin: string) {
-    return this.client.request("receive_initRequest", { origin: origin, busId: this.busId });
+  public request_initResponse(origin: string, initArgs: EditorInitArgs) {
+    return this.client.request("receive_initRequest", { origin: origin, busId: this.busId }, initArgs);
   }
 
   public request_guidedTourElementPositionResponse(selector: string) {

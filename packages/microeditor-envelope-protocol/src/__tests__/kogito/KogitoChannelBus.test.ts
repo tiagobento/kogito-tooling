@@ -62,7 +62,7 @@ describe("startInitPolling", () => {
   test("polls for init response", async () => {
     jest.spyOn(channelBus, "stopInitPolling");
 
-    channelBus.startInitPolling("tests");
+    channelBus.startInitPolling("tests", { fileExtension: "txt", resourcesRelativePath: "" });
     expect(channelBus.initPolling).toBeTruthy();
     expect(channelBus.initPollingTimeout).toBeTruthy();
 
@@ -85,7 +85,7 @@ describe("startInitPolling", () => {
     jest.spyOn(channelBus, "stopInitPolling");
     KogitoChannelBus.INIT_POLLING_TIMEOUT_IN_MS = 200;
 
-    channelBus.startInitPolling("tests");
+    channelBus.startInitPolling("tests", { fileExtension: "txt", resourcesRelativePath: "" });
     expect(channelBus.initPolling).toBeTruthy();
     expect(channelBus.initPollingTimeout).toBeTruthy();
 
@@ -292,13 +292,16 @@ describe("receive", () => {
 
 describe("send", () => {
   test("request init", async () => {
-    const init = channelBus.request_initResponse("test-origin");
+    const init = channelBus.request_initResponse("test-origin", { fileExtension: "txt", resourcesRelativePath: "" });
     expect(sentMessages).toEqual([
       {
         purpose: EnvelopeBusMessagePurpose.REQUEST,
         requestId: "KogitoChannelBus_0",
         type: "receive_initRequest",
-        data: [{ busId: channelBus.busId, origin: "test-origin" }]
+        data: [
+          { busId: channelBus.busId, origin: "test-origin" },
+          { fileExtension: "txt", resourcesRelativePath: "" }
+        ]
       }
     ]);
 

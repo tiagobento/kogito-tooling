@@ -62,7 +62,7 @@ export class KogitoEditorEnvelope {
   ) {}
 
   public start() {
-    return this.envelope.start(this.renderView, this.context, this.kogitoEditorEnvelopeApiFactory);
+    return this.envelope.start(() => this.renderView(), this.context, this.kogitoEditorEnvelopeApiFactory);
   }
 
   private renderView() {

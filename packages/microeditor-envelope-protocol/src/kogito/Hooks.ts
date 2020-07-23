@@ -16,12 +16,17 @@
 
 import { KogitoChannelBus } from "./KogitoChannelBus";
 import { useEffect } from "react";
+import { EditorInitArgs } from "./KogitoEditorEnvelopeApi";
 
-export function useConnectedKogitoChannelBus(envelopeTargetOrigin: string, kogitoChannelBus: KogitoChannelBus) {
+export function useConnectedKogitoChannelBus(
+  envelopeTargetOrigin: string,
+  editorInitArgs: EditorInitArgs,
+  kogitoChannelBus: KogitoChannelBus
+) {
   useEffect(() => {
     const listener = (msg: MessageEvent) => kogitoChannelBus.receive(msg.data);
     window.addEventListener("message", listener, false);
-    kogitoChannelBus.startInitPolling(envelopeTargetOrigin);
+    kogitoChannelBus.startInitPolling(envelopeTargetOrigin, editorInitArgs);
 
     return () => {
       kogitoChannelBus.stopInitPolling();
