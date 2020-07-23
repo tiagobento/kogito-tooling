@@ -38,8 +38,10 @@ export class Envelope<
     context: ContextType,
     apiFactory: EnvelopeApiFactory<ApiToProvide, ApiToConsume, ViewType, ContextType>
   ) {
+    const view = await viewFactory();
+
     const api = apiFactory.createNew({
-      view: await viewFactory(),
+      view: view,
       envelopeContext: context,
       envelopeBusController: this.envelopeBusController
     });
