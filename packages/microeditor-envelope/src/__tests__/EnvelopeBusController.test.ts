@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EnvelopeBusController } from "../EnvelopeBusController";
+import { EnvelopeBusController } from "../envelope/EnvelopeBusController";
 import {
   EnvelopeBusMessage,
   EnvelopeBusMessagePurpose,

@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { LoadingScreen } from "../../LoadingScreen";
+import { LoadingScreen } from "../../../editor/LoadingScreen";
 
 describe("LoadingScreen", () => {
   test("when visible", () => {
