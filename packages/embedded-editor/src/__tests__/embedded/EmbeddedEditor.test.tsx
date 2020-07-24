@@ -131,7 +131,7 @@ describe("EmbeddedEditor::ONLINE", () => {
         editorEnvelopeLocator={editorEnvelopeLocator}
         envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
-        onSetContentError={onSetContentError}
+        receive_setContentError={onSetContentError}
       />
     );
 
@@ -156,7 +156,7 @@ describe("EmbeddedEditor::ONLINE", () => {
         editorEnvelopeLocator={editorEnvelopeLocator}
         envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
-        onReady={onReady}
+        receive_ready={onReady}
       />
     );
 
@@ -181,7 +181,7 @@ describe("EmbeddedEditor::ONLINE", () => {
         editorEnvelopeLocator={editorEnvelopeLocator}
         envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
-        onResourceContentRequest={onResourceContentRequest}
+        receive_resourceContentRequest={onResourceContentRequest}
       />
     );
 
@@ -207,7 +207,7 @@ describe("EmbeddedEditor::ONLINE", () => {
         editorEnvelopeLocator={editorEnvelopeLocator}
         envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
-        onResourceListRequest={onResourceListRequest}
+        receive_resourceListRequest={onResourceListRequest}
       />
     );
 
@@ -233,7 +233,7 @@ describe("EmbeddedEditor::ONLINE", () => {
         editorEnvelopeLocator={editorEnvelopeLocator}
         envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
-        onNewEdit={onNewEdit}
+        receive_newEdit={onNewEdit}
       />
     );
 

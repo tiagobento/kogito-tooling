@@ -26,66 +26,47 @@ import {
 import * as React from "react";
 import { useCallback } from "react";
 import { File } from "../common/File";
-import { EmbeddedEditor } from "./EmbeddedEditor";
+import { EmbeddedEditor, Props as EmbeddedEditorProps } from "./EmbeddedEditor";
 
-/**
- * Properties supported by the `EmbeddedEditor`.
- */
-interface Props {
-  /**
-   * File to show in the editor.
-   */
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+type ChannelApiMethodsThatAreNoOpOnEmbeddedViewer =
+  | "receive_setContentError"
+  | "receive_ready"
+  | "receive_openFile"
+  | "receive_newEdit"
+  | "receive_stateControlCommandUpdate";
+
+type EmbeddedViewerChannelApiOverrides = Partial<
+  Omit<EmbeddedEditorProps, ChannelApiMethodsThatAreNoOpOnEmbeddedViewer>
+>;
+
+export type Props = EmbeddedViewerChannelApiOverrides & {
   file: File;
-
-  /**
-   * EditorEnvelopeLocator to map editor envelope URLs and installations.
-   */
   editorEnvelopeLocator: EditorEnvelopeLocator;
-
-  /**
-   * EnvelopeMapping for the provided file.
-   */
   envelopeMapping: EnvelopeMapping;
-
-  /**
-   * Channel in which the editor has been embedded.
-   */
   channelType: ChannelType;
-
-  /**
-   * Optional callback for when the editor is requesting external content.
-   */
-  onResourceContentRequest?: (request: ResourceContentRequest) => Promise<ResourceContent | undefined>;
-
-  /**
-   * Optional callback for when the editor is requesting a list of external content.
-   */
-  onResourceListRequest?: (request: ResourceListRequest) => Promise<ResourcesList>;
-}
+};
 
 export const EmbeddedViewer = (props: Props) => {
-  const noop = useCallback((...args: any) => {
-    /*NO OP*/
-  }, []);
-
   const onResourceContentRequest = useCallback(
     (request: ResourceContentRequest) => {
-      if (props.onResourceContentRequest) {
-        return props.onResourceContentRequest(request);
+      if (props.receive_resourceContentRequest) {
+        return props.receive_resourceContentRequest(request);
       }
       return Promise.resolve(new ResourceContent(request.path, undefined));
     },
-    [props.onResourceContentRequest]
+    [props.receive_resourceContentRequest]
   );
 
   const onResourceListRequest = useCallback(
     (request: ResourceListRequest) => {
-      if (props.onResourceListRequest) {
-        return props.onResourceListRequest(request);
+      if (props.receive_resourceListRequest) {
+        return props.receive_resourceListRequest(request);
       }
       return Promise.resolve(new ResourcesList(request.pattern, []));
     },
-    [props.onResourceListRequest]
+    [props.receive_resourceListRequest]
   );
 
   return (
@@ -94,14 +75,8 @@ export const EmbeddedViewer = (props: Props) => {
       envelopeMapping={props.envelopeMapping}
       editorEnvelopeLocator={props.editorEnvelopeLocator}
       channelType={props.channelType}
-      onResourceContentRequest={onResourceContentRequest}
-      onResourceListRequest={onResourceListRequest}
-      onSetContentError={noop}
-      onReady={noop}
-      onEditorUndo={noop}
-      onEditorRedo={noop}
-      onOpenFile={noop}
-      onNewEdit={noop}
+      receive_resourceContentRequest={onResourceContentRequest}
+      receive_resourceListRequest={onResourceListRequest}
     />
   );
 };

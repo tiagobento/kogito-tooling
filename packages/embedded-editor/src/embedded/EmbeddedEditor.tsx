@@ -18,6 +18,7 @@ import {
   ChannelType,
   EditorEnvelopeLocator,
   EnvelopeMapping,
+  KogitoChannelApi,
   KogitoChannelBus,
   KogitoEdit,
   ResourceContent,
@@ -38,75 +39,38 @@ import { File } from "../common";
 import { StateControl } from "../stateControl";
 import { Editor } from "@kogito-tooling/editor-api";
 
-/**
- * Properties supported by the `EmbeddedEditor`.
- */
-export interface Props {
-  /**
-   * File to show in the editor.
-   */
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+type ChannelApiMethodsAlreadyImplementedByEmbeddedEditor =
+  | "receive_guidedTourUserInteraction"
+  | "receive_guidedTourRegisterTutorial"
+  | "receive_contentRequest";
+
+type EmbeddedEditorChannelApiOverrides = Partial<
+  Omit<KogitoChannelApi, ChannelApiMethodsAlreadyImplementedByEmbeddedEditor>
+>;
+
+export type Props = EmbeddedEditorChannelApiOverrides & {
   file: File;
-
-  /**
-   * EditorEnvelopeLocator to map editor envelope URLs and installations.
-   */
   editorEnvelopeLocator: EditorEnvelopeLocator;
-
-  /**
-   * EnvelopeMapping for the provided file.
-   */
   envelopeMapping: EnvelopeMapping;
-
-  /**
-   * Channel in which the editor has been embedded.
-   */
   channelType: ChannelType;
+};
 
-  /**
-   * Optional callback for when setting the editors content resulted in an error.
-   */
-  onSetContentError?: (errorMessage: string) => void;
+type Created =
+  | "af_isReact"
+  | "af_componentId"
+  | "af_componentTitle"
+  | "af_componentRoot"
+  | "af_onOpen"
+  | "af_onStartup";
 
-  /**
-   * Optional callback for when the editor has initialised and is considered ready.
-   */
-  onReady?: () => void;
-
-  /**
-   * Optional callback for when the editor is requesting external content.
-   */
-  onResourceContentRequest?: (request: ResourceContentRequest) => Promise<ResourceContent | undefined>;
-
-  /**
-   * Optional callback for when the editor is requesting a list of external content.
-   */
-  onResourceListRequest?: (request: ResourceListRequest) => Promise<ResourcesList>;
-
-  /**
-   * Optional callback for when the editor signals an _undo_ operation.
-   */
-  onEditorUndo?: () => void;
-
-  /**
-   * Optional callback for when the editor signals an _redo_ operation.
-   */
-  onEditorRedo?: () => void;
-
-  /**
-   * Optional callback for when the editor signals an open file operation.
-   */
-  onOpenFile?: (path: string) => void;
-
-  /**
-   * Optional callback for when the editor signals a new edit.
-   */
-  onNewEdit?: (edit: KogitoEdit) => void;
-}
+type EditorApi = Omit<Editor, Created>;
 
 /**
  * Forward reference for the `EmbeddedEditor` to support consumers to call upon embedded operations.
  */
-export type EmbeddedEditorRef = (Editor & { getStateControl(): StateControl }) | null;
+export type EmbeddedEditorRef = (EditorApi & { getStateControl(): StateControl }) | null;
 
 const containerStyles: CSS.Properties = {
   display: "flex",
@@ -130,38 +94,37 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
   //Property functions default handling
   const onResourceContentRequest = useCallback(
     (request: ResourceContentRequest) => {
-      if (props.onResourceContentRequest) {
-        return props.onResourceContentRequest(request);
+      if (props.receive_resourceContentRequest) {
+        return props.receive_resourceContentRequest(request);
       }
       return Promise.resolve(new ResourceContent(request.path, undefined));
     },
-    [props.onResourceContentRequest]
+    [props.receive_resourceContentRequest]
   );
 
   const onResourceListRequest = useCallback(
     (request: ResourceListRequest) => {
-      if (props.onResourceListRequest) {
-        return props.onResourceListRequest(request);
+      if (props.receive_resourceListRequest) {
+        return props.receive_resourceListRequest(request);
       }
       return Promise.resolve(new ResourcesList(request.pattern, []));
     },
-    [props.onResourceListRequest]
+    [props.receive_resourceListRequest]
   );
 
   const handleStateControlCommand = useCallback((stateControlCommand: StateControlCommand) => {
     switch (stateControlCommand) {
       case StateControlCommand.REDO:
         stateControl.redo();
-        props.onEditorRedo?.();
         break;
       case StateControlCommand.UNDO:
         stateControl.undo();
-        props.onEditorUndo?.();
         break;
       default:
         console.info(`Unknown message type received: ${stateControlCommand}`);
         break;
     }
+    props.receive_stateControlCommandUpdate?.(stateControlCommand);
   }, []);
 
   //Setup envelope bus communication
@@ -176,17 +139,17 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
       },
       {
         receive_setContentError(errorMessage: string) {
-          props.onSetContentError?.(errorMessage);
+          props.receive_setContentError?.(errorMessage);
         },
         receive_ready() {
-          props.onReady?.();
+          props.receive_ready?.();
         },
         receive_openFile: (path: string) => {
-          props.onOpenFile?.(path);
+          props.receive_openFile?.(path);
         },
         receive_newEdit(edit: KogitoEdit) {
           stateControl.updateCommandStack(edit.id);
-          props.onNewEdit?.(edit);
+          props.receive_newEdit?.(edit);
         },
         receive_stateControlCommandUpdate(stateControlCommand: StateControlCommand) {
           handleStateControlCommand(stateControlCommand);
@@ -212,8 +175,8 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
   }, [
     props.file.editorType,
     props.file.fileName,
-    props.onResourceContentRequest,
-    props.onResourceListRequest,
+    props.receive_resourceContentRequest,
+    props.receive_resourceListRequest,
     handleStateControlCommand
   ]);
 
@@ -248,13 +211,6 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
       }
 
       return {
-        af_componentId: "",
-        af_isReact: false,
-        af_componentTitle: "EmbeddedEditor",
-        af_componentRoot: () => ({} as any),
-        af_onOpen: () => ({} as any),
-        af_onStartup: () => ({} as any),
-
         getStateControl: () => stateControl,
         getElementPosition: (selector: string) => kogitoChannelBus.request_guidedTourElementPositionResponse(selector),
         redo: () => Promise.resolve(kogitoChannelBus.notify_editorRedo()),

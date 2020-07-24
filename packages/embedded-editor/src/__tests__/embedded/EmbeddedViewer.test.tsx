@@ -78,7 +78,7 @@ describe("EmbeddedViewer::ONLINE", () => {
         editorEnvelopeLocator={editorEnvelopeLocator}
         envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
-        onResourceContentRequest={onResourceContentRequest}
+        receive_resourceContentRequest={onResourceContentRequest}
       />
     );
 
@@ -103,7 +103,7 @@ describe("EmbeddedViewer::ONLINE", () => {
         editorEnvelopeLocator={editorEnvelopeLocator}
         envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
-        onResourceListRequest={onResourceListRequest}
+        receive_resourceListRequest={onResourceListRequest}
       />
     );
 

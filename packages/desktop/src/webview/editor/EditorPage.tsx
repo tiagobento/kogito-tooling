@@ -288,7 +288,7 @@ export function EditorPage(props: Props) {
               ref={editorRef}
               file={file}
               channelType={ChannelType.DESKTOP}
-              onReady={requestThumbnailPreview}
+              receive_ready={requestThumbnailPreview}
               editorEnvelopeLocator={context.editorEnvelopeLocator}
               envelopeMapping={context.editorEnvelopeLocator.mapping.get(file.editorType)!} //FIXME: Danger
             />

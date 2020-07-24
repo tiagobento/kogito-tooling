@@ -136,9 +136,9 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
           ref={editorRef}
           file={file}
           channelType={ChannelType.GITHUB}
-          onReady={onEditorReady}
-          onResourceContentRequest={onResourceContentRequest}
-          onResourceListRequest={onResourceContentList}
+          receive_ready={onEditorReady}
+          receive_resourceContentRequest={onResourceContentRequest}
+          receive_resourceListRequest={onResourceContentList}
           envelopeMapping={envelopeMapping}
           editorEnvelopeLocator={envelopeLocator}
         />

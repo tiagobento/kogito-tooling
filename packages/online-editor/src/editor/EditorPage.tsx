@@ -276,7 +276,7 @@ export function EditorPage(props: Props) {
           file={context.file}
           editorEnvelopeLocator={context.editorEnvelopeLocator}
           envelopeMapping={context.editorEnvelopeLocator.mapping.get(context.file.editorType)!} //FIXME: Danger
-          onReady={onReady}
+          receive_ready={onReady}
           channelType={ChannelType.ONLINE}
         />
       </PageSection>
