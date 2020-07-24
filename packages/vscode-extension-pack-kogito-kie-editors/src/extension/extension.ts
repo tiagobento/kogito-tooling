@@ -25,9 +25,9 @@ export function activate(context: vscode.ExtensionContext) {
     context: context,
     viewType: "kieKogitoWebviewEditors",
     getPreviewCommandId: "extension.kogito.getPreviewSvg",
-    editorEnvelopeMapping: {
+    editorEnvelopeLocator: {
       targetOrigin: "vscode",
-      editorMapping: new Map([
+      mapping: new Map([
         ["bpmn", { resourcesPathPrefix: "dist/webview/editors/bpmn", envelopePath: "dist/webview/index.js" }],
         ["bpmn2", { resourcesPathPrefix: "dist/webview/editors/bpmn", envelopePath: "dist/webview/index.js" }],
         ["dmn", { resourcesPathPrefix: "dist/webview/editors/dmn", envelopePath: "dist/webview/index.js" }],

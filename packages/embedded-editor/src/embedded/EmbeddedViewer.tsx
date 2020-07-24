@@ -16,6 +16,8 @@
 
 import {
   ChannelType,
+  EditorEnvelopeLocator,
+  EnvelopeMapping,
   ResourceContent,
   ResourceContentRequest,
   ResourceListRequest,
@@ -25,7 +27,6 @@ import * as React from "react";
 import { useCallback } from "react";
 import { File } from "../common/File";
 import { EmbeddedEditor } from "./EmbeddedEditor";
-import { EmbeddedEditorRouter } from "./EmbeddedEditorRouter";
 
 /**
  * Properties supported by the `EmbeddedEditor`.
@@ -35,26 +36,31 @@ interface Props {
    * File to show in the editor.
    */
   file: File;
+
   /**
-   * Router to map editor URLs to installations.
+   * EnvelopeMapping to map editor URLs to installations.
    */
-  router: EmbeddedEditorRouter;
+  editorEnvelopeLocator: EditorEnvelopeLocator;
+
+  /**
+   * EnvelopeMapping to map editor URLs to installations.
+   */
+  envelopeMapping: EnvelopeMapping;
+
   /**
    * Channel in which the editor has been embedded.
    */
   channelType: ChannelType;
+
   /**
    * Optional callback for when the editor is requesting external content.
    */
   onResourceContentRequest?: (request: ResourceContentRequest) => Promise<ResourceContent | undefined>;
+
   /**
    * Optional callback for when the editor is requesting a list of external content.
    */
   onResourceListRequest?: (request: ResourceListRequest) => Promise<ResourcesList>;
-  /**
-   * Optional relative URL for the `envelope.html` used as the inner bus `IFRAME`. Defaults to `envelope/envelope.html`
-   */
-  envelopeUri?: string;
 }
 
 export const EmbeddedViewer = (props: Props) => {
@@ -85,17 +91,17 @@ export const EmbeddedViewer = (props: Props) => {
   return (
     <EmbeddedEditor
       file={props.file}
-      router={props.router}
+      envelopeMapping={props.envelopeMapping}
+      editorEnvelopeLocator={props.editorEnvelopeLocator}
       channelType={props.channelType}
-      onSetContentError={noop}
-      onReady={noop}
       onResourceContentRequest={onResourceContentRequest}
       onResourceListRequest={onResourceListRequest}
+      onSetContentError={noop}
+      onReady={noop}
       onEditorUndo={noop}
       onEditorRedo={noop}
       onOpenFile={noop}
       onNewEdit={noop}
-      envelopeUri={props.envelopeUri}
     />
   );
 };

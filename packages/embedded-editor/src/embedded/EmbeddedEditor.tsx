@@ -17,6 +17,8 @@
 import {
   ChannelType,
   EditorContent,
+  EditorEnvelopeLocator,
+  EnvelopeMapping,
   KogitoChannelBus,
   KogitoEdit,
   ResourceContent,
@@ -34,7 +36,6 @@ import * as CSS from "csstype";
 import * as React from "react";
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { File } from "../common";
-import { EmbeddedEditorRouter } from "./EmbeddedEditorRouter";
 import { StateControl } from "../stateControl";
 
 /**
@@ -45,51 +46,61 @@ export interface Props {
    * File to show in the editor.
    */
   file: File;
+
   /**
-   * Router to map editor URLs to installations.
+   * EnvelopeMapping to map editor URLs to installations.
    */
-  router: EmbeddedEditorRouter;
+  editorEnvelopeLocator: EditorEnvelopeLocator;
+
+  /**
+   * EnvelopeMapping to map editor URLs to installations.
+   */
+  envelopeMapping: EnvelopeMapping;
+
   /**
    * Channel in which the editor has been embedded.
    */
-
   channelType: ChannelType;
+
   /**
    * Optional callback for when setting the editors content resulted in an error.
    */
   onSetContentError?: (errorMessage: string) => void;
+
   /**
    * Optional callback for when the editor has initialised and is considered ready.
    */
   onReady?: () => void;
+
   /**
    * Optional callback for when the editor is requesting external content.
    */
   onResourceContentRequest?: (request: ResourceContentRequest) => Promise<ResourceContent | undefined>;
+
   /**
    * Optional callback for when the editor is requesting a list of external content.
    */
   onResourceListRequest?: (request: ResourceListRequest) => Promise<ResourcesList>;
+
   /**
    * Optional callback for when the editor signals an _undo_ operation.
    */
   onEditorUndo?: () => void;
+
   /**
    * Optional callback for when the editor signals an _redo_ operation.
    */
   onEditorRedo?: () => void;
+
   /**
    * Optional callback for when the editor signals an open file operation.
    */
   onOpenFile?: (path: string) => void;
+
   /**
    * Optional callback for when the editor signals a new edit.
    */
   onNewEdit?: (edit: KogitoEdit) => void;
-  /**
-   * Optional relative URL for the `envelope.html` used as the inner bus `IFRAME`. Defaults to `envelope/envelope.html`
-   */
-  envelopeUri?: string;
 }
 
 /**
@@ -100,22 +111,27 @@ export type EmbeddedEditorRef = {
    * Get an instance of the StateControl
    */
   getStateControl(): StateControl;
+
   /**
    * Notify the editor to redo the last command and update the state control.
    */
   notifyRedo(): void;
+
   /**
    * Notify the editor to undo the last command and update the state control.
    */
   notifyUndo(): void;
+
   /**
    * Request the editor returns its current content.
    */
   requestContent(): Promise<EditorContent>;
+
   /**
    * Request the editor returns a preview of its current content.
    */
   requestPreview(): Promise<string>;
+
   /**
    * Request to set the content of the editor; this will overwrite the content supplied by the `File.getFileContents()` passed in construction.
    * @param content
@@ -179,8 +195,6 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
     }
   }, []);
 
-  const envelopeUri = useMemo(() => props.envelopeUri ?? "envelope/envelope.html", [props.envelopeUri]);
-
   //Setup envelope bus communication
   const kogitoChannelBus = useMemo(() => {
     return new KogitoChannelBus(
@@ -227,7 +241,6 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
       }
     );
   }, [
-    props.router,
     props.file.editorType,
     props.file.fileName,
     props.onResourceContentRequest,
@@ -240,8 +253,11 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
 
   //Attach/detach bus when component attaches/detaches from DOM
   useConnectedKogitoChannelBus(
-    window.location.origin,
-    { fileExtension: props.file.editorType, resourcesPathPrefix: props.router.getRelativePathTo("") },
+    props.editorEnvelopeLocator.targetOrigin,
+    {
+      fileExtension: props.file.editorType,
+      resourcesPathPrefix: props.envelopeMapping.resourcesPathPrefix
+    },
     kogitoChannelBus
   );
 
@@ -279,7 +295,7 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
       ref={iframeRef}
       id={"kogito-iframe"}
       data-testid={"kogito-iframe"}
-      src={envelopeUri}
+      src={props.envelopeMapping.envelopePath}
       title="Kogito editor"
       style={containerStyles}
       data-envelope-channel={props.channelType}

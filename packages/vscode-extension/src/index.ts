@@ -33,10 +33,10 @@ export function startExtension(args: {
   context: vscode.ExtensionContext;
   viewType: string;
   getPreviewCommandId: string;
-  editorEnvelopeMapping: EditorEnvelopeLocator;
+  editorEnvelopeLocator: EditorEnvelopeLocator;
 }) {
   const editorStore = new KogitoEditorStore();
-  const editorFactory = new KogitoEditorFactory(args.context, editorStore, args.editorEnvelopeMapping);
+  const editorFactory = new KogitoEditorFactory(args.context, editorStore, args.editorEnvelopeLocator);
   const webviewProvider = new KogitoWebviewProvider(args.viewType, editorFactory, editorStore, args.context);
 
   args.context.subscriptions.push(webviewProvider.register());

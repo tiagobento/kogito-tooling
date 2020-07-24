@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ChannelType, ResourceContentRequest, ResourceListRequest } from "@kogito-tooling/microeditor-envelope-protocol";
+import {
+  ChannelType,
+  ResourceContentRequest,
+  ResourceListRequest
+} from "@kogito-tooling/microeditor-envelope-protocol";
 import { EditorType, EmbeddedEditor, EmbeddedEditorRef } from "@kogito-tooling/embedded-editor";
 import * as React from "react";
 import { useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef } from "react";
@@ -40,7 +44,7 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
 ) => {
   const githubApi = useGitHubApi();
   const editorRef = useRef<EmbeddedEditorRef>(null);
-  const { router, editorIndexPath, resourceContentServiceFactory } = useGlobals();
+  const { envelopeLocator, resourceContentServiceFactory } = useGlobals();
   const { repoInfo, textMode, fullscreen, onEditorReady } = useContext(IsolatedEditorContext);
 
   //Lookup ResourceContentService
@@ -122,18 +126,21 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
     []
   );
 
+  //FIXME: Danger
+  const envelopeMapping = useMemo(() => envelopeLocator.mapping.get(file.editorType) ?? ({} as any), []);
+
   return (
     <>
       <div className={`kogito-iframe ${fullscreen ? "fullscreen" : "not-fullscreen"}`}>
         <EmbeddedEditor
           ref={editorRef}
           file={file}
-          router={router}
           channelType={ChannelType.GITHUB}
           onReady={onEditorReady}
           onResourceContentRequest={onResourceContentRequest}
           onResourceListRequest={onResourceContentList}
-          envelopeUri={router.getRelativePathTo(editorIndexPath)}
+          envelopeMapping={envelopeMapping}
+          editorEnvelopeLocator={envelopeLocator}
         />
       </div>
     </>

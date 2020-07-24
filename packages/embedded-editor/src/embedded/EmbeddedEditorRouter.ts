@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-import { Router, Routes } from "@kogito-tooling/microeditor-envelope-protocol";
+import { Router } from "@kogito-tooling/microeditor-envelope-protocol";
 
 /**
  * Default router to be used for construction of an `KogitoChannelBus` by `EmbeddedEditor`.
  * Consumers can map the different supported editor URL routes as appropriate, if necessary.
  */
 export class EmbeddedEditorRouter extends Router {
-  constructor(...routesArray: Routes[]) {
-    super(...routesArray);
-  }
-
   public getRelativePathTo(uri: string): string {
     return `../${uri}`;
-  }
-
-  public getLanguageData(fileExtension: string) {
-    return this.getLanguageDataByFileExtension().get(fileExtension);
   }
 
   public getTargetOrigin() {

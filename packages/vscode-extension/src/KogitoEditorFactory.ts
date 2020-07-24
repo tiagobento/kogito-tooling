@@ -33,7 +33,7 @@ export class KogitoEditorFactory {
   constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly editorStore: KogitoEditorStore,
-    private readonly editorEnvelopeMapping: EditorEnvelopeLocator
+    private readonly editorEnvelopeLocator: EditorEnvelopeLocator
   ) {}
 
   public configureNew(
@@ -53,17 +53,17 @@ export class KogitoEditorFactory {
       localResourceRoots: [vscode.Uri.file(this.context.extensionPath)]
     };
 
-    const editorMapping = new Map<string, EnvelopeMapping>();
-    Array.of(...this.editorEnvelopeMapping.editorMapping.entries()).forEach(([k, v]) => {
-      editorMapping.set(k, {
+    const mapping = new Map<string, EnvelopeMapping>();
+    Array.of(...this.editorEnvelopeLocator.mapping.entries()).forEach(([k, v]) => {
+      mapping.set(k, {
         envelopePath: this.getWebviewPath(webviewPanel.webview, v.envelopePath),
         resourcesPathPrefix: this.getWebviewPath(webviewPanel.webview, v.resourcesPathPrefix)
       });
     });
 
     const editorEnvelopeLocator: EditorEnvelopeLocator = {
-      targetOrigin: this.editorEnvelopeMapping.targetOrigin,
-      editorMapping: editorMapping
+      targetOrigin: this.editorEnvelopeLocator.targetOrigin,
+      mapping: mapping
     };
 
     const workspacePath = vscode.workspace.asRelativePath(path);
@@ -72,7 +72,7 @@ export class KogitoEditorFactory {
 
     const fileExtension = uri.fsPath.split(".").pop()!;
 
-    const envelopeMapping = editorEnvelopeLocator.editorMapping.get(fileExtension);
+    const envelopeMapping = editorEnvelopeLocator.mapping.get(fileExtension);
     if (!envelopeMapping) {
       throw new Error("No envelope mapping found for " + fileExtension);
     }

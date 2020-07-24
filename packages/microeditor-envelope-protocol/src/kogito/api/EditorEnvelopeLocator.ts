@@ -21,5 +21,5 @@ export interface EnvelopeMapping {
 
 export interface EditorEnvelopeLocator {
   targetOrigin: string;
-  editorMapping: Map<string, EnvelopeMapping>;
+  mapping: Map<string, EnvelopeMapping>;
 }

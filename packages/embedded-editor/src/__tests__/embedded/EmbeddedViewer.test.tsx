@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { ChannelType } from "@kogito-tooling/microeditor-envelope-protocol";
+import {
+  ChannelType,
+  EditorEnvelopeLocator,
+  EnvelopeBusMessagePurpose,
+  EnvelopeMapping,
+  KogitoChannelBus
+} from "@kogito-tooling/microeditor-envelope-protocol";
 import * as React from "react";
 import { EditorType, File } from "../../common";
-import { EmbeddedEditorRouter, EmbeddedViewer } from "../../embedded";
+import { EmbeddedViewer } from "../../embedded";
 import { incomingMessage } from "./EmbeddedEditorTestUtils";
 import { render } from "@testing-library/react";
-import { EnvelopeBusMessagePurpose, KogitoChannelBus } from "@kogito-tooling/microeditor-envelope-protocol";
 
 describe("EmbeddedViewer::ONLINE", () => {
   const file: File = {
@@ -30,7 +35,16 @@ describe("EmbeddedViewer::ONLINE", () => {
     isReadOnly: false
   };
 
-  const router = new EmbeddedEditorRouter();
+  const txtEnvelopeMapping: EnvelopeMapping = {
+    envelopePath: "envelope/envelope.html",
+    resourcesPathPrefix: "envelope"
+  };
+
+  const editorEnvelopeLocator: EditorEnvelopeLocator = {
+    targetOrigin: "localhost:8888",
+    mapping: new Map([["txt", txtEnvelopeMapping]])
+  };
+
   const channelType = ChannelType.ONLINE;
   const busId = "test-bus-id";
 
@@ -39,7 +53,14 @@ describe("EmbeddedViewer::ONLINE", () => {
   });
 
   test("EmbeddedViewer::defaults", () => {
-    const { getByTestId, container } = render(<EmbeddedViewer file={file} router={router} channelType={channelType} />);
+    const { getByTestId, container } = render(
+      <EmbeddedViewer
+        file={file}
+        editorEnvelopeLocator={editorEnvelopeLocator}
+        envelopeMapping={txtEnvelopeMapping}
+        channelType={channelType}
+      />
+    );
 
     expect(getByTestId("kogito-iframe")).toBeVisible();
     expect(getByTestId("kogito-iframe")).toHaveAttribute("data-envelope-channel", ChannelType.ONLINE);
@@ -54,7 +75,8 @@ describe("EmbeddedViewer::ONLINE", () => {
     const { container } = render(
       <EmbeddedViewer
         file={file}
-        router={router}
+        editorEnvelopeLocator={editorEnvelopeLocator}
+        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         onResourceContentRequest={onResourceContentRequest}
       />
@@ -78,7 +100,8 @@ describe("EmbeddedViewer::ONLINE", () => {
     const { container } = render(
       <EmbeddedViewer
         file={file}
-        router={router}
+        editorEnvelopeLocator={editorEnvelopeLocator}
+        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         onResourceListRequest={onResourceListRequest}
       />
