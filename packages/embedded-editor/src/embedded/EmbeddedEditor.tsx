@@ -48,12 +48,12 @@ export interface Props {
   file: File;
 
   /**
-   * EnvelopeMapping to map editor URLs to installations.
+   * EditorEnvelopeLocator to map editor envelope URLs and installations.
    */
   editorEnvelopeLocator: EditorEnvelopeLocator;
 
   /**
-   * EnvelopeMapping to map editor URLs to installations.
+   * EnvelopeMapping for the provided file.
    */
   envelopeMapping: EnvelopeMapping;
 
