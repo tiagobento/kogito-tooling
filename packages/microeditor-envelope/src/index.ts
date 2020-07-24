@@ -22,7 +22,7 @@ import { KogitoEditorEnvelope } from "./editor/KogitoEditorEnvelope";
  * Starts the Editor envelope at a given container. Uses `bus` to send messages out of the Envelope and creates Editors based on the editorFactory provided.
  * @param args.container The DOM element where the envelope should be rendered.
  * @param args.bus The implementation of EnvelopeBus to send messages out of the envelope.
- * @param args.editorFactory The factory of Editors using a LanguageData implementation.
+ * @param args.editorFactory The factory of Editors provided by this EditorEnvelope.
  * @param args.editorContext The context for Editors with information about the running channel.
  */
 export function init(args: {

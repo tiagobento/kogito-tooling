@@ -23,7 +23,7 @@ import { KogitoEditorEnvelopeContextType } from "./KogitoEditorEnvelopeContext";
  */
 export interface EditorFactory {
   /**
-   * Returns an Editor based on a LanguageData.
+   * Returns an Editor instance.
    * Receives a messageBus to be used by the Editor to communicate with the outside of the envelope.
    */
   createEditor(envelopeContext: KogitoEditorEnvelopeContextType, initArgs: EditorInitArgs): Promise<Editor>;

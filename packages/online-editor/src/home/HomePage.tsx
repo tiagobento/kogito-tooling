@@ -130,7 +130,7 @@ export function HomePage(props: Props) {
 
   const onFileUploadFromDnd = useCallback((file: File) => {
     const fileExtension = extractFileExtension(file.name);
-    if (!fileExtension || !context.router.getLanguageData(fileExtension)) {
+    if (!fileExtension || !context.editorEnvelopeLocator.mapping.has(fileExtension)) {
       setUploadFileDndState(UploadFileDndState.INVALID_EXTENSION);
     } else {
       openFile(file);
@@ -177,7 +177,7 @@ export function HomePage(props: Props) {
 
   const onFileUploadFromInput = useCallback((file: File) => {
     const fileExtension = extractFileExtension(file.name);
-    if (!fileExtension || !context.router.getLanguageData(fileExtension)) {
+    if (!fileExtension || !context.editorEnvelopeLocator.mapping.has(fileExtension)) {
       setUploadFileInputState(UploadFileInputState.INVALID_EXTENSION);
     } else {
       openFile(file);
@@ -307,7 +307,7 @@ export function HomePage(props: Props) {
       }
 
       const gistExtension = extractFileExtension(new URL(rawUrl).pathname);
-      if (gistExtension && context.router.getLanguageData(gistExtension)) {
+      if (gistExtension && context.editorEnvelopeLocator.mapping.has(gistExtension)) {
         setInputFileUrlState({
           urlValidation: InputFileUrlState.VALID,
           urlToOpen: rawUrl
@@ -323,7 +323,7 @@ export function HomePage(props: Props) {
     }
 
     const fileExtension = extractFileExtension(url.pathname);
-    if (!fileExtension || !context.router.getLanguageData(fileExtension)) {
+    if (!fileExtension || !context.editorEnvelopeLocator.mapping.has(fileExtension)) {
       setInputFileUrlState({
         urlValidation: InputFileUrlState.INVALID_EXTENSION,
         urlToOpen: undefined

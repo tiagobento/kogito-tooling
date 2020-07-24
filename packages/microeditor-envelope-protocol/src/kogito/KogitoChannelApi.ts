@@ -17,7 +17,6 @@
 import {
   EditorContent,
   KogitoEdit,
-  LanguageData,
   ResourceContent,
   ResourceContentRequest,
   ResourceListRequest,

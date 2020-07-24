@@ -21,7 +21,7 @@ import { renderPrEditorsApp } from "./app/components/pr/prEditors";
 import { mainContainer, runAfterUriChange } from "./app/utils";
 import { Dependencies } from "./app/Dependencies";
 import * as ReactDOM from "react-dom";
-import { EditorEnvelopeLocator, Router } from "@kogito-tooling/microeditor-envelope-protocol";
+import { EditorEnvelopeLocator } from "@kogito-tooling/microeditor-envelope-protocol";
 import "../resources/style.css";
 import { Logger } from "./Logger";
 import { Globals } from "./app/components/common/Main";
@@ -35,7 +35,7 @@ import { addExternalEditorLinks } from "./app/components/tree/externalEditorLink
  *  @param args.name The extension name. Used to differentiate logs from other extensions.
  *  @param args.extensionIconUrl The relative path to search for an image that will be the icon used for your extension.
  *  @param args.githubAuthTokenCookieName The name of the cookie that will hold a GitHub PAT for your extension.
- *  @param args.router The Router to be used to find resources for each language.
+ *  @param args.editorEnvelopeLocator The file extension mapping to the provided Editors.
  *  @param args.externalEditorManager The implementation of ExternalEditorManager for your extension.
  */
 export function startExtension(args: {

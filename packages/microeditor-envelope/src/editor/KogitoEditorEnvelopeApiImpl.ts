@@ -60,27 +60,22 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
     private readonly editorFactory: EditorFactory
   ) {}
 
-  private capturedInitRequestYetF() {
+  private hasCapturedInitRequestYet() {
     return this.capturedInitRequestYet;
   }
 
-
-  private setCapturedInitRequest() {
-    return this.capturedInitRequestYet = true;
+  private ackCapturedInitRequest() {
+    this.capturedInitRequestYet = true;
   }
 
   public receive_initRequest = async (association: Association, initArgs: EditorInitArgs) => {
     this.args.envelopeBusController.associate(association);
 
-
-    if (this.capturedInitRequestYetF()) {
+    if (this.hasCapturedInitRequestYet()) {
       return;
     }
 
-    console.info("FILE EXTENSION: " + initArgs.fileExtension);
-    console.info("RESOURCES RELATIVE PATH: " + initArgs.resourcesPathPrefix);
-
-    this.setCapturedInitRequest();
+    this.ackCapturedInitRequest();
 
     this.editor = await this.editorFactory.createEditor(this.args.envelopeContext, initArgs);
 

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { EditorType, EmbeddedEditorRouter, File } from "@kogito-tooling/embedded-editor";
-import { GwtEditorRoutes } from "@kogito-tooling/kie-bc-editors";
+import { EditorType, File } from "@kogito-tooling/embedded-editor";
 import "@patternfly/patternfly/patternfly-addons.css";
 import "@patternfly/patternfly/patternfly-variables.css";
 import "@patternfly/patternfly/patternfly.css";
@@ -32,6 +31,7 @@ import { DownloadHubModal } from "./home/DownloadHubModal";
 import { HomePage } from "./home/HomePage";
 import { NoMatchPage } from "./NoMatchPage";
 import "../static/resources/style.css";
+import { EditorEnvelopeLocator } from "@kogito-tooling/microeditor-envelope-protocol";
 
 interface Props {
   file: File;
@@ -44,15 +44,16 @@ interface Props {
 export function App(props: Props) {
   const [file, setFile] = useState(props.file);
   const routes = useMemo(() => new Routes(), []);
-  const router: EmbeddedEditorRouter = useMemo(
-    () =>
-      new EmbeddedEditorRouter(
-        new GwtEditorRoutes({
-          dmnPath: "gwt-editors/dmn",
-          bpmnPath: "gwt-editors/bpmn",
-          scesimPath: "gwt-editors/scesim"
-        })
-      ),
+
+  const editorEnvelopeLocator: EditorEnvelopeLocator = useMemo(
+    () => ({
+      targetOrigin: window.location.origin,
+      mapping: new Map([
+        ["bpmn", { resourcesPathPrefix: "../gwt-editors/bpmn", envelopePath: "envelope/envelope.html" }],
+        ["bpmn2", { resourcesPathPrefix: "../gwt-editors/bpmn", envelopePath: "envelope/envelope.html" }],
+        ["dmn", { resourcesPathPrefix: "../gwt-editors/dmn", envelopePath: "envelope/envelope.html" }]
+      ])
+    }),
     []
   );
 
@@ -77,7 +78,7 @@ export function App(props: Props) {
       value={{
         file,
         routes,
-        router,
+        editorEnvelopeLocator,
         readonly: props.readonly,
         external: props.external,
         senderTabId: props.senderTabId,

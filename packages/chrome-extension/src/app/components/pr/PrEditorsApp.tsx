@@ -17,7 +17,7 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useGlobals } from "../common/GlobalContext";
-import { Router, EditorEnvelopeLocator } from "@kogito-tooling/microeditor-envelope-protocol";
+import { EditorEnvelopeLocator } from "@kogito-tooling/microeditor-envelope-protocol";
 import { Dependencies } from "../../Dependencies";
 import { getOriginalFilePath, IsolatedPrEditor, PrInfo } from "./IsolatedPrEditor";
 import { Logger } from "../../../Logger";
@@ -79,7 +79,7 @@ export function PrEditorsApp(props: { prInfo: PrInfo; contentPath: string }) {
 
 function supportedPrFileElements(logger: Logger, envelopeLocator: EditorEnvelopeLocator, dependencies: Dependencies) {
   return prFileElements(logger, dependencies).filter(container =>
-      envelopeLocator.mapping.has(getFileExtension(container, dependencies))
+    envelopeLocator.mapping.has(getFileExtension(container, dependencies))
   );
 }
 

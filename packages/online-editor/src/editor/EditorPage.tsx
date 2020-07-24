@@ -274,7 +274,8 @@ export function EditorPage(props: Props) {
         <EmbeddedEditor
           ref={editorRef}
           file={context.file}
-          router={context.router}
+          editorEnvelopeLocator={context.editorEnvelopeLocator}
+          envelopeMapping={context.editorEnvelopeLocator.mapping.get(context.file.editorType)!} //FIXME: Danger
           onReady={onReady}
           channelType={ChannelType.ONLINE}
         />
