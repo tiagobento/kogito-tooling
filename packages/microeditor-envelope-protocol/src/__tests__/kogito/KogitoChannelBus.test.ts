@@ -37,7 +37,6 @@ beforeEach(() => {
     receive_stateControlCommandUpdate: jest.fn(),
     receive_guidedTourUserInteraction: jest.fn(),
     receive_guidedTourRegisterTutorial: jest.fn(),
-    receive_languageRequest: jest.fn(),
     receive_contentRequest: jest.fn(),
     receive_resourceContentRequest: jest.fn(),
     receive_resourceListRequest: jest.fn()
@@ -62,7 +61,7 @@ describe("startInitPolling", () => {
   test("polls for init response", async () => {
     jest.spyOn(channelBus, "stopInitPolling");
 
-    channelBus.startInitPolling("tests", { fileExtension: "txt", resourcesRelativePath: "" });
+    channelBus.startInitPolling("tests", { fileExtension: "txt", resourcesPathPrefix: "" });
     expect(channelBus.initPolling).toBeTruthy();
     expect(channelBus.initPollingTimeout).toBeTruthy();
 
@@ -85,7 +84,7 @@ describe("startInitPolling", () => {
     jest.spyOn(channelBus, "stopInitPolling");
     KogitoChannelBus.INIT_POLLING_TIMEOUT_IN_MS = 200;
 
-    channelBus.startInitPolling("tests", { fileExtension: "txt", resourcesRelativePath: "" });
+    channelBus.startInitPolling("tests", { fileExtension: "txt", resourcesPathPrefix: "" });
     expect(channelBus.initPolling).toBeTruthy();
     expect(channelBus.initPollingTimeout).toBeTruthy();
 
@@ -104,7 +103,7 @@ describe("receive", () => {
       busId: "unknown-id",
       purpose: EnvelopeBusMessagePurpose.REQUEST,
       requestId: "any",
-      type: "receive_languageRequest",
+      type: "receive_resourceListRequest",
       data: []
     });
     channelBus.receive({
@@ -191,30 +190,6 @@ describe("receive", () => {
     expect(api.receive_guidedTourUserInteraction).toHaveBeenCalledWith();
   });
 
-  test("language request", async () => {
-    const languageData = { type: "a-language" };
-
-    jest.spyOn(api, "receive_languageRequest").mockReturnValueOnce(Promise.resolve(languageData));
-
-    await incomingMessage({
-      busId: channelBus.busId,
-      requestId: "requestId",
-      purpose: EnvelopeBusMessagePurpose.REQUEST,
-      type: "receive_languageRequest",
-      data: []
-    });
-
-    expect(api.receive_languageRequest).toHaveBeenCalledWith();
-    expect(sentMessages).toEqual([
-      {
-        requestId: "requestId",
-        purpose: EnvelopeBusMessagePurpose.RESPONSE,
-        type: "receive_languageRequest",
-        data: languageData
-      }
-    ]);
-  });
-
   test("content request", async () => {
     const content = { content: "the language", path: "the path" };
 
@@ -292,7 +267,7 @@ describe("receive", () => {
 
 describe("send", () => {
   test("request init", async () => {
-    const init = channelBus.request_initResponse("test-origin", { fileExtension: "txt", resourcesRelativePath: "" });
+    const init = channelBus.request_initResponse("test-origin", { fileExtension: "txt", resourcesPathPrefix: "" });
     expect(sentMessages).toEqual([
       {
         purpose: EnvelopeBusMessagePurpose.REQUEST,
@@ -300,7 +275,7 @@ describe("send", () => {
         type: "receive_initRequest",
         data: [
           { busId: channelBus.busId, origin: "test-origin" },
-          { fileExtension: "txt", resourcesRelativePath: "" }
+          { fileExtension: "txt", resourcesPathPrefix: "" }
         ]
       }
     ]);

@@ -15,7 +15,6 @@
  */
 
 import * as vscode from "vscode";
-import { Uri } from "vscode";
 import * as fs from "fs";
 import * as __path from "path";
 import {
@@ -26,44 +25,28 @@ import {
   ResourceListRequest,
   Router
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import { KogitoEditorStore } from "./KogitoEditorStore";
+import {KogitoEditorStore} from "./KogitoEditorStore";
+import {EnvelopeMapping} from "./index";
 
 export class KogitoEditor {
-  private readonly uri: vscode.Uri;
-  private readonly relativePath: string;
-  private readonly webviewLocation: string;
-  private readonly context: vscode.ExtensionContext;
-  private readonly router: Router;
-  private readonly panel: vscode.WebviewPanel;
-  private readonly editorStore: KogitoEditorStore;
   private readonly kogitoChannelBus: KogitoChannelBus;
-  private readonly resourceContentService: ResourceContentService;
-  private readonly signalEdit: (edit: KogitoEdit) => void;
 
   private readonly encoder = new TextEncoder();
   private readonly decoder = new TextDecoder("utf-8");
 
   public constructor(
-    relativePath: string,
-    uri: vscode.Uri,
-    initialBackup: vscode.Uri | undefined,
-    panel: vscode.WebviewPanel,
-    context: vscode.ExtensionContext,
-    router: Router,
-    webviewLocation: string,
-    editorStore: KogitoEditorStore,
-    resourceContentService: ResourceContentService,
-    signalEdit: (edit: KogitoEdit) => void
+    private readonly relativePath: string,
+    private readonly uri: vscode.Uri,
+    private readonly initialBackup: vscode.Uri | undefined,
+    private readonly panel: vscode.WebviewPanel,
+    private readonly context: vscode.ExtensionContext,
+    private readonly router: Router,
+    private readonly editorStore: KogitoEditorStore,
+    private readonly resourceContentService: ResourceContentService,
+    private readonly signalEdit: (edit: KogitoEdit) => void,
+    private readonly envelopeMapping: EnvelopeMapping,
+    private readonly fileExtension: string
   ) {
-    this.relativePath = relativePath;
-    this.uri = uri;
-    this.panel = panel;
-    this.context = context;
-    this.router = router;
-    this.webviewLocation = webviewLocation;
-    this.editorStore = editorStore;
-    this.resourceContentService = resourceContentService;
-    this.signalEdit = signalEdit;
     this.kogitoChannelBus = new KogitoChannelBus(
       {
         postMessage: message => this.panel.webview.postMessage(message)
@@ -92,10 +75,6 @@ export class KogitoEditor {
         receive_openFile: (path: string) => {
           this.notify_openFile(path);
         },
-        //requests
-        receive_languageRequest: async () => {
-          return this.router.getLanguageData(this.getFileExtension());
-        },
         receive_contentRequest: async () => {
           return vscode.workspace.fs.readFile(initialBackup ?? this.uri).then(contentArray => {
             initialBackup = undefined;
@@ -110,14 +89,6 @@ export class KogitoEditor {
         }
       }
     );
-  }
-
-  private getFileExtension() {
-    return this.uri.fsPath.split(".").pop()!;
-  }
-
-  public asWebviewUri(absolutePath: Uri) {
-    return this.panel.webview.asWebviewUri(absolutePath);
   }
 
   public async requestSave(destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
@@ -195,8 +166,8 @@ export class KogitoEditor {
     );
 
     this.kogitoChannelBus.startInitPolling("vscode", {
-      fileExtension: this.getFileExtension(),
-      resourcesRelativePath: this.router.getRelativePathTo("")
+      fileExtension: this.fileExtension,
+      resourcesPathPrefix: this.envelopeMapping.resourcesPathPrefix
     });
   }
 
@@ -225,10 +196,6 @@ export class KogitoEditor {
       this,
       this.context.subscriptions
     );
-  }
-
-  private getWebviewIndexJsPath() {
-    return this.router.getRelativePathTo(this.webviewLocation);
   }
 
   public hasUri(uri: vscode.Uri) {
@@ -275,7 +242,7 @@ export class KogitoEditor {
         </head>
         <body>
         <div id="envelope-app"></div>
-        <script src="${this.getWebviewIndexJsPath()}"></script>
+        <script src="${(this.envelopeMapping.envelopePath)}"></script>
         </body>
         </html>
     `;

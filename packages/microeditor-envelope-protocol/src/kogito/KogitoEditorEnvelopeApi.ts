@@ -23,7 +23,7 @@ export interface Association {
 }
 
 export interface EditorInitArgs {
-  resourcesRelativePath: string;
+  resourcesPathPrefix: string;
   fileExtension: string;
 }
 

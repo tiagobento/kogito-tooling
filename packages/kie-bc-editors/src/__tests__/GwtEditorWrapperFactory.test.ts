@@ -16,6 +16,7 @@
 
 import { GwtEditorWrapperFactory } from "../GwtEditorWrapperFactory";
 import { GwtLanguageData, Resource } from "../GwtLanguageData";
+import { GwtStateControlService } from "../gwtStateControl";
 
 const cssResource: Resource = {
   type: "css",
@@ -50,13 +51,22 @@ const testLanguageData: GwtLanguageData = {
   resources: [cssResource, jsResource]
 };
 
-const gwtEditorWrapperFactory: GwtEditorWrapperFactory = new GwtEditorWrapperFactory({ format: (c: string) => c }, {
-  onFinishedLoading: (callback: () => Promise<any>) => {
-    window.appFormerGwtFinishedLoading = callback;
-  },
+const xmlFormatter = { format: (c: string) => c };
+
+const gwtAppFormerApi = {
+  onFinishedLoading: (callback: () => Promise<any>) => (window.appFormerGwtFinishedLoading = callback),
   getEditor: jest.fn(),
   setClientSideOnly: jest.fn()
-} as any);
+};
+
+const gwtEditorMapping = { getLanguageData: () => testLanguageData };
+
+const gwtEditorWrapperFactory: GwtEditorWrapperFactory = new GwtEditorWrapperFactory(
+  xmlFormatter,
+  gwtAppFormerApi,
+  new GwtStateControlService(),
+  gwtEditorMapping
+);
 
 function waitForNScriptsToLoad(remaining: number) {
   if (remaining <= 0) {
@@ -74,17 +84,20 @@ function waitForNScriptsToLoad(remaining: number) {
 
 describe("GwtEditorWrapperFactory", () => {
   test("create editor", async () => {
-    const editorCreation = gwtEditorWrapperFactory.createEditor(testLanguageData, {
-      channelApi: {
-        notify: jest.fn(),
-        request: jest.fn()
+    const editorCreation = gwtEditorWrapperFactory.createEditor(
+      {
+        channelApi: {
+          notify: jest.fn(),
+          request: jest.fn()
+        },
+        context: {} as any,
+        services: {
+          keyboardShortcuts: {} as any,
+          guidedTour: {} as any
+        }
       },
-      context: {} as any,
-      services: {
-        keyboardShortcuts: {} as any,
-        guidedTour: {} as any
-      }
-    });
+      { resourcesPathPrefix: "", fileExtension: "txt" }
+    );
 
     await waitForNScriptsToLoad(jsResource.paths.length);
     await window.appFormerGwtFinishedLoading();

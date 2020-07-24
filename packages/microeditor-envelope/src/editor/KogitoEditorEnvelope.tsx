@@ -38,7 +38,7 @@ export class KogitoEditorEnvelope {
     private readonly args: {
       container: HTMLElement;
       bus: EnvelopeBus;
-      editorFactory: EditorFactory<any>;
+      editorFactory: EditorFactory;
       editorContext: EditorContext;
     },
     private readonly kogitoEditorEnvelopeApiFactory = new KogitoEditorEnvelopeApiFactory(args.editorFactory),

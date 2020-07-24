@@ -14,34 +14,25 @@
  * limitations under the License.
  */
 
-import { KogitoEditorStore } from "./KogitoEditorStore";
-import { KogitoEditor } from "./KogitoEditor";
-import { KogitoEdit, ResourceContentService } from "@kogito-tooling/microeditor-envelope-protocol";
-import { VsCodeNodeResourceContentService } from "./VsCodeNodeResourceContentService";
-import { VsCodeResourceContentService } from "./VsCodeResourceContentService";
+import {KogitoEditorStore} from "./KogitoEditorStore";
+import {KogitoEditor} from "./KogitoEditor";
+import {KogitoEdit, ResourceContentService, Routes} from "@kogito-tooling/microeditor-envelope-protocol";
+import {VsCodeNodeResourceContentService} from "./VsCodeNodeResourceContentService";
+import {VsCodeResourceContentService} from "./VsCodeResourceContentService";
 
 import * as vscode from "vscode";
+import {Uri, Webview} from "vscode";
 import * as nodePath from "path";
-import { DefaultVsCodeRouter } from "./DefaultVsCodeRouter";
-import { Routes } from "@kogito-tooling/microeditor-envelope-protocol";
+import {DefaultVsCodeRouter} from "./DefaultVsCodeRouter";
+import {EditorEnvelopeLocator, EnvelopeMapping} from "./index";
 
 export class KogitoEditorFactory {
-  private readonly context: vscode.ExtensionContext;
-  private readonly editorStore: KogitoEditorStore;
-  private readonly webviewLocation: string;
-  private readonly routes: Routes;
-
   constructor(
-    context: vscode.ExtensionContext,
-    routes: Routes,
-    webviewLocation: string,
-    editorStore: KogitoEditorStore
-  ) {
-    this.context = context;
-    this.editorStore = editorStore;
-    this.routes = routes;
-    this.webviewLocation = webviewLocation;
-  }
+    private readonly context: vscode.ExtensionContext,
+    private readonly routes: Routes,
+    private readonly editorStore: KogitoEditorStore,
+    private readonly editorEnvelopeMapping: EditorEnvelopeLocator
+  ) {}
 
   public configureNew(
     uri: vscode.Uri,
@@ -60,11 +51,26 @@ export class KogitoEditorFactory {
       localResourceRoots: [vscode.Uri.file(this.context.extensionPath)]
     };
 
+    const editorMapping = new Map<string, EnvelopeMapping>();
+    Array.of(...this.editorEnvelopeMapping.editorMapping.entries()).forEach(([k, v]) => {
+      editorMapping.set(k, {
+        envelopePath: this.getWebviewPath(webviewPanel.webview, v.envelopePath),
+        resourcesPathPrefix: this.getWebviewPath(webviewPanel.webview, v.resourcesPathPrefix)
+      });
+    });
+
+    const editorEnvelopeLocator: EditorEnvelopeLocator = {
+      targetOrigin: this.editorEnvelopeMapping.targetOrigin,
+      editorMapping: editorMapping
+    };
+
     const router = new DefaultVsCodeRouter(this.context, webviewPanel.webview, this.routes);
 
     const workspacePath = vscode.workspace.asRelativePath(path);
 
     const resourceContentService = this.createResourceContentService(path, workspacePath);
+
+    const fileExtension = uri.fsPath.split(".").pop()!;
 
     const editor = new KogitoEditor(
       workspacePath,
@@ -73,16 +79,22 @@ export class KogitoEditorFactory {
       webviewPanel,
       this.context,
       router,
-      this.webviewLocation,
       this.editorStore,
       resourceContentService,
-      signalEdit
+      signalEdit,
+      editorEnvelopeLocator.editorMapping.get(fileExtension)!,
+      fileExtension
     );
+
     this.editorStore.addAsActive(editor);
     editor.setupEnvelopeBus();
     editor.setupPanelActiveStatusChange();
     editor.setupPanelOnDidDispose();
     editor.setupWebviewContent();
+  }
+
+  private getWebviewPath(webview: Webview, relativePath: string) {
+    return webview.asWebviewUri(Uri.file(this.context.asAbsolutePath(relativePath))).toString();
   }
 
   public createResourceContentService(path: string, workspacePath: string): ResourceContentService {

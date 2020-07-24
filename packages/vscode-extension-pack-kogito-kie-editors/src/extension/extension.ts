@@ -23,7 +23,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   KogitoVsCode.startExtension({
     extensionName: "kie-group.vscode-extension-pack-kogito-kie-editors",
-    webviewLocation: "dist/webview/index.js",
     context: context,
     viewType: "kieKogitoWebviewEditors",
     getPreviewCommandId: "extension.kogito.getPreviewSvg",
@@ -31,7 +30,16 @@ export function activate(context: vscode.ExtensionContext) {
       bpmnPath: "dist/webview/editors/bpmn",
       dmnPath: "dist/webview/editors/dmn",
       scesimPath: "dist/webview/editors/scesim"
-    })
+    }),
+    editorEnvelopeMapping: {
+      targetOrigin: "vscode",
+      editorMapping: new Map([
+        ["bpmn", { resourcesPathPrefix: "dist/webview/editors/bpmn", envelopePath: "dist/webview/index.js" }],
+        ["bpmn2", { resourcesPathPrefix: "dist/webview/editors/bpmn", envelopePath: "dist/webview/index.js" }],
+        ["dmn", { resourcesPathPrefix: "dist/webview/editors/dmn", envelopePath: "dist/webview/index.js" }],
+        ["scesim", { resourcesPathPrefix: "dist/webview/editors/scesim", envelopePath: "dist/webview/index.js" }]
+      ])
+    }
   });
 
   console.info("Extension is successfully setup.");

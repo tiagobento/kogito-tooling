@@ -28,7 +28,7 @@ import { KogitoEditorEnvelope } from "./editor/KogitoEditorEnvelope";
 export function init(args: {
   container: HTMLElement;
   bus: EnvelopeBus;
-  editorFactory: EditorFactory<any>;
+  editorFactory: EditorFactory;
   editorContext: EditorContext;
 }) {
   return new KogitoEditorEnvelope(args).start();

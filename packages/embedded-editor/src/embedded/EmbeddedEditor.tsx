@@ -215,9 +215,6 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
           KogitoGuidedTour.getInstance().registerTutorial(tutorial);
         },
         //requests
-        receive_languageRequest() {
-          return Promise.resolve(props.router.getLanguageData(props.file.editorType));
-        },
         receive_contentRequest() {
           return props.file.getFileContents().then(c => ({ content: c ?? "", path: props.file.fileName }));
         },
@@ -244,7 +241,7 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
   //Attach/detach bus when component attaches/detaches from DOM
   useConnectedKogitoChannelBus(
     window.location.origin,
-    { fileExtension: props.file.editorType, resourcesRelativePath: props.router.getRelativePathTo("") },
+    { fileExtension: props.file.editorType, resourcesPathPrefix: props.router.getRelativePathTo("") },
     kogitoChannelBus
   );
 

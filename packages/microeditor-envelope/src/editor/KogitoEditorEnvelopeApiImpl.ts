@@ -20,6 +20,7 @@ import {
   ChannelType,
   DEFAULT_RECT,
   EditorContent,
+  EditorInitArgs,
   KogitoChannelApi,
   KogitoEditorEnvelopeApi,
   StateControlCommand
@@ -31,7 +32,7 @@ import { EditorEnvelopeView } from "./EditorEnvelopeView";
 export class KogitoEditorEnvelopeApiFactory
   implements
     EnvelopeApiFactory<KogitoEditorEnvelopeApi, KogitoChannelApi, EditorEnvelopeView, KogitoEditorEnvelopeContextType> {
-  constructor(private readonly editorFactory: EditorFactory<any>) {}
+  constructor(private readonly editorFactory: EditorFactory) {}
 
   public create(
     args: EnvelopeApiFactoryArgs<
@@ -56,11 +57,14 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
       EditorEnvelopeView,
       KogitoEditorEnvelopeContextType
     >,
-    private readonly editorFactory: EditorFactory<any>
+    private readonly editorFactory: EditorFactory
   ) {}
 
-  public receive_initRequest = async (association: Association) => {
+  public receive_initRequest = async (association: Association, initArgs: EditorInitArgs) => {
     this.args.envelopeBusController.associate(association);
+
+    console.info("FILE EXTENSION: " + initArgs.fileExtension);
+    console.info("RESOURCES RELATIVE PATH: " + initArgs.resourcesPathPrefix);
 
     if (this.capturedInitRequestYet) {
       return;
@@ -68,8 +72,7 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
 
     this.capturedInitRequestYet = true;
 
-    const language = await this.args.envelopeContext.channelApi.request("receive_languageRequest");
-    this.editor = await this.editorFactory.createEditor(language, this.args.envelopeContext);
+    this.editor = await this.editorFactory.createEditor(this.args.envelopeContext, initArgs);
 
     await this.args.view.setEditor(this.editor);
 

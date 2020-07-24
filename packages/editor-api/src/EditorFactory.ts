@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { LanguageData } from "@kogito-tooling/microeditor-envelope-protocol";
+import { EditorInitArgs } from "@kogito-tooling/microeditor-envelope-protocol";
 import { Editor } from "./Editor";
 import { KogitoEditorEnvelopeContextType } from "./KogitoEditorEnvelopeContext";
 
 /**
  * Factory of Editors to be created inside the envelope.
  */
-export interface EditorFactory<T extends LanguageData> {
+export interface EditorFactory {
   /**
    * Returns an Editor based on a LanguageData.
    * Receives a messageBus to be used by the Editor to communicate with the outside of the envelope.
    */
-  createEditor(languageData: T, envelopeContext: KogitoEditorEnvelopeContextType): Promise<Editor>;
+  createEditor(envelopeContext: KogitoEditorEnvelopeContextType, initArgs: EditorInitArgs): Promise<Editor>;
 }

@@ -25,7 +25,8 @@ import {
   ResourceContentOptions,
   ResourceListOptions,
   Tutorial,
-  UserInteraction
+  UserInteraction,
+  EditorInitArgs
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import { GuidedTourApi } from "./api/GuidedTourApi";
 import { ResourceContentApi } from "./api/ResourceContentApi";
@@ -33,6 +34,7 @@ import { KeyboardShortcutsApi } from "./api/KeyboardShorcutsApi";
 import { WorkspaceServiceApi } from "./api/WorkspaceServiceApi";
 import { StateControlApi } from "./api/StateControlApi";
 import { EditorContextApi } from "./api/EditorContextApi";
+import { GwtEditorMapping } from "./GwtEditorMapping";
 
 declare global {
   interface Window {
@@ -54,15 +56,21 @@ declare global {
   }
 }
 
-export class GwtEditorWrapperFactory implements EditorFactory<GwtLanguageData> {
+export class GwtEditorWrapperFactory implements EditorFactory {
   constructor(
     private readonly xmlFormatter: XmlFormatter = new DefaultXmlFormatter(),
     private readonly gwtAppFormerApi = new GwtAppFormerApi(),
-    private readonly gwtStateControlService = new GwtStateControlService()
+    private readonly gwtStateControlService = new GwtStateControlService(),
+    private readonly gwtEditorMapping = new GwtEditorMapping()
   ) {}
 
-  public createEditor(languageData: GwtLanguageData, envelopeContext: KogitoEditorEnvelopeContextType) {
+  public createEditor(envelopeContext: KogitoEditorEnvelopeContextType, initArgs: EditorInitArgs) {
     this.gwtAppFormerApi.setClientSideOnly(true);
+
+    const languageData = this.gwtEditorMapping.getLanguageData(initArgs);
+    if (!languageData) {
+      throw new Error("Langugage data does not exist");
+    }
 
     this.exposeEnvelopeContext(envelopeContext);
 

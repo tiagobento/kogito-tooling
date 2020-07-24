@@ -35,7 +35,6 @@ export interface KogitoChannelApi {
   receive_guidedTourRegisterTutorial(tutorial: Tutorial): void;
   receive_newEdit(edit: KogitoEdit): void;
   receive_stateControlCommandUpdate(command: StateControlCommand): void;
-  receive_languageRequest(): Promise<LanguageData | undefined>;
   receive_contentRequest(): Promise<EditorContent>;
   receive_resourceContentRequest(request: ResourceContentRequest): Promise<ResourceContent | undefined>;
   receive_resourceListRequest(request: ResourceListRequest): Promise<ResourcesList>;
