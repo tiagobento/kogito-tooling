@@ -18,15 +18,15 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as __path from "path";
 import {
+  EditorEnvelopeLocator,
+  EnvelopeMapping,
   KogitoChannelBus,
   KogitoEdit,
   ResourceContentRequest,
   ResourceContentService,
-  ResourceListRequest,
-  Router
+  ResourceListRequest
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import {KogitoEditorStore} from "./KogitoEditorStore";
-import {EnvelopeMapping} from "./index";
+import { KogitoEditorStore } from "./KogitoEditorStore";
 
 export class KogitoEditor {
   private readonly kogitoChannelBus: KogitoChannelBus;
@@ -40,11 +40,11 @@ export class KogitoEditor {
     private readonly initialBackup: vscode.Uri | undefined,
     private readonly panel: vscode.WebviewPanel,
     private readonly context: vscode.ExtensionContext,
-    private readonly router: Router,
     private readonly editorStore: KogitoEditorStore,
     private readonly resourceContentService: ResourceContentService,
     private readonly signalEdit: (edit: KogitoEdit) => void,
     private readonly envelopeMapping: EnvelopeMapping,
+    private readonly envelopeLocator: EditorEnvelopeLocator,
     private readonly fileExtension: string
   ) {
     this.kogitoChannelBus = new KogitoChannelBus(
@@ -165,7 +165,7 @@ export class KogitoEditor {
       )
     );
 
-    this.kogitoChannelBus.startInitPolling("vscode", {
+    this.kogitoChannelBus.startInitPolling(this.envelopeLocator.targetOrigin, {
       fileExtension: this.fileExtension,
       resourcesPathPrefix: this.envelopeMapping.resourcesPathPrefix
     });
@@ -242,7 +242,7 @@ export class KogitoEditor {
         </head>
         <body>
         <div id="envelope-app"></div>
-        <script src="${(this.envelopeMapping.envelopePath)}"></script>
+        <script src="${this.envelopeMapping.envelopePath}"></script>
         </body>
         </html>
     `;

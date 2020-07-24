@@ -32,4 +32,5 @@ export * from "./ResourceContent";
 export * from "./ContentType";
 export * from "./Router";
 export * from "./ChannelKeyboardEvent";
+export * from "./EditorEnvelopeLocator";
 export * from "./guidedTour";

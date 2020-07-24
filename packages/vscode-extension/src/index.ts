@@ -18,7 +18,7 @@ import * as vscode from "vscode";
 import { KogitoEditorStore } from "./KogitoEditorStore";
 import { KogitoEditorFactory } from "./KogitoEditorFactory";
 import { KogitoWebviewProvider } from "./KogitoWebviewProvider";
-import { Routes } from "@kogito-tooling/microeditor-envelope-protocol";
+import { EditorEnvelopeLocator } from "@kogito-tooling/microeditor-envelope-protocol";
 
 /**
  * Starts a Kogito extension.
@@ -31,18 +31,12 @@ import { Routes } from "@kogito-tooling/microeditor-envelope-protocol";
 export function startExtension(args: {
   extensionName: string;
   context: vscode.ExtensionContext;
-  routes: Routes;
   viewType: string;
   getPreviewCommandId: string;
   editorEnvelopeMapping: EditorEnvelopeLocator;
 }) {
   const editorStore = new KogitoEditorStore();
-  const editorFactory = new KogitoEditorFactory(
-    args.context,
-    args.routes,
-    editorStore,
-    args.editorEnvelopeMapping
-  );
+  const editorFactory = new KogitoEditorFactory(args.context, editorStore, args.editorEnvelopeMapping);
   const webviewProvider = new KogitoWebviewProvider(args.viewType, editorFactory, editorStore, args.context);
 
   args.context.subscriptions.push(webviewProvider.register());
@@ -52,15 +46,3 @@ export function startExtension(args: {
     })
   );
 }
-
-export interface EnvelopeMapping {
-  resourcesPathPrefix: string;
-  envelopePath: string;
-}
-
-export interface EditorEnvelopeLocator {
-  targetOrigin: string;
-  editorMapping: Map<string, EnvelopeMapping>;
-}
-
-export * from "./DefaultVsCodeRouter";

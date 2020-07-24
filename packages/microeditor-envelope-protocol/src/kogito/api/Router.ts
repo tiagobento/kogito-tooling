@@ -14,39 +14,7 @@
  * limitations under the License.
  */
 
-import { LanguageData } from "./LanguageData";
-
-/**
- * Responsible for returning a LanguageData for a file extension. When opening an Editor,
- * the LanguageData returned is used to find the resources needed for that editor to work.
- *
- * The LanguageData returned should be a custom class that implements LanguageData.
- */
 export abstract class Router {
-  protected readonly routesArray: Routes[];
-
-  protected constructor(...routesArray: Routes[]) {
-    this.routesArray = routesArray;
-  }
-
-  /**
-   * Returns the LanguageData from the provided routes as a Map indexed by the file extensions.
-   */
-  public getLanguageDataByFileExtension() {
-    const allLanguageData = new Map<string, LanguageData>();
-    this.routesArray.reduce((map, routes) => {
-      routes.getRoutes(this).forEach((v, k) => map.set(k, v));
-      return map;
-    }, allLanguageData);
-    return allLanguageData;
-  }
-
-  /**
-   * Returns the custom LanguageData class for a specific file extension.
-   * @param fileExtension The file extension (i.e. "txt", or "png")
-   */
-  public abstract getLanguageData(fileExtension: string): LanguageData | undefined;
-
   /**
    * Responsible for transforming a relative URI path to an absolute URL inside the context of the application.
    * @param uri The relative path URI.
@@ -57,15 +25,4 @@ export abstract class Router {
    * Returns the domain of the envelope
    */
   public abstract getTargetOrigin(): string;
-}
-
-/**
- * Exports the routes for a file extension
- */
-export interface Routes {
-  /**
-   * Returns the routes for a file extension as a Map
-   * @param router Router that will decide the relative path to prepend on the resources URLs
-   */
-  getRoutes(router: Router): Map<string, LanguageData>;
 }

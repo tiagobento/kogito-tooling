@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import {KogitoEditorStore} from "./KogitoEditorStore";
-import {KogitoEditor} from "./KogitoEditor";
-import {KogitoEdit, ResourceContentService, Routes} from "@kogito-tooling/microeditor-envelope-protocol";
-import {VsCodeNodeResourceContentService} from "./VsCodeNodeResourceContentService";
-import {VsCodeResourceContentService} from "./VsCodeResourceContentService";
+import { KogitoEditorStore } from "./KogitoEditorStore";
+import { KogitoEditor } from "./KogitoEditor";
+import {
+  EditorEnvelopeLocator,
+  EnvelopeMapping,
+  KogitoEdit,
+  ResourceContentService,
+} from "@kogito-tooling/microeditor-envelope-protocol";
+import { VsCodeNodeResourceContentService } from "./VsCodeNodeResourceContentService";
+import { VsCodeResourceContentService } from "./VsCodeResourceContentService";
 
 import * as vscode from "vscode";
-import {Uri, Webview} from "vscode";
+import { Uri, Webview } from "vscode";
 import * as nodePath from "path";
-import {DefaultVsCodeRouter} from "./DefaultVsCodeRouter";
-import {EditorEnvelopeLocator, EnvelopeMapping} from "./index";
 
 export class KogitoEditorFactory {
   constructor(
     private readonly context: vscode.ExtensionContext,
-    private readonly routes: Routes,
     private readonly editorStore: KogitoEditorStore,
     private readonly editorEnvelopeMapping: EditorEnvelopeLocator
   ) {}
@@ -64,13 +66,16 @@ export class KogitoEditorFactory {
       editorMapping: editorMapping
     };
 
-    const router = new DefaultVsCodeRouter(this.context, webviewPanel.webview, this.routes);
-
     const workspacePath = vscode.workspace.asRelativePath(path);
 
     const resourceContentService = this.createResourceContentService(path, workspacePath);
 
     const fileExtension = uri.fsPath.split(".").pop()!;
+
+    const envelopeMapping = editorEnvelopeLocator.editorMapping.get(fileExtension);
+    if (!envelopeMapping) {
+      throw new Error("No envelope mapping found for " + fileExtension);
+    }
 
     const editor = new KogitoEditor(
       workspacePath,
@@ -78,11 +83,11 @@ export class KogitoEditorFactory {
       initialBackup,
       webviewPanel,
       this.context,
-      router,
       this.editorStore,
       resourceContentService,
       signalEdit,
-      editorEnvelopeLocator.editorMapping.get(fileExtension)!,
+      envelopeMapping,
+      editorEnvelopeLocator,
       fileExtension
     );
 

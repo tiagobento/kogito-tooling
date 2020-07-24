@@ -17,7 +17,7 @@
 import * as React from "react";
 import { getGuidedTourElementPosition, GwtEditor } from "./GwtAppFormerApi";
 import { Editor } from "@kogito-tooling/editor-api";
-import { editors } from "./GwtEditorRoutes";
+import { editors } from "./GwtEditorMapping";
 import { XmlFormatter } from "./XmlFormatter";
 import { GwtStateControlService } from "./gwtStateControl";
 import { KogitoChannelApi, MessageBusClient } from "@kogito-tooling/microeditor-envelope-protocol";
