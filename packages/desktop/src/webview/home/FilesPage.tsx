@@ -167,7 +167,7 @@ export function FilesPage(props: Props) {
     const fileType = extractFileExtension(urlObject.pathname);
     if (!fileType) {
       setInputFileUrlState(InputFileUrlState.NO_FILE_URL);
-    } else if (!context.router.getLanguageData(fileType)) {
+    } else if (!context.editorEnvelopeLocator.mapping.has(fileType)) {
       setInputFileUrlState(InputFileUrlState.INVALID_EXTENSION);
     } else {
       setInputFileUrlState(InputFileUrlState.VALID);
