@@ -61,12 +61,12 @@ export function EditorPage(props: Props) {
   }, []);
 
   const requestSave = useCallback(() => {
-    editorRef.current?.requestContent().then(content => {
+    editorRef.current?.getContent().then(content => {
       window.dispatchEvent(
         new CustomEvent("saveOnlineEditor", {
           detail: {
             fileName: fileNameWithExtension,
-            fileContent: content.content,
+            fileContent: content,
             senderTabId: context.senderTabId!
           }
         })
@@ -77,9 +77,9 @@ export function EditorPage(props: Props) {
   const requestDownload = useCallback(() => {
     editorRef.current?.getStateControl().setSavedCommand();
     setShowUnsavedAlert(false);
-    editorRef.current?.requestContent().then(content => {
+    editorRef.current?.getContent().then(content => {
       if (downloadRef.current) {
-        const fileBlob = new Blob([content.content], { type: "text/plain" });
+        const fileBlob = new Blob([content], { type: "text/plain" });
         downloadRef.current.href = URL.createObjectURL(fileBlob);
         downloadRef.current.click();
       }
@@ -87,8 +87,8 @@ export function EditorPage(props: Props) {
   }, []);
 
   const requestPreview = useCallback(() => {
-    editorRef.current?.requestPreview().then(previewSvg => {
-      if (downloadPreviewRef.current) {
+    editorRef.current?.getPreview().then(previewSvg => {
+      if (downloadPreviewRef.current && previewSvg) {
         const fileBlob = new Blob([previewSvg], { type: "image/svg+xml" });
         downloadPreviewRef.current.href = URL.createObjectURL(fileBlob);
         downloadPreviewRef.current.click();
@@ -97,7 +97,7 @@ export function EditorPage(props: Props) {
   }, []);
 
   const requestExportGist = useCallback(() => {
-    editorRef.current?.requestContent().then(content => {
+    editorRef.current?.getContent().then(content => {
       if (!context.githubService.isAuthenticated()) {
         setGithubTokenModalVisible(true);
         return;
@@ -106,8 +106,8 @@ export function EditorPage(props: Props) {
       context.githubService
         .createGist({
           filename: fileNameWithExtension,
-          content: content.content,
-          description: content.path ?? fileNameWithExtension,
+          content: content,
+          description: fileNameWithExtension,
           isPublic: true
         })
         .then(gistUrl => {
@@ -121,9 +121,9 @@ export function EditorPage(props: Props) {
   }, []);
 
   const requestCopyContentToClipboard = useCallback(() => {
-    editorRef.current?.requestContent().then(content => {
+    editorRef.current?.getContent().then(content => {
       if (copyContentTextArea.current) {
-        copyContentTextArea.current.value = content.content;
+        copyContentTextArea.current.value = content;
         copyContentTextArea.current.select();
         if (document.execCommand("copy")) {
           setCopySuccessAlertVisible(true);

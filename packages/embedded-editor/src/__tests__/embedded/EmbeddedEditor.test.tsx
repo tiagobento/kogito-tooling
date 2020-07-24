@@ -84,7 +84,7 @@ describe("EmbeddedEditor::ONLINE", () => {
         channelType={channelType}
       />
     );
-    editorRef.current?.setContent("content");
+    editorRef.current?.setContent("content", "");
 
     expect(spyRespond_contentRequest).toBeCalledWith({ content: "content" });
   });
@@ -100,7 +100,7 @@ describe("EmbeddedEditor::ONLINE", () => {
         channelType={channelType}
       />
     );
-    editorRef.current?.requestContent();
+    editorRef.current?.getContent();
 
     expect(spyRequest_contentResponse).toBeCalled();
   });
@@ -116,7 +116,7 @@ describe("EmbeddedEditor::ONLINE", () => {
         channelType={channelType}
       />
     );
-    editorRef.current?.requestPreview();
+    editorRef.current?.getPreview();
 
     expect(spyRequest_previewResponse).toBeCalled();
   });

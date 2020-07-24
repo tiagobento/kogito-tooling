@@ -16,7 +16,6 @@
 
 import {
   ChannelType,
-  EditorContent,
   EditorEnvelopeLocator,
   EnvelopeMapping,
   KogitoChannelBus,
@@ -37,6 +36,7 @@ import * as React from "react";
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { File } from "../common";
 import { StateControl } from "../stateControl";
+import { Editor } from "@kogito-tooling/editor-api";
 
 /**
  * Properties supported by the `EmbeddedEditor`.
@@ -106,38 +106,7 @@ export interface Props {
 /**
  * Forward reference for the `EmbeddedEditor` to support consumers to call upon embedded operations.
  */
-export type EmbeddedEditorRef = {
-  /**
-   * Get an instance of the StateControl
-   */
-  getStateControl(): StateControl;
-
-  /**
-   * Notify the editor to redo the last command and update the state control.
-   */
-  notifyRedo(): void;
-
-  /**
-   * Notify the editor to undo the last command and update the state control.
-   */
-  notifyUndo(): void;
-
-  /**
-   * Request the editor returns its current content.
-   */
-  requestContent(): Promise<EditorContent>;
-
-  /**
-   * Request the editor returns a preview of its current content.
-   */
-  requestPreview(): Promise<string>;
-
-  /**
-   * Request to set the content of the editor; this will overwrite the content supplied by the `File.getFileContents()` passed in construction.
-   * @param content
-   */
-  setContent(content: string): void;
-} | null;
+export type EmbeddedEditorRef = (Editor & { getStateControl(): StateControl }) | null;
 
 const containerStyles: CSS.Properties = {
   display: "flex",
@@ -155,7 +124,7 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
   props: Props,
   forwardedRef
 ) => {
-  const iframeRef: React.RefObject<HTMLIFrameElement> = useRef<HTMLIFrameElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const stateControl = useMemo(() => new StateControl(), []);
 
   //Property functions default handling
@@ -279,11 +248,19 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
       }
 
       return {
+        af_componentId: "",
+        af_isReact: false,
+        af_componentTitle: "EmbeddedEditor",
+        af_componentRoot: () => ({} as any),
+        af_onOpen: () => ({} as any),
+        af_onStartup: () => ({} as any),
+
         getStateControl: () => stateControl,
-        notifyRedo: () => kogitoChannelBus.notify_editorRedo(),
-        notifyUndo: () => kogitoChannelBus.notify_editorUndo(),
-        requestContent: () => kogitoChannelBus.request_contentResponse(),
-        requestPreview: () => kogitoChannelBus.request_previewResponse(),
+        getElementPosition: (selector: string) => kogitoChannelBus.request_guidedTourElementPositionResponse(selector),
+        redo: () => Promise.resolve(kogitoChannelBus.notify_editorRedo()),
+        undo: () => Promise.resolve(kogitoChannelBus.notify_editorUndo()),
+        getContent: () => kogitoChannelBus.request_contentResponse().then(s => s.content),
+        getPreview: () => kogitoChannelBus.request_previewResponse(),
         setContent: async (content: string) => kogitoChannelBus.notify_contentChanged({ content: content })
       };
     },

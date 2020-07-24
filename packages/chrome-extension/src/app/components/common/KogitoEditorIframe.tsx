@@ -74,7 +74,7 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
 
   useEffect(() => {
     if (textMode) {
-      editorRef.current?.requestContent();
+      editorRef.current?.getContent();
       return;
     }
 
@@ -85,17 +85,17 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
     let task: number;
     Promise.resolve()
       .then(() => props.getFileContents())
-      .then(c => editorRef.current?.setContent(c ?? ""))
+      .then(c => editorRef.current?.setContent(c ?? "", props.contentPath))
       .then(() => {
         task = window.setInterval(
           () =>
-            editorRef.current?.requestContent().then(editorContent => {
+            editorRef.current?.getContent().then(c => {
               if (props.readonly) {
                 return;
               }
 
               //keep line breaks
-              const content = editorContent.content.split("\n").join("\\n");
+              const content = c.split("\n").join("\\n");
 
               runScriptOnPage(
                 `document.querySelector("${GITHUB_CODEMIRROR_EDITOR_SELECTOR}").CodeMirror.setValue('${content}')`
@@ -118,7 +118,7 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
 
       return {
         setContent: (content: string) => {
-          editorRef.current?.setContent(content);
+          editorRef.current?.setContent(content, props.contentPath);
           return Promise.resolve();
         }
       };

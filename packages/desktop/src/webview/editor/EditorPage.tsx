@@ -60,20 +60,20 @@ export function EditorPage(props: Props) {
 
   const requestSaveFile = useCallback(() => {
     setShowUnsavedAlert(false);
-    editorRef.current?.requestContent().then(content => {
+    editorRef.current?.getContent().then(content => {
       contentRequestData.file = {
         filePath: context.file!.filePath,
         fileType: context.file!.fileType,
-        fileContent: content.content
+        fileContent: content
       };
       electron.ipcRenderer.send("saveFile", contentRequestData);
     });
   }, []);
 
   const requestCopyContentToClipboard = useCallback(() => {
-    editorRef.current?.requestContent().then(content => {
+    editorRef.current?.getContent().then(content => {
       if (copyContentTextArea.current) {
-        copyContentTextArea.current.value = content.content;
+        copyContentTextArea.current.value = content;
         copyContentTextArea.current.select();
         if (document.execCommand("copy")) {
           setCopySuccessAlertVisible(true);
@@ -83,7 +83,7 @@ export function EditorPage(props: Props) {
   }, []);
 
   const requestSavePreview = useCallback(() => {
-    editorRef.current?.requestPreview().then(previewSvg => {
+    editorRef.current?.getPreview().then(previewSvg => {
       electron.ipcRenderer.send("savePreview", {
         filePath: context.file!.filePath,
         fileType: "svg",
@@ -93,7 +93,7 @@ export function EditorPage(props: Props) {
   }, []);
 
   const requestThumbnailPreview = useCallback(() => {
-    editorRef.current?.requestPreview().then(previewSvg => {
+    editorRef.current?.getPreview().then(previewSvg => {
       electron.ipcRenderer.send("saveThumbnail", {
         filePath: context.file!.filePath,
         fileType: "svg",
