@@ -24,7 +24,10 @@ import { KogitoChannelApi, MessageBusClient } from "@kogito-tooling/microeditor-
 
 const KOGITO_JIRA_LINK = "https://issues.jboss.org/projects/KOGITO";
 
-export class GwtEditorWrapper extends Editor {
+export class GwtEditorWrapper implements Editor {
+  public readonly af_isReact = true;
+  public readonly af_componentId = "gwt-editor-wrapper";
+
   public readonly af_componentTitle: string;
   public readonly editorId: string;
 
@@ -40,7 +43,6 @@ export class GwtEditorWrapper extends Editor {
     xmlFormatter: XmlFormatter,
     stateControlService: GwtStateControlService
   ) {
-    super("gwt-editor-wrapper");
     this.af_componentTitle = editorId;
     this.stateControlService = stateControlService;
     this.af_isReact = true;

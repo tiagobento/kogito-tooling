@@ -36,7 +36,7 @@ import * as React from "react";
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { File } from "../common";
 import { StateControl } from "../stateControl";
-import { Editor } from "@kogito-tooling/editor-api";
+import { EditorApi } from "@kogito-tooling/editor-api";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
@@ -54,16 +54,6 @@ export type Props = EmbeddedEditorChannelApiOverrides & {
   editorEnvelopeLocator: EditorEnvelopeLocator;
   channelType: ChannelType;
 };
-
-type Created =
-  | "af_isReact"
-  | "af_componentId"
-  | "af_componentTitle"
-  | "af_componentRoot"
-  | "af_onOpen"
-  | "af_onStartup";
-
-type EditorApi = Omit<Editor, Created>;
 
 /**
  * Forward reference for the `EmbeddedEditor` to support consumers to call upon embedded operations.
@@ -211,12 +201,12 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
 
       return {
         getStateControl: () => stateControl,
-        getElementPosition: (selector: string) => kogitoChannelBus.request_guidedTourElementPositionResponse(selector),
+        getElementPosition: selector => kogitoChannelBus.request_guidedTourElementPositionResponse(selector),
         redo: () => Promise.resolve(kogitoChannelBus.notify_editorRedo()),
         undo: () => Promise.resolve(kogitoChannelBus.notify_editorUndo()),
-        getContent: () => kogitoChannelBus.request_contentResponse().then(s => s.content),
+        getContent: () => kogitoChannelBus.request_contentResponse().then(c => c.content),
         getPreview: () => kogitoChannelBus.request_previewResponse(),
-        setContent: async (content: string) => kogitoChannelBus.notify_contentChanged({ content: content })
+        setContent: async content => kogitoChannelBus.notify_contentChanged({ content: content })
       };
     },
     [kogitoChannelBus]
@@ -224,7 +214,11 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
 
   return (
     <>
-      {!envelopeMapping && <span>{`No Editor available for '${props.file.fileExtension}' extension`}</span>}
+      {!envelopeMapping && (
+        <>
+          <span>{`No Editor available for '${props.file.fileExtension}' extension`}</span>
+        </>
+      )}
       {envelopeMapping && (
         <iframe
           ref={iframeRef}

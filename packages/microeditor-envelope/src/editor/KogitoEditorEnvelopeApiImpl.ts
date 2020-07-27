@@ -81,8 +81,8 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
 
     await this.args.view.setEditor(this.editor);
 
-    await this.editor.af_onStartup();
-    await this.editor.af_onOpen();
+    this.editor.af_onStartup?.();
+    this.editor.af_onOpen?.();
 
     if (this.args.envelopeContext.context.channel !== ChannelType.VSCODE) {
       this.registerDefaultShortcuts();
