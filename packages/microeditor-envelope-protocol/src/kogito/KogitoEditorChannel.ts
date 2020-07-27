@@ -15,46 +15,42 @@
  */
 
 import { EditorContent } from "../kogito/api";
-import { EnvelopeBus, EnvelopeBusMessage, EnvelopeBusMessageManager, FunctionPropertyNames } from "../bus";
-import { KogitoChannelApi } from "./KogitoChannelApi";
+import { EnvelopeBus, EnvelopeBusMessage, FunctionPropertyNames } from "../bus";
+import { KogitoEditorChannelApi } from "./KogitoEditorChannelApi";
 import { EditorInitArgs, KogitoEditorEnvelopeApi } from "./KogitoEditorEnvelopeApi";
+import { Channel } from "./Channel";
 
-export type KogitoEnvelopeMessageTypes =
-  | FunctionPropertyNames<KogitoChannelApi>
-  | FunctionPropertyNames<KogitoEditorEnvelopeApi>;
-
-export class KogitoChannelBus {
+export class KogitoEditorChannel {
   public static INIT_POLLING_TIMEOUT_IN_MS = 10000;
   public static INIT_POLLING_INTERVAL_IN_MS = 100;
 
-  public readonly manager: EnvelopeBusMessageManager<KogitoChannelApi, KogitoEditorEnvelopeApi>;
-
   public initPolling?: ReturnType<typeof setInterval>;
   public initPollingTimeout?: ReturnType<typeof setTimeout>;
-  public busId: string;
 
   public get client() {
-    return this.manager.client;
+    return this.channel.client;
   }
 
-  public constructor(bus: EnvelopeBus, private readonly api: KogitoChannelApi) {
-    this.initPolling = undefined;
-    this.initPollingTimeout = undefined;
-    this.manager = new EnvelopeBusMessageManager(message => bus.postMessage(message), "KogitoChannelBus");
-    this.busId = this.generateRandomId();
+  public get busId() {
+    return this.channel.busId;
   }
+
+  public constructor(
+    bus: EnvelopeBus,
+    private readonly channel = new Channel<KogitoEditorChannelApi, KogitoEditorEnvelopeApi>(bus)
+  ) {}
 
   public startInitPolling(origin: string, initArgs: EditorInitArgs) {
     this.initPolling = setInterval(() => {
       this.request_initResponse(origin, initArgs).then(() => {
         this.stopInitPolling();
       });
-    }, KogitoChannelBus.INIT_POLLING_INTERVAL_IN_MS);
+    }, KogitoEditorChannel.INIT_POLLING_INTERVAL_IN_MS);
 
     this.initPollingTimeout = setTimeout(() => {
       this.stopInitPolling();
       console.info("Init polling timed out. Looks like the microeditor-envelope is not responding accordingly.");
-    }, KogitoChannelBus.INIT_POLLING_TIMEOUT_IN_MS);
+    }, KogitoEditorChannel.INIT_POLLING_TIMEOUT_IN_MS);
   }
 
   public stopInitPolling() {
@@ -64,12 +60,14 @@ export class KogitoChannelBus {
     this.initPollingTimeout = undefined;
   }
 
-  public receive(message: EnvelopeBusMessage<unknown, KogitoEnvelopeMessageTypes>) {
-    if (message.busId !== this.busId) {
-      return;
-    }
-
-    this.manager.server.receive(message, this.api);
+  public receive(
+    message: EnvelopeBusMessage<
+      unknown,
+      FunctionPropertyNames<KogitoEditorChannelApi> | FunctionPropertyNames<KogitoEditorEnvelopeApi>
+    >,
+    api: KogitoEditorChannelApi
+  ) {
+    this.channel.receive(message, api);
   }
 
   public notify_editorUndo() {
@@ -93,19 +91,10 @@ export class KogitoChannelBus {
   }
 
   public request_initResponse(origin: string, initArgs: EditorInitArgs) {
-    return this.client.request("receive_initRequest", { origin: origin, busId: this.busId }, initArgs);
+    return this.client.request("receive_initRequest", { origin: origin, busId: this.channel.busId }, initArgs);
   }
 
   public request_guidedTourElementPositionResponse(selector: string) {
     return this.client.request("receive_guidedTourElementPositionRequest", selector);
-  }
-
-  public generateRandomId() {
-    return (
-      "_" +
-      Math.random()
-        .toString(36)
-        .substr(2, 9)
-    );
   }
 }

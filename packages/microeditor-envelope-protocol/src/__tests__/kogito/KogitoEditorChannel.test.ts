@@ -15,17 +15,18 @@
  */
 
 import {
-  EnvelopeBusMessage,
-  EnvelopeBusMessagePurpose,
-  KogitoChannelApi,
-  KogitoChannelBus,
-  KogitoEnvelopeMessageTypes
+    EnvelopeBusMessage,
+    EnvelopeBusMessagePurpose,
+    FunctionPropertyNames,
+    KogitoEditorChannel,
+    KogitoEditorChannelApi,
+    KogitoEditorEnvelopeApi
 } from "../..";
-import { ContentType, ResourceContent, StateControlCommand } from "../../kogito/api";
+import {ContentType, ResourceContent, StateControlCommand} from "../../kogito/api";
 
 let sentMessages: Array<EnvelopeBusMessage<unknown, any>>;
-let channelBus: KogitoChannelBus;
-let api: KogitoChannelApi;
+let channelBus: KogitoEditorChannel;
+let api: KogitoEditorChannelApi;
 
 beforeEach(() => {
   sentMessages = [];
@@ -42,7 +43,7 @@ beforeEach(() => {
     receive_resourceListRequest: jest.fn()
   };
 
-  channelBus = new KogitoChannelBus({ postMessage: msg => sentMessages.push(msg) }, api);
+  channelBus = new KogitoEditorChannel({ postMessage: (msg: any) => sentMessages.push(msg) });
 });
 
 const delay = (ms: number) => {
@@ -69,7 +70,7 @@ describe("startInitPolling", () => {
 
     await incomingMessage({
       busId: channelBus.busId,
-      requestId: "KogitoChannelBus_0",
+      requestId: "KogitoEditorChannel_0",
       type: "receive_initRequest",
       purpose: EnvelopeBusMessagePurpose.RESPONSE,
       data: undefined
@@ -82,7 +83,7 @@ describe("startInitPolling", () => {
 
   test("stops polling after timeout", async () => {
     jest.spyOn(channelBus, "stopInitPolling");
-    KogitoChannelBus.INIT_POLLING_TIMEOUT_IN_MS = 200;
+    KogitoEditorChannel.INIT_POLLING_TIMEOUT_IN_MS = 200;
 
     channelBus.startInitPolling("tests", { fileExtension: "txt", resourcesPathPrefix: "" });
     expect(channelBus.initPolling).toBeTruthy();
@@ -105,14 +106,14 @@ describe("receive", () => {
       requestId: "any",
       type: "receive_resourceListRequest",
       data: []
-    });
+    }, api);
     channelBus.receive({
       busId: "unknown-id",
       purpose: EnvelopeBusMessagePurpose.REQUEST,
       requestId: "any",
       type: "receive_contentRequest",
       data: []
-    });
+    }, api);
   });
 
   test("setContentError notification", async () => {
@@ -122,7 +123,7 @@ describe("receive", () => {
       purpose: EnvelopeBusMessagePurpose.NOTIFICATION,
       type: "receive_setContentError",
       data: ["this is the error"]
-    });
+    }, api);
     expect(api.receive_setContentError).toHaveBeenCalledWith("this is the error");
   });
 
@@ -133,7 +134,7 @@ describe("receive", () => {
       purpose: EnvelopeBusMessagePurpose.NOTIFICATION,
       type: "receive_ready",
       data: []
-    });
+    }, api);
     expect(api.receive_ready).toHaveBeenCalledWith();
   });
 
@@ -144,7 +145,7 @@ describe("receive", () => {
       purpose: EnvelopeBusMessagePurpose.NOTIFICATION,
       type: "receive_newEdit",
       data: [{ id: "edit-id" }]
-    });
+    }, api);
     expect(api.receive_newEdit).toHaveBeenCalledWith({ id: "edit-id" });
   });
   test("openFile notification", async () => {
@@ -154,7 +155,7 @@ describe("receive", () => {
       purpose: EnvelopeBusMessagePurpose.NOTIFICATION,
       type: "receive_openFile",
       data: ["a/path"]
-    });
+    }, api);
     expect(api.receive_openFile).toHaveBeenCalledWith("a/path");
   });
   test("stateControlCommandUpdate notification", async () => {
@@ -164,7 +165,7 @@ describe("receive", () => {
       purpose: EnvelopeBusMessagePurpose.NOTIFICATION,
       type: "receive_stateControlCommandUpdate",
       data: [StateControlCommand.REDO]
-    });
+    }, api);
     expect(api.receive_stateControlCommandUpdate).toHaveBeenCalledWith(StateControlCommand.REDO);
   });
 
@@ -175,7 +176,7 @@ describe("receive", () => {
       purpose: EnvelopeBusMessagePurpose.NOTIFICATION,
       type: "receive_guidedTourRegisterTutorial",
       data: []
-    });
+    }, api);
     expect(api.receive_guidedTourRegisterTutorial).toHaveBeenCalledWith();
   });
 
@@ -186,7 +187,7 @@ describe("receive", () => {
       purpose: EnvelopeBusMessagePurpose.NOTIFICATION,
       type: "receive_guidedTourUserInteraction",
       data: []
-    });
+    }, api);
     expect(api.receive_guidedTourUserInteraction).toHaveBeenCalledWith();
   });
 
@@ -271,7 +272,7 @@ describe("send", () => {
     expect(sentMessages).toEqual([
       {
         purpose: EnvelopeBusMessagePurpose.REQUEST,
-        requestId: "KogitoChannelBus_0",
+        requestId: "KogitoEditorChannel_0",
         type: "receive_initRequest",
         data: [
           { busId: channelBus.busId, origin: "test-origin" },
@@ -282,7 +283,7 @@ describe("send", () => {
 
     await incomingMessage({
       busId: channelBus.busId,
-      requestId: "KogitoChannelBus_0",
+      requestId: "KogitoEditorChannel_0",
       type: "receive_initRequest",
       purpose: EnvelopeBusMessagePurpose.RESPONSE,
       data: undefined
@@ -295,7 +296,7 @@ describe("send", () => {
     const content = channelBus.request_contentResponse();
     await incomingMessage({
       busId: channelBus.busId,
-      requestId: "KogitoChannelBus_0",
+      requestId: "KogitoEditorChannel_0",
       type: "receive_contentRequest",
       purpose: EnvelopeBusMessagePurpose.RESPONSE,
       data: { content: "the content", path: "the/path/" }
@@ -308,7 +309,7 @@ describe("send", () => {
     const preview = channelBus.request_previewResponse();
     await incomingMessage({
       busId: channelBus.busId,
-      requestId: "KogitoChannelBus_0",
+      requestId: "KogitoEditorChannel_0",
       type: "receive_previewRequest",
       purpose: EnvelopeBusMessagePurpose.RESPONSE,
       data: "the-svg-string"
@@ -321,7 +322,7 @@ describe("send", () => {
     const position = channelBus.request_guidedTourElementPositionResponse("my-selector");
     await incomingMessage({
       busId: channelBus.busId,
-      requestId: "KogitoChannelBus_0",
+      requestId: "KogitoEditorChannel_0",
       type: "receive_guidedTourElementPositionRequest",
       purpose: EnvelopeBusMessagePurpose.RESPONSE,
       data: {}
@@ -364,7 +365,8 @@ describe("send", () => {
   });
 });
 
-async function incomingMessage(message: EnvelopeBusMessage<unknown, KogitoEnvelopeMessageTypes>) {
-  channelBus.receive(message);
+async function incomingMessage(message: EnvelopeBusMessage<unknown, | FunctionPropertyNames<KogitoEditorChannelApi>
+    | FunctionPropertyNames<KogitoEditorEnvelopeApi>>) {
+  channelBus.receive(message, api);
   await delay(0); // waits for next event loop iteration
 }

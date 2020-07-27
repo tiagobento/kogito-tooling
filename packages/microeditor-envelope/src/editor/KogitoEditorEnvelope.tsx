@@ -17,7 +17,7 @@
 import {
   EditorContext,
   EnvelopeBus,
-  KogitoChannelApi,
+  KogitoEditorChannelApi,
   KogitoEditorEnvelopeApi
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import {
@@ -47,7 +47,7 @@ export class KogitoEditorEnvelope {
     }),
     private readonly envelope: Envelope<
       KogitoEditorEnvelopeApi,
-      KogitoChannelApi,
+      KogitoEditorChannelApi,
       EditorEnvelopeView,
       KogitoEditorEnvelopeContextType
     > = new Envelope(args.bus),

@@ -24,6 +24,7 @@ import {
 } from "vscode";
 import { KogitoEditorStore } from "./KogitoEditorStore";
 import { KogitoEdit } from "@kogito-tooling/microeditor-envelope-protocol";
+import { KogitoEditor } from "./KogitoEditor";
 
 export class KogitoEditableDocument implements CustomDocument {
   private readonly _onDidDispose = new EventEmitter<void>();
@@ -67,12 +68,12 @@ export class KogitoEditableDocument implements CustomDocument {
     return this.editorStore.withActiveAsync(activeEditor => activeEditor.notify_editorRevert());
   }
 
-  public notifyEdit(edit: KogitoEdit) {
+  public notifyEdit(editor: KogitoEditor, edit: KogitoEdit) {
     this._onDidChange.fire({
       label: "edit",
       document: this,
-      undo: async () => this.editorStore.withActiveAsync(activeEditor => activeEditor.notify_editorUndo()),
-      redo: async () => this.editorStore.withActiveAsync(activeEditor => activeEditor.notify_editorRedo())
+      undo: async () => editor.notify_editorUndo(),
+      redo: async () => editor.notify_editorRedo()
     });
   }
 }

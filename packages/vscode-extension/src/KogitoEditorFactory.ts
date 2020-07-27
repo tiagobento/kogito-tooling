@@ -19,8 +19,7 @@ import { KogitoEditor } from "./KogitoEditor";
 import {
   EditorEnvelopeLocator,
   EnvelopeMapping,
-  KogitoEdit,
-  ResourceContentService,
+  ResourceContentService
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import { VsCodeNodeResourceContentService } from "./VsCodeNodeResourceContentService";
 import { VsCodeResourceContentService } from "./VsCodeResourceContentService";
@@ -28,6 +27,8 @@ import { VsCodeResourceContentService } from "./VsCodeResourceContentService";
 import * as vscode from "vscode";
 import { Uri, Webview } from "vscode";
 import * as nodePath from "path";
+import { KogitoEditorChannelApiImpl } from "./KogitoEditorChannelApiImpl";
+import { KogitoEditableDocument } from "./KogitoEditableDocument";
 
 export class KogitoEditorFactory {
   constructor(
@@ -40,7 +41,7 @@ export class KogitoEditorFactory {
     uri: vscode.Uri,
     initialBackup: vscode.Uri | undefined,
     webviewPanel: vscode.WebviewPanel,
-    signalEdit: (edit: KogitoEdit) => void
+    document: KogitoEditableDocument
   ) {
     const path = uri.fsPath;
     if (path.length <= 0) {
@@ -53,23 +54,9 @@ export class KogitoEditorFactory {
       localResourceRoots: [vscode.Uri.file(this.context.extensionPath)]
     };
 
-    const mapping = new Map<string, EnvelopeMapping>();
-    Array.of(...this.editorEnvelopeLocator.mapping.entries()).forEach(([k, v]) => {
-      mapping.set(k, {
-        envelopePath: this.getWebviewPath(webviewPanel.webview, v.envelopePath),
-        resourcesPathPrefix: this.getWebviewPath(webviewPanel.webview, v.resourcesPathPrefix)
-      });
-    });
-
-    const editorEnvelopeLocator: EditorEnvelopeLocator = {
-      targetOrigin: this.editorEnvelopeLocator.targetOrigin,
-      mapping: mapping
-    };
-
+    const editorEnvelopeLocator = this.getEditorEnvelopeLocator(webviewPanel.webview);
     const workspacePath = vscode.workspace.asRelativePath(path);
-
     const resourceContentService = this.createResourceContentService(path, workspacePath);
-
     const fileExtension = uri.fsPath.split(".").pop()!;
 
     const envelopeMapping = editorEnvelopeLocator.mapping.get(fileExtension);
@@ -80,22 +67,42 @@ export class KogitoEditorFactory {
     const editor = new KogitoEditor(
       workspacePath,
       uri,
-      initialBackup,
       webviewPanel,
       this.context,
       this.editorStore,
-      resourceContentService,
-      signalEdit,
       envelopeMapping,
       editorEnvelopeLocator,
       fileExtension
     );
 
+    const editorChannelApi = new KogitoEditorChannelApiImpl(
+      editor,
+      resourceContentService,
+      document,
+      uri,
+      workspacePath,
+      initialBackup
+    );
+
     this.editorStore.addAsActive(editor);
-    editor.setupEnvelopeBus();
+    editor.startListening(editorChannelApi);
+    editor.startInitPolling();
     editor.setupPanelActiveStatusChange();
     editor.setupPanelOnDidDispose();
     editor.setupWebviewContent();
+  }
+
+  private getEditorEnvelopeLocator(webview: vscode.Webview): EditorEnvelopeLocator {
+    return {
+      targetOrigin: this.editorEnvelopeLocator.targetOrigin,
+      mapping: [...this.editorEnvelopeLocator.mapping.entries()].reduce((map, [fileExtension, m]) => {
+        map.set(fileExtension, {
+          envelopePath: this.getWebviewPath(webview, m.envelopePath),
+          resourcesPathPrefix: this.getWebviewPath(webview, m.resourcesPathPrefix)
+        });
+        return map;
+      }, new Map<string, EnvelopeMapping>())
+    };
   }
 
   private getWebviewPath(webview: Webview, relativePath: string) {

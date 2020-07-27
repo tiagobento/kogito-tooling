@@ -31,7 +31,10 @@ export interface MessageBusServer<
   ApiToConsume extends ApiDefinition<ApiToConsume>
 > {
   receive(
-    message: EnvelopeBusMessage<unknown, FunctionPropertyNames<ApiToProvide> | FunctionPropertyNames<ApiToConsume>>,
+    message: EnvelopeBusMessage<
+      unknown,
+      FunctionPropertyNames<ApiToProvide> | FunctionPropertyNames<ApiToConsume>
+    >,
     api: ApiToProvide
   ): void;
 }
@@ -140,7 +143,7 @@ export class EnvelopeBusMessageManager<
   private receive(
     // We can receive messages from both the APIs we provide and consume.
     message: EnvelopeBusMessage<unknown, FunctionPropertyNames<ApiToConsume> | FunctionPropertyNames<ApiToProvide>>,
-    api: ApiToProvide,
+    api: ApiToProvide
   ) {
     if (message.purpose === EnvelopeBusMessagePurpose.RESPONSE) {
       // We can only receive responses for the API we consume.
@@ -164,7 +167,7 @@ export class EnvelopeBusMessageManager<
     if (message.purpose === EnvelopeBusMessagePurpose.NOTIFICATION) {
       // We can only receive notifications from the API we provide.
       const method = message.type as FunctionPropertyNames<ApiToProvide>;
-      api[method].apply(api, message.data);
+      api[method]?.apply(api, message.data);
       return;
     }
   }

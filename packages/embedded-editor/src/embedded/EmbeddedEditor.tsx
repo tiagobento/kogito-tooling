@@ -17,26 +17,19 @@
 import {
   ChannelType,
   EditorEnvelopeLocator,
-  KogitoChannelApi,
-  KogitoChannelBus,
-  KogitoEdit,
-  ResourceContent,
-  ResourceContentRequest,
-  ResourceListRequest,
-  ResourcesList,
-  StateControlCommand,
-  Tutorial,
-  useConnectedKogitoChannelBus,
-  UserInteraction
+  KogitoEditorChannel,
+  KogitoEditorChannelApi,
+  useConnectedKogitoEditorChannel
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import { useSyncedKeyboardEvents } from "@kogito-tooling/keyboard-shortcuts-channel";
 import { KogitoGuidedTour } from "@kogito-tooling/guided-tour";
 import * as CSS from "csstype";
 import * as React from "react";
-import { useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { File } from "../common";
 import { StateControl } from "../stateControl";
 import { EditorApi } from "@kogito-tooling/editor-api";
+import { KogitoEditorChannelApiImpl } from "./KogitoEditorChannelApiImpl";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
@@ -46,7 +39,7 @@ type ChannelApiMethodsAlreadyImplementedByEmbeddedEditor =
   | "receive_contentRequest";
 
 type EmbeddedEditorChannelApiOverrides = Partial<
-  Omit<KogitoChannelApi, ChannelApiMethodsAlreadyImplementedByEmbeddedEditor>
+  Omit<KogitoEditorChannelApi, ChannelApiMethodsAlreadyImplementedByEmbeddedEditor>
 >;
 
 export type Props = EmbeddedEditorChannelApiOverrides & {
@@ -78,118 +71,45 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
 ) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const stateControl = useMemo(() => new StateControl(), []);
-  const envelopeMapping = useMemo(() => props.editorEnvelopeLocator.mapping.get(props.file.fileExtension), []);
 
-  //Property functions default handling
-  const onResourceContentRequest = useCallback(
-    (request: ResourceContentRequest) => {
-      if (props.receive_resourceContentRequest) {
-        return props.receive_resourceContentRequest(request);
-      }
-      return Promise.resolve(new ResourceContent(request.path, undefined));
-    },
-    [props.receive_resourceContentRequest]
-  );
-
-  const onResourceListRequest = useCallback(
-    (request: ResourceListRequest) => {
-      if (props.receive_resourceListRequest) {
-        return props.receive_resourceListRequest(request);
-      }
-      return Promise.resolve(new ResourcesList(request.pattern, []));
-    },
-    [props.receive_resourceListRequest]
-  );
-
-  const handleStateControlCommand = useCallback((stateControlCommand: StateControlCommand) => {
-    switch (stateControlCommand) {
-      case StateControlCommand.REDO:
-        stateControl.redo();
-        break;
-      case StateControlCommand.UNDO:
-        stateControl.undo();
-        break;
-      default:
-        console.info(`Unknown message type received: ${stateControlCommand}`);
-        break;
-    }
-    props.receive_stateControlCommandUpdate?.(stateControlCommand);
-  }, []);
-
-  //Setup envelope bus communication
-  const kogitoChannelBus = useMemo(() => {
-    return new KogitoChannelBus(
-      {
-        postMessage: message => {
-          if (iframeRef.current && iframeRef.current.contentWindow) {
-            iframeRef.current.contentWindow.postMessage(message, "*");
-          }
-        }
-      },
-      {
-        receive_setContentError(errorMessage: string) {
-          props.receive_setContentError?.(errorMessage);
-        },
-        receive_ready() {
-          props.receive_ready?.();
-        },
-        receive_openFile: (path: string) => {
-          props.receive_openFile?.(path);
-        },
-        receive_newEdit(edit: KogitoEdit) {
-          stateControl.updateCommandStack(edit.id);
-          props.receive_newEdit?.(edit);
-        },
-        receive_stateControlCommandUpdate(stateControlCommand: StateControlCommand) {
-          handleStateControlCommand(stateControlCommand);
-        },
-        receive_guidedTourUserInteraction(userInteraction: UserInteraction) {
-          KogitoGuidedTour.getInstance().onUserInteraction(userInteraction);
-        },
-        receive_guidedTourRegisterTutorial(tutorial: Tutorial) {
-          KogitoGuidedTour.getInstance().registerTutorial(tutorial);
-        },
-        //requests
-        receive_contentRequest() {
-          return props.file.getFileContents().then(c => ({ content: c ?? "", path: props.file.fileName }));
-        },
-        receive_resourceContentRequest(request: ResourceContentRequest) {
-          return onResourceContentRequest(request);
-        },
-        receive_resourceListRequest(request: ResourceListRequest) {
-          return onResourceListRequest(request);
-        }
-      }
-    );
-  }, [
-    props.file.fileExtension,
-    props.file.fileName,
-    props.receive_resourceContentRequest,
-    props.receive_resourceListRequest,
-    handleStateControlCommand
+  const envelopeMapping = useMemo(() => props.editorEnvelopeLocator.mapping.get(props.file.fileExtension), [
+    props.editorEnvelopeLocator,
+    props.file
   ]);
 
-  // Forward keyboard events to envelope
-  useSyncedKeyboardEvents(kogitoChannelBus.client);
+  //Setup envelope bus communication
+  const kogitoEditorChannelApiImpl = useMemo(() => {
+    return new KogitoEditorChannelApiImpl(stateControl, props.file, props);
+  }, [stateControl, props.file, props]);
 
-  //Attach/detach bus when component attaches/detaches from DOM
-  useConnectedKogitoChannelBus(
+  const kogitoEditorChannel = useMemo(() => {
+    return new KogitoEditorChannel({
+      postMessage: message => {
+        if (iframeRef.current && iframeRef.current.contentWindow) {
+          iframeRef.current.contentWindow.postMessage(message, "*");
+        }
+      }
+    });
+  }, []);
+
+  useConnectedKogitoEditorChannel(
+    kogitoEditorChannel,
+    kogitoEditorChannelApiImpl,
     props.editorEnvelopeLocator.targetOrigin,
-    {
-      fileExtension: props.file.fileExtension,
-      resourcesPathPrefix: envelopeMapping?.resourcesPathPrefix ?? ""
-    },
-    kogitoChannelBus
+    { fileExtension: props.file.fileExtension, resourcesPathPrefix: envelopeMapping?.resourcesPathPrefix ?? "" }
   );
 
   useEffect(() => {
     KogitoGuidedTour.getInstance().registerPositionProvider((selector: string) =>
-      kogitoChannelBus.request_guidedTourElementPositionResponse(selector).then(position => {
+      kogitoEditorChannel.request_guidedTourElementPositionResponse(selector).then(position => {
         const parentRect = iframeRef.current?.getBoundingClientRect();
         KogitoGuidedTour.getInstance().onPositionReceived(position, parentRect);
       })
     );
-  }, [kogitoChannelBus]);
+  }, [kogitoEditorChannel]);
+
+  // Forward keyboard events to envelope
+  useSyncedKeyboardEvents(kogitoEditorChannel.client);
 
   //Forward reference methods
   useImperativeHandle(
@@ -201,15 +121,15 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
 
       return {
         getStateControl: () => stateControl,
-        getElementPosition: selector => kogitoChannelBus.request_guidedTourElementPositionResponse(selector),
-        redo: () => Promise.resolve(kogitoChannelBus.notify_editorRedo()),
-        undo: () => Promise.resolve(kogitoChannelBus.notify_editorUndo()),
-        getContent: () => kogitoChannelBus.request_contentResponse().then(c => c.content),
-        getPreview: () => kogitoChannelBus.request_previewResponse(),
-        setContent: async content => kogitoChannelBus.notify_contentChanged({ content: content })
+        getElementPosition: selector => kogitoEditorChannel.request_guidedTourElementPositionResponse(selector),
+        redo: () => Promise.resolve(kogitoEditorChannel.notify_editorRedo()),
+        undo: () => Promise.resolve(kogitoEditorChannel.notify_editorUndo()),
+        getContent: () => kogitoEditorChannel.request_contentResponse().then(c => c.content),
+        getPreview: () => kogitoEditorChannel.request_previewResponse(),
+        setContent: async content => kogitoEditorChannel.notify_contentChanged({ content: content })
       };
     },
-    [kogitoChannelBus]
+    [kogitoEditorChannel]
   );
 
   return (

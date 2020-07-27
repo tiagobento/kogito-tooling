@@ -15,10 +15,10 @@
  */
 
 import {
+  Channel,
   ChannelType,
   EditorEnvelopeLocator,
-  EnvelopeBusMessagePurpose,
-  KogitoChannelBus
+  EnvelopeBusMessagePurpose
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import * as React from "react";
 import { File } from "../../common";
@@ -43,7 +43,7 @@ describe("EmbeddedViewer::ONLINE", () => {
   const busId = "test-bus-id";
 
   beforeAll(() => {
-    jest.spyOn(KogitoChannelBus.prototype, "generateRandomId").mockReturnValue(busId);
+    jest.spyOn(Channel.prototype, "generateRandomId").mockReturnValue(busId);
   });
 
   test("EmbeddedViewer::defaults", () => {

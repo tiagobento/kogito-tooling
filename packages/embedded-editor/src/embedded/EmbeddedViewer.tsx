@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  ChannelType,
-  EditorEnvelopeLocator,
-  ResourceContent,
-  ResourceContentRequest,
-  ResourceListRequest,
-  ResourcesList
-} from "@kogito-tooling/microeditor-envelope-protocol";
+import { ChannelType, EditorEnvelopeLocator } from "@kogito-tooling/microeditor-envelope-protocol";
 import * as React from "react";
-import { useCallback } from "react";
-import { File } from "../common/File";
+import { File } from "../common";
 import { EmbeddedEditor, Props as EmbeddedEditorProps } from "./EmbeddedEditor";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -46,34 +38,4 @@ export type Props = EmbeddedViewerChannelApiOverrides & {
   channelType: ChannelType;
 };
 
-export const EmbeddedViewer = (props: Props) => {
-  const onResourceContentRequest = useCallback(
-    (request: ResourceContentRequest) => {
-      if (props.receive_resourceContentRequest) {
-        return props.receive_resourceContentRequest(request);
-      }
-      return Promise.resolve(new ResourceContent(request.path, undefined));
-    },
-    [props.receive_resourceContentRequest]
-  );
-
-  const onResourceListRequest = useCallback(
-    (request: ResourceListRequest) => {
-      if (props.receive_resourceListRequest) {
-        return props.receive_resourceListRequest(request);
-      }
-      return Promise.resolve(new ResourcesList(request.pattern, []));
-    },
-    [props.receive_resourceListRequest]
-  );
-
-  return (
-    <EmbeddedEditor
-      file={props.file}
-      editorEnvelopeLocator={props.editorEnvelopeLocator}
-      channelType={props.channelType}
-      receive_resourceContentRequest={onResourceContentRequest}
-      receive_resourceListRequest={onResourceListRequest}
-    />
-  );
-};
+export const EmbeddedViewer = (props: Props) => <EmbeddedEditor {...props} />;

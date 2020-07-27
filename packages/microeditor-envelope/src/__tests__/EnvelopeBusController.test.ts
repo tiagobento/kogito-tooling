@@ -18,14 +18,14 @@ import { EnvelopeBusController } from "../envelope/EnvelopeBusController";
 import {
   EnvelopeBusMessage,
   EnvelopeBusMessagePurpose,
-  KogitoChannelApi,
+  KogitoEditorChannelApi,
   KogitoEditorEnvelopeApi,
   KogitoEnvelopeMessageTypes,
   StateControlCommand
 } from "@kogito-tooling/microeditor-envelope-protocol";
 
 let api: KogitoEditorEnvelopeApi;
-let envelopeBus: EnvelopeBusController<KogitoEditorEnvelopeApi, KogitoChannelApi>;
+let envelopeBus: EnvelopeBusController<KogitoEditorEnvelopeApi, KogitoEditorChannelApi>;
 let sentMessages: Array<[EnvelopeBusMessage<any, KogitoEnvelopeMessageTypes>, string]>;
 
 beforeEach(() => {
@@ -41,7 +41,7 @@ beforeEach(() => {
     receive_channelKeyboardEvent: jest.fn()
   };
 
-  envelopeBus = new EnvelopeBusController<KogitoEditorEnvelopeApi, KogitoChannelApi>({
+  envelopeBus = new EnvelopeBusController<KogitoEditorEnvelopeApi, KogitoEditorChannelApi>({
     postMessage<D, T>(message: EnvelopeBusMessage<D, T>, targetOrigin?: string, _?: any): void {
       sentMessages.push([message as any, targetOrigin!]);
     }

@@ -15,7 +15,6 @@
  */
 
 import { ChannelKeyboardEvent, EditorContent, Rect } from "./api";
-import { ApiDefinition } from "../bus";
 
 export interface Association {
   origin: string;
@@ -27,7 +26,7 @@ export interface EditorInitArgs {
   fileExtension: string;
 }
 
-export interface KogitoEditorEnvelopeApi extends ApiDefinition<KogitoEditorEnvelopeApi> {
+export interface KogitoEditorEnvelopeApi {
   receive_contentChanged(content: EditorContent): void;
   receive_editorUndo(): void;
   receive_editorRedo(): void;

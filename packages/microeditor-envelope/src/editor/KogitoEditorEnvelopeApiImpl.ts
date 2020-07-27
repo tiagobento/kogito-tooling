@@ -21,7 +21,7 @@ import {
   DEFAULT_RECT,
   EditorContent,
   EditorInitArgs,
-  KogitoChannelApi,
+  KogitoEditorChannelApi,
   KogitoEditorEnvelopeApi,
   StateControlCommand
 } from "@kogito-tooling/microeditor-envelope-protocol";
@@ -31,13 +31,13 @@ import { EditorEnvelopeView } from "./EditorEnvelopeView";
 
 export class KogitoEditorEnvelopeApiFactory
   implements
-    EnvelopeApiFactory<KogitoEditorEnvelopeApi, KogitoChannelApi, EditorEnvelopeView, KogitoEditorEnvelopeContextType> {
+    EnvelopeApiFactory<KogitoEditorEnvelopeApi, KogitoEditorChannelApi, EditorEnvelopeView, KogitoEditorEnvelopeContextType> {
   constructor(private readonly editorFactory: EditorFactory) {}
 
   public create(
     args: EnvelopeApiFactoryArgs<
       KogitoEditorEnvelopeApi,
-      KogitoChannelApi,
+      KogitoEditorChannelApi,
       EditorEnvelopeView,
       KogitoEditorEnvelopeContextType
     >
@@ -53,7 +53,7 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
   constructor(
     private readonly args: EnvelopeApiFactoryArgs<
       KogitoEditorEnvelopeApi,
-      KogitoChannelApi,
+      KogitoEditorChannelApi,
       EditorEnvelopeView,
       KogitoEditorEnvelopeContextType
     >,

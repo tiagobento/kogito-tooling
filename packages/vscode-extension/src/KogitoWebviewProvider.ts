@@ -67,9 +67,7 @@ export class KogitoWebviewProvider implements CustomEditorProvider<KogitoEditabl
     webviewPanel: WebviewPanel,
     cancellation: CancellationToken
   ): Promise<void> {
-    this.editorFactory.configureNew(document.uri, document.initialBackup, webviewPanel, (edit: KogitoEdit) =>
-      document.notifyEdit(edit)
-    );
+    this.editorFactory.configureNew(document.uri, document.initialBackup, webviewPanel, document);
   }
 
   public async openCustomDocument(

@@ -26,7 +26,7 @@ import {
   UserInteraction
 } from "./api";
 
-export interface KogitoChannelApi {
+export interface KogitoEditorChannelApi {
   receive_setContentError(errorMessage: string): void;
   receive_ready(): void;
   receive_openFile(path: string): void;

@@ -69,7 +69,7 @@ export class GwtEditorWrapperFactory implements EditorFactory {
 
     const languageData = this.gwtEditorMapping.getLanguageData(initArgs);
     if (!languageData) {
-      throw new Error("Langugage data does not exist");
+      throw new Error("Language data does not exist");
     }
 
     this.exposeEnvelopeContext(envelopeContext);

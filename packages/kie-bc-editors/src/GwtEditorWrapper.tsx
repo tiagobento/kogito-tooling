@@ -20,7 +20,7 @@ import { Editor } from "@kogito-tooling/editor-api";
 import { editors } from "./GwtEditorMapping";
 import { XmlFormatter } from "./XmlFormatter";
 import { GwtStateControlService } from "./gwtStateControl";
-import { KogitoChannelApi, MessageBusClient } from "@kogito-tooling/microeditor-envelope-protocol";
+import { KogitoEditorChannelApi, MessageBusClient } from "@kogito-tooling/microeditor-envelope-protocol";
 
 const KOGITO_JIRA_LINK = "https://issues.jboss.org/projects/KOGITO";
 
@@ -33,13 +33,13 @@ export class GwtEditorWrapper implements Editor {
 
   private readonly gwtEditor: GwtEditor;
   private readonly xmlFormatter: XmlFormatter;
-  private readonly messageBusClient: MessageBusClient<KogitoChannelApi>;
+  private readonly messageBusClient: MessageBusClient<KogitoEditorChannelApi>;
   private readonly stateControlService: GwtStateControlService;
 
   constructor(
     editorId: string,
     gwtEditor: GwtEditor,
-    messageBus: MessageBusClient<KogitoChannelApi>,
+    messageBus: MessageBusClient<KogitoEditorChannelApi>,
     xmlFormatter: XmlFormatter,
     stateControlService: GwtStateControlService
   ) {
