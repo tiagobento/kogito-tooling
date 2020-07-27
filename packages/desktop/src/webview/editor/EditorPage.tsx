@@ -290,7 +290,6 @@ export function EditorPage(props: Props) {
               channelType={ChannelType.DESKTOP}
               receive_ready={requestThumbnailPreview}
               editorEnvelopeLocator={context.editorEnvelopeLocator}
-              envelopeMapping={context.editorEnvelopeLocator.mapping.get(file.fileExtension)!} //FIXME: Danger
             />
           </StackItem>
         </Stack>

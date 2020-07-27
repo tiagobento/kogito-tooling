@@ -17,7 +17,6 @@
 import {
   ChannelType,
   EditorEnvelopeLocator,
-  EnvelopeMapping,
   KogitoChannelApi,
   KogitoChannelBus,
   KogitoEdit,
@@ -53,7 +52,6 @@ type EmbeddedEditorChannelApiOverrides = Partial<
 export type Props = EmbeddedEditorChannelApiOverrides & {
   file: File;
   editorEnvelopeLocator: EditorEnvelopeLocator;
-  envelopeMapping: EnvelopeMapping;
   channelType: ChannelType;
 };
 
@@ -90,6 +88,7 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
 ) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const stateControl = useMemo(() => new StateControl(), []);
+  const envelopeMapping = useMemo(() => props.editorEnvelopeLocator.mapping.get(props.file.fileExtension), []);
 
   //Property functions default handling
   const onResourceContentRequest = useCallback(
@@ -188,7 +187,7 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
     props.editorEnvelopeLocator.targetOrigin,
     {
       fileExtension: props.file.fileExtension,
-      resourcesPathPrefix: props.envelopeMapping.resourcesPathPrefix
+      resourcesPathPrefix: envelopeMapping?.resourcesPathPrefix ?? ""
     },
     kogitoChannelBus
   );
@@ -224,15 +223,20 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
   );
 
   return (
-    <iframe
-      ref={iframeRef}
-      id={"kogito-iframe"}
-      data-testid={"kogito-iframe"}
-      src={props.envelopeMapping.envelopePath}
-      title="Kogito editor"
-      style={containerStyles}
-      data-envelope-channel={props.channelType}
-    />
+    <>
+      {!envelopeMapping && <span>{`No Editor available for '${props.file.fileExtension}' extension`}</span>}
+      {envelopeMapping && (
+        <iframe
+          ref={iframeRef}
+          id={"kogito-iframe"}
+          data-testid={"kogito-iframe"}
+          src={envelopeMapping.envelopePath}
+          title="Kogito editor"
+          style={containerStyles}
+          data-envelope-channel={props.channelType}
+        />
+      )}
+    </>
   );
 };
 

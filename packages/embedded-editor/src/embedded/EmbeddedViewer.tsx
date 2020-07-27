@@ -17,7 +17,6 @@
 import {
   ChannelType,
   EditorEnvelopeLocator,
-  EnvelopeMapping,
   ResourceContent,
   ResourceContentRequest,
   ResourceListRequest,
@@ -44,7 +43,6 @@ type EmbeddedViewerChannelApiOverrides = Partial<
 export type Props = EmbeddedViewerChannelApiOverrides & {
   file: File;
   editorEnvelopeLocator: EditorEnvelopeLocator;
-  envelopeMapping: EnvelopeMapping;
   channelType: ChannelType;
 };
 
@@ -72,7 +70,6 @@ export const EmbeddedViewer = (props: Props) => {
   return (
     <EmbeddedEditor
       file={props.file}
-      envelopeMapping={props.envelopeMapping}
       editorEnvelopeLocator={props.editorEnvelopeLocator}
       channelType={props.channelType}
       receive_resourceContentRequest={onResourceContentRequest}

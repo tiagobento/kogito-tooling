@@ -126,9 +126,6 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
     []
   );
 
-  //FIXME: Danger
-  const envelopeMapping = useMemo(() => envelopeLocator.mapping.get(file.fileExtension) ?? ({} as any), []);
-
   return (
     <>
       <div className={`kogito-iframe ${fullscreen ? "fullscreen" : "not-fullscreen"}`}>
@@ -139,7 +136,6 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
           receive_ready={onEditorReady}
           receive_resourceContentRequest={onResourceContentRequest}
           receive_resourceListRequest={onResourceContentList}
-          envelopeMapping={envelopeMapping}
           editorEnvelopeLocator={envelopeLocator}
         />
       </div>

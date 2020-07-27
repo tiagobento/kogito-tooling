@@ -18,7 +18,6 @@ import {
   ChannelType,
   EditorEnvelopeLocator,
   EnvelopeBusMessagePurpose,
-  EnvelopeMapping,
   KogitoChannelBus
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import * as React from "react";
@@ -35,14 +34,9 @@ describe("EmbeddedViewer::ONLINE", () => {
     isReadOnly: false
   };
 
-  const txtEnvelopeMapping: EnvelopeMapping = {
-    envelopePath: "envelope/envelope.html",
-    resourcesPathPrefix: "envelope"
-  };
-
   const editorEnvelopeLocator: EditorEnvelopeLocator = {
     targetOrigin: "localhost:8888",
-    mapping: new Map([["txt", txtEnvelopeMapping]])
+    mapping: new Map([["dmn", { envelopePath: "envelope/envelope.html", resourcesPathPrefix: "envelope" }]])
   };
 
   const channelType = ChannelType.ONLINE;
@@ -54,12 +48,7 @@ describe("EmbeddedViewer::ONLINE", () => {
 
   test("EmbeddedViewer::defaults", () => {
     const { getByTestId, container } = render(
-      <EmbeddedViewer
-        file={file}
-        editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
-        channelType={channelType}
-      />
+      <EmbeddedViewer file={file} editorEnvelopeLocator={editorEnvelopeLocator} channelType={channelType} />
     );
 
     expect(getByTestId("kogito-iframe")).toBeVisible();
@@ -76,7 +65,6 @@ describe("EmbeddedViewer::ONLINE", () => {
       <EmbeddedViewer
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         receive_resourceContentRequest={onResourceContentRequest}
       />
@@ -101,7 +89,6 @@ describe("EmbeddedViewer::ONLINE", () => {
       <EmbeddedViewer
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         receive_resourceListRequest={onResourceListRequest}
       />

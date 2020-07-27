@@ -36,14 +36,9 @@ describe("EmbeddedEditor::ONLINE", () => {
     isReadOnly: false
   };
 
-  const txtEnvelopeMapping: EnvelopeMapping = {
-    envelopePath: "envelope/envelope.html",
-    resourcesPathPrefix: "envelope"
-  };
-
   const editorEnvelopeLocator: EditorEnvelopeLocator = {
     targetOrigin: "localhost:8888",
-    mapping: new Map([["txt", txtEnvelopeMapping]])
+    mapping: new Map([["dmn", { envelopePath: "envelope/envelope.html", resourcesPathPrefix: "envelope" }]])
   };
 
   const channelType = ChannelType.ONLINE;
@@ -61,7 +56,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
       />
     );
@@ -80,7 +74,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
       />
     );
@@ -96,7 +89,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
       />
     );
@@ -112,7 +104,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
       />
     );
@@ -129,7 +120,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         receive_setContentError={onSetContentError}
       />
@@ -154,7 +144,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         receive_ready={onReady}
       />
@@ -179,7 +168,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         receive_resourceContentRequest={onResourceContentRequest}
       />
@@ -205,7 +193,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         receive_resourceListRequest={onResourceListRequest}
       />
@@ -231,7 +218,6 @@ describe("EmbeddedEditor::ONLINE", () => {
         ref={editorRef}
         file={file}
         editorEnvelopeLocator={editorEnvelopeLocator}
-        envelopeMapping={txtEnvelopeMapping}
         channelType={channelType}
         receive_newEdit={onNewEdit}
       />
