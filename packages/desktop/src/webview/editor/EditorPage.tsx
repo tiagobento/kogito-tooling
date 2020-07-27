@@ -15,7 +15,7 @@
  */
 
 import { ChannelType } from "@kogito-tooling/microeditor-envelope-protocol";
-import { EditorType, EmbeddedEditor, EmbeddedEditorRef, useDirtyState } from "@kogito-tooling/embedded-editor";
+import { EmbeddedEditor, EmbeddedEditorRef, useDirtyState } from "@kogito-tooling/embedded-editor";
 import "@patternfly/patternfly/patternfly.css";
 import { Alert, AlertActionCloseButton, Page, PageSection, Stack, StackItem } from "@patternfly/react-core";
 import * as electron from "electron";
@@ -27,7 +27,7 @@ import { EditorToolbar } from "./EditorToolbar";
 import IpcRendererEvent = Electron.IpcRendererEvent;
 
 interface Props {
-  editorType: string;
+  fileExtension: string;
   onClose: () => void;
 }
 
@@ -215,7 +215,7 @@ export function EditorPage(props: Props) {
   const file = useMemo(
     () => ({
       fileName: context.file?.filePath ?? "",
-      editorType: context.file?.fileType as EditorType,
+      fileExtension: context.file?.fileType!,
       getFileContents: () => Promise.resolve(context.file?.fileContent ?? ""),
       isReadOnly: false
     }),
@@ -290,7 +290,7 @@ export function EditorPage(props: Props) {
               channelType={ChannelType.DESKTOP}
               receive_ready={requestThumbnailPreview}
               editorEnvelopeLocator={context.editorEnvelopeLocator}
-              envelopeMapping={context.editorEnvelopeLocator.mapping.get(file.editorType)!} //FIXME: Danger
+              envelopeMapping={context.editorEnvelopeLocator.mapping.get(file.fileExtension)!} //FIXME: Danger
             />
           </StackItem>
         </Stack>

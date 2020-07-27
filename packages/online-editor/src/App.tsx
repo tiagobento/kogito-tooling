@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EditorType, File } from "@kogito-tooling/embedded-editor";
+import { File } from "@kogito-tooling/embedded-editor";
 import "@patternfly/patternfly/patternfly-addons.css";
 import "@patternfly/patternfly/patternfly-variables.css";
 import "@patternfly/patternfly/patternfly.css";
@@ -39,23 +39,12 @@ interface Props {
   external: boolean;
   senderTabId?: string;
   githubService: GithubService;
+  editorEnvelopeLocator: EditorEnvelopeLocator;
 }
 
 export function App(props: Props) {
   const [file, setFile] = useState(props.file);
   const routes = useMemo(() => new Routes(), []);
-
-  const editorEnvelopeLocator: EditorEnvelopeLocator = useMemo(
-    () => ({
-      targetOrigin: window.location.origin,
-      mapping: new Map([
-        ["bpmn", { resourcesPathPrefix: "../gwt-editors/bpmn", envelopePath: "envelope/envelope.html" }],
-        ["bpmn2", { resourcesPathPrefix: "../gwt-editors/bpmn", envelopePath: "envelope/envelope.html" }],
-        ["dmn", { resourcesPathPrefix: "../gwt-editors/dmn", envelopePath: "envelope/envelope.html" }]
-      ])
-    }),
-    []
-  );
 
   const onFileOpened = useCallback(fileOpened => {
     setFile(fileOpened);
@@ -65,7 +54,7 @@ export function App(props: Props) {
     (fileName: string) => {
       setFile({
         isReadOnly: false,
-        editorType: extractFileExtension(fileName) as EditorType,
+        fileExtension: extractFileExtension(fileName)!,
         fileName: fileName,
         getFileContents: file.getFileContents
       });
@@ -78,7 +67,7 @@ export function App(props: Props) {
       value={{
         file,
         routes,
-        editorEnvelopeLocator,
+        editorEnvelopeLocator: props.editorEnvelopeLocator,
         readonly: props.readonly,
         external: props.external,
         senderTabId: props.senderTabId,

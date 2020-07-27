@@ -14,8 +14,33 @@
  * limitations under the License.
  */
 
-import { EditorType } from "@kogito-tooling/embedded-editor";
-import { Alert, AlertActionCloseButton, AlertVariant, Bullseye, Button, Card, CardBody, CardFooter, CardHeader, Form, FormGroup, Gallery, InputGroup, PageSection, Select, SelectOption, Text, TextContent, TextInput, TextVariants, Title, Toolbar, ToolbarGroup, ToolbarItem, Tooltip } from "@patternfly/react-core";
+import {
+  Alert,
+  AlertActionCloseButton,
+  AlertVariant,
+  Bullseye,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Form,
+  FormGroup,
+  Gallery,
+  InputGroup,
+  PageSection,
+  Select,
+  SelectOption,
+  Text,
+  TextContent,
+  TextInput,
+  TextVariants,
+  Title,
+  Toolbar,
+  ToolbarGroup,
+  ToolbarItem,
+  Tooltip
+} from "@patternfly/react-core";
 import { SortAlphaDownIcon } from "@patternfly/react-icons";
 import * as electron from "electron";
 import * as React from "react";
@@ -24,7 +49,6 @@ import { File, UNSAVED_FILE_NAME } from "../../common/File";
 import { RecentOpenedFile } from "../../common/RecentOpenedFile";
 import { extractFileExtension, removeDirectories } from "../../common/utils";
 import { GlobalContext } from "../common/GlobalContext";
-import IpcRendererEvent = Electron.IpcRendererEvent;
 
 interface Props {
   openFile: (file: File) => void;
@@ -53,7 +77,11 @@ enum FileTypeFilter {
   DMN = "DMN"
 }
 
-const typeFilterOptions = [{ value: FileTypeFilter.ALL }, { value: FileTypeFilter.BPMN }, { value: FileTypeFilter.DMN }];
+const typeFilterOptions = [
+  { value: FileTypeFilter.ALL },
+  { value: FileTypeFilter.BPMN },
+  { value: FileTypeFilter.DMN }
+];
 
 export function FilesPage(props: Props) {
   const context = useContext(GlobalContext);
@@ -291,7 +319,7 @@ export function FilesPage(props: Props) {
             component={"article"}
             isHoverable={false}
             isCompact={true}
-            onClick={() => electron.ipcRenderer.send("createNewFile", { type: EditorType.BPMN })}
+            onClick={() => electron.ipcRenderer.send("createNewFile", { type: "bpmn" })}
           >
             <CardHeader>
               {
@@ -309,7 +337,7 @@ export function FilesPage(props: Props) {
             component={"article"}
             isHoverable={false}
             isCompact={true}
-            onClick={() => electron.ipcRenderer.send("createNewFile", { type: EditorType.DMN })}
+            onClick={() => electron.ipcRenderer.send("createNewFile", { type: "dmn" })}
           >
             <CardHeader>
               {
@@ -327,7 +355,7 @@ export function FilesPage(props: Props) {
             component={"article"}
             isHoverable={false}
             isCompact={true}
-            onClick={() => electron.ipcRenderer.send("openSample", { type: EditorType.BPMN })}
+            onClick={() => electron.ipcRenderer.send("openSample", { type: "bpmn" })}
           >
             <CardHeader>
               {
@@ -351,7 +379,7 @@ export function FilesPage(props: Props) {
             component={"article"}
             isHoverable={false}
             isCompact={true}
-            onClick={() => electron.ipcRenderer.send("openSample", { type: EditorType.DMN })}
+            onClick={() => electron.ipcRenderer.send("openSample", { type: "dmn" })}
           >
             <CardHeader>
               {

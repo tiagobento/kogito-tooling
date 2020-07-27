@@ -19,7 +19,7 @@ import {
   ResourceContentRequest,
   ResourceListRequest
 } from "@kogito-tooling/microeditor-envelope-protocol";
-import { EditorType, EmbeddedEditor, EmbeddedEditorRef } from "@kogito-tooling/embedded-editor";
+import { EmbeddedEditor, EmbeddedEditorRef } from "@kogito-tooling/embedded-editor";
 import * as React from "react";
 import { useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { runScriptOnPage } from "../../utils";
@@ -66,7 +66,7 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
   const file = useMemo(() => {
     return {
       fileName: props.contentPath,
-      editorType: props.openFileExtension as EditorType,
+      fileExtension: props.openFileExtension,
       getFileContents: props.getFileContents,
       isReadOnly: props.readonly
     };
@@ -127,7 +127,7 @@ const RefForwardingKogitoEditorIframe: React.RefForwardingComponent<IsolatedEdit
   );
 
   //FIXME: Danger
-  const envelopeMapping = useMemo(() => envelopeLocator.mapping.get(file.editorType) ?? ({} as any), []);
+  const envelopeMapping = useMemo(() => envelopeLocator.mapping.get(file.fileExtension) ?? ({} as any), []);
 
   return (
     <>

@@ -98,7 +98,7 @@ export function App(props: Props) {
       case Pages.HOME:
         return <HomePage openFile={openFile} openFileByPath={openFileByPath} />;
       case Pages.EDITOR:
-        return <EditorPage editorType={file!.fileType} onClose={goToHomePage} />;
+        return <EditorPage fileExtension={file!.fileType} onClose={goToHomePage} />;
       default:
         return <></>;
     }

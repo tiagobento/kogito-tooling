@@ -173,7 +173,7 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
       }
     );
   }, [
-    props.file.editorType,
+    props.file.fileExtension,
     props.file.fileName,
     props.receive_resourceContentRequest,
     props.receive_resourceListRequest,
@@ -187,7 +187,7 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
   useConnectedKogitoChannelBus(
     props.editorEnvelopeLocator.targetOrigin,
     {
-      fileExtension: props.file.editorType,
+      fileExtension: props.file.fileExtension,
       resourcesPathPrefix: props.envelopeMapping.resourcesPathPrefix
     },
     kogitoChannelBus

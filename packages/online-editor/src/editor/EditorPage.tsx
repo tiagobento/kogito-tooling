@@ -112,7 +112,6 @@ export function EditorPage(props: Props) {
         })
         .then(gistUrl => {
           setGithubTokenModalVisible(false);
-          const fileExtension = extractFileExtension(new URL(gistUrl).pathname);
           // FIXME: KOGITO-1202
           window.location.href = `?file=${gistUrl}#/editor/${fileExtension}`;
         })
@@ -146,13 +145,13 @@ export function EditorPage(props: Props) {
     setFullscreen(!fullscreen);
   }, [fullscreen]);
 
-  const editorType = useMemo(() => {
+  const fileExtension = useMemo(() => {
     return context.routes.editor.args(location.pathname).type;
   }, [location.pathname]);
 
   const fileNameWithExtension = useMemo(() => {
-    return context.file.fileName + "." + editorType;
-  }, [context.file.fileName, editorType]);
+    return context.file.fileName + "." + fileExtension;
+  }, [context.file.fileName, fileExtension]);
 
   const closeCopySuccessAlert = useCallback(() => setCopySuccessAlertVisible(false), []);
 
@@ -275,7 +274,7 @@ export function EditorPage(props: Props) {
           ref={editorRef}
           file={context.file}
           editorEnvelopeLocator={context.editorEnvelopeLocator}
-          envelopeMapping={context.editorEnvelopeLocator.mapping.get(context.file.editorType)!} //FIXME: Danger
+          envelopeMapping={context.editorEnvelopeLocator.mapping.get(context.file.fileExtension)!} //FIXME: Danger
           receive_ready={onReady}
           channelType={ChannelType.ONLINE}
         />

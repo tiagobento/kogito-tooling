@@ -23,7 +23,7 @@ import {
   KogitoEdit
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import * as React from "react";
-import { EditorType, File } from "../../common";
+import { File } from "../../common";
 import { EmbeddedEditor, EmbeddedEditorRef } from "../../embedded";
 import { incomingMessage } from "./EmbeddedEditorTestUtils";
 import { render } from "@testing-library/react";
@@ -31,7 +31,7 @@ import { render } from "@testing-library/react";
 describe("EmbeddedEditor::ONLINE", () => {
   const file: File = {
     fileName: "test",
-    editorType: EditorType.DMN,
+    fileExtension: "dmn",
     getFileContents: () => Promise.resolve(""),
     isReadOnly: false
   };
