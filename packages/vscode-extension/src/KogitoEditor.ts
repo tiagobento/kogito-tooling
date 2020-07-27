@@ -15,8 +15,6 @@
  */
 
 import * as vscode from "vscode";
-import * as fs from "fs";
-import * as __path from "path";
 import {
   EditorEnvelopeLocator,
   EnvelopeMapping,
@@ -24,78 +22,49 @@ import {
   KogitoEditorChannelApi
 } from "@kogito-tooling/microeditor-envelope-protocol";
 import { KogitoEditorStore } from "./KogitoEditorStore";
+import { EditorApi } from "@kogito-tooling/editor-api";
+import { KogitoEditableDocument } from "./KogitoEditableDocument";
 
-export class KogitoEditor {
-  private readonly encoder = new TextEncoder();
-  private readonly decoder = new TextDecoder("utf-8");
-
+export class KogitoEditor implements EditorApi {
   public constructor(
-    private readonly relativePath: string,
-    private readonly uri: vscode.Uri,
+    public readonly document: KogitoEditableDocument,
     private readonly panel: vscode.WebviewPanel,
     private readonly context: vscode.ExtensionContext,
     private readonly editorStore: KogitoEditorStore,
     private readonly envelopeMapping: EnvelopeMapping,
     private readonly envelopeLocator: EditorEnvelopeLocator,
-    private readonly fileExtension: string,
     private readonly kogitoEditorChannel = new KogitoEditorChannel({
       postMessage: message => this.panel.webview.postMessage(message)
     })
   ) {}
 
-  public async requestSave(destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
-    return this.kogitoEditorChannel.request_contentResponse().then(content => {
-      if (cancellation.isCancellationRequested) {
-        return;
-      }
-      return vscode.workspace.fs.writeFile(destination, this.encoder.encode(content.content)).then(() => {
-        vscode.window.setStatusBarMessage("Saved successfully!", 3000);
-      });
-    });
+  public getElementPosition(selector: string) {
+    return this.kogitoEditorChannel.request_guidedTourElementPositionResponse(selector);
   }
 
-  public async requestBackup(destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
-    return this.kogitoEditorChannel.request_contentResponse().then(content => {
-      if (cancellation.isCancellationRequested) {
-        return;
-      }
-      return vscode.workspace.fs.writeFile(destination, this.encoder.encode(content.content)).then(() => {
-        console.info("Backup saved.");
-      });
-    });
+  public getContent() {
+    return this.kogitoEditorChannel.request_contentResponse().then(c => c.content);
   }
 
-  public async deleteBackup(destination: vscode.Uri): Promise<void> {
-    await vscode.workspace.fs.delete(destination);
+  public async setContent(path: string, content: string) {
+    this.kogitoEditorChannel.notify_contentChanged({ path: path, content: content });
   }
 
-  public async notify_editorRevert(): Promise<void> {
-    this.kogitoEditorChannel.notify_contentChanged({
-      content: this.decoder.decode(await vscode.workspace.fs.readFile(this.uri)),
-      path: this.relativePath
-    });
-  }
-
-  public async notify_editorUndo(): Promise<void> {
+  public async undo() {
     this.kogitoEditorChannel.notify_editorUndo();
   }
 
-  public async notify_editorRedo(): Promise<void> {
+  public async redo() {
     this.kogitoEditorChannel.notify_editorRedo();
   }
 
-  public requestPreview() {
-    this.kogitoEditorChannel.request_previewResponse().then(previewSvg => {
-      if (previewSvg) {
-        const parsedPath = __path.parse(this.uri.fsPath);
-        fs.writeFileSync(`${parsedPath.dir}/${parsedPath.name}-svg.svg`, previewSvg);
-      }
-    });
+  public getPreview() {
+    return this.kogitoEditorChannel.request_previewResponse();
   }
 
   public startInitPolling() {
     this.kogitoEditorChannel.startInitPolling(this.envelopeLocator.targetOrigin, {
-      fileExtension: this.fileExtension,
+      fileExtension: this.document.fileExtension,
       resourcesPathPrefix: this.envelopeMapping.resourcesPathPrefix
     });
   }
@@ -138,19 +107,11 @@ export class KogitoEditor {
   }
 
   public hasUri(uri: vscode.Uri) {
-    return this.uri === uri;
+    return this.document.uri === uri;
   }
 
   public isActive() {
     return this.panel.active;
-  }
-
-  public viewColumn() {
-    return this.panel.viewColumn;
-  }
-
-  public focus() {
-    this.panel.reveal(this.viewColumn(), true);
   }
 
   public setupWebviewContent() {

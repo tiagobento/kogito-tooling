@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as vscode from "vscode";
 import {
   CancellationToken,
   CustomDocument,
@@ -27,6 +28,9 @@ import { KogitoEdit } from "@kogito-tooling/microeditor-envelope-protocol";
 import { KogitoEditor } from "./KogitoEditor";
 
 export class KogitoEditableDocument implements CustomDocument {
+  private readonly encoder = new TextEncoder();
+  private readonly decoder = new TextDecoder("utf-8");
+
   private readonly _onDidDispose = new EventEmitter<void>();
   public readonly onDidDispose = this._onDidDispose.event;
 
@@ -45,35 +49,58 @@ export class KogitoEditableDocument implements CustomDocument {
     this._onDidChange.dispose();
   }
 
+  get relativePath() {
+    return vscode.workspace.asRelativePath(this.uri.fsPath);
+  }
+
+  get fileExtension() {
+    return this.uri.fsPath.split(".").pop()!;
+  }
+
   public async save(destination: Uri, cancellation: CancellationToken): Promise<void> {
-    return this.editorStore.withUriAsync(this.uri, editor => editor.requestSave(destination, cancellation));
+    const editor = this.editorStore.get(this.uri);
+    const content = await editor!.getContent();
+    if (cancellation.isCancellationRequested) {
+      return;
+    }
+
+    await vscode.workspace.fs.writeFile(destination, this.encoder.encode(content));
+    vscode.window.setStatusBarMessage("Saved successfully!", 3000);
   }
 
   public async backup(destination: Uri, cancellation: CancellationToken): Promise<CustomDocumentBackup> {
     const editor = this.editorStore.get(this.uri);
-
     if (!editor) {
       throw new Error(`Cannot proceed with backup. Editor is null for path ${this.uri.fsPath}.`);
     }
 
-    return editor.requestBackup(destination, cancellation).then(() => {
-      return {
-        id: destination.fsPath,
-        delete: () => editor.deleteBackup(destination)
-      };
-    });
+    const customDocumentBackup = {
+      id: destination.fsPath,
+      delete: () => vscode.workspace.fs.delete(destination)
+    };
+
+    if (cancellation.isCancellationRequested) {
+      return customDocumentBackup;
+    }
+
+    const content = await editor.getContent();
+    await vscode.workspace.fs.writeFile(destination, this.encoder.encode(content));
+    console.info("Backup saved.");
+
+    return customDocumentBackup;
   }
 
   public async revert(cancellation: CancellationToken): Promise<void> {
-    return this.editorStore.withActiveAsync(activeEditor => activeEditor.notify_editorRevert());
+    const input = await vscode.workspace.fs.readFile(this.uri);
+    return this.editorStore.withActive(editor => editor.setContent(this.relativePath, this.decoder.decode(input)));
   }
 
   public notifyEdit(editor: KogitoEditor, edit: KogitoEdit) {
     this._onDidChange.fire({
       label: "edit",
       document: this,
-      undo: async () => editor.notify_editorUndo(),
-      redo: async () => editor.notify_editorRedo()
+      undo: async () => editor.undo(),
+      redo: async () => editor.redo()
     });
   }
 }

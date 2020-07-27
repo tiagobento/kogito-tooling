@@ -19,6 +19,8 @@ import { KogitoEditorStore } from "./KogitoEditorStore";
 import { KogitoEditorFactory } from "./KogitoEditorFactory";
 import { KogitoWebviewProvider } from "./KogitoWebviewProvider";
 import { EditorEnvelopeLocator } from "@kogito-tooling/microeditor-envelope-protocol";
+import * as __path from "path";
+import * as fs from "fs";
 
 /**
  * Starts a Kogito extension.
@@ -42,7 +44,15 @@ export function startExtension(args: {
   args.context.subscriptions.push(webviewProvider.register());
   args.context.subscriptions.push(
     vscode.commands.registerCommand(args.getPreviewCommandId, () => {
-      editorStore.withActive(e => e.requestPreview());
+      editorStore.withActive(async editor => {
+        const previewSvg = await editor.getPreview();
+        if (previewSvg) {
+          const parsedPath = __path.parse(editor.document.uri.fsPath);
+          fs.writeFileSync(`${parsedPath.dir}/${parsedPath.name}-svg.svg`, previewSvg);
+        } else {
+          console.info(`Unable to create SVG for '${editor.document.uri.fsPath}'`);
+        }
+      });
     })
   );
 }

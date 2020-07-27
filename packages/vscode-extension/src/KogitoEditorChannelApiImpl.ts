@@ -34,12 +34,10 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
   private readonly decoder = new TextDecoder("utf-8");
 
   constructor(
+    private readonly document: KogitoEditableDocument,
     private readonly editor: KogitoEditor,
     private readonly resourceContentService: ResourceContentService,
-    private readonly document: KogitoEditableDocument,
-    private readonly uri: vscode.Uri,
-    private readonly relativePath: string,
-    private initialBackup: vscode.Uri | undefined
+    private initialBackup = document.initialBackup
   ) {}
 
   public receive_newEdit(edit: KogitoEdit) {
@@ -47,7 +45,7 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
   }
 
   public receive_openFile(path: string) {
-    const resolvedPath = __path.isAbsolute(path) ? path : __path.join(__path.dirname(this.uri.fsPath), path);
+    const resolvedPath = __path.isAbsolute(path) ? path : __path.join(__path.dirname(this.document.uri.fsPath), path);
     if (!fs.existsSync(resolvedPath)) {
       throw new Error(`Cannot open file at: ${resolvedPath}.`);
     }
@@ -55,9 +53,9 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
   }
 
   public async receive_contentRequest() {
-    return vscode.workspace.fs.readFile(this.initialBackup ?? this.uri).then(contentArray => {
+    return vscode.workspace.fs.readFile(this.initialBackup ?? this.document.uri).then(contentArray => {
       this.initialBackup = undefined;
-      return { content: this.decoder.decode(contentArray), path: this.relativePath };
+      return { content: this.decoder.decode(contentArray), path: this.document.relativePath };
     });
   }
 
