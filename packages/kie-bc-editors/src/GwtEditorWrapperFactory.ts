@@ -22,11 +22,11 @@ import { XmlFormatter } from "./XmlFormatter";
 import { GwtStateControlService } from "./gwtStateControl";
 import { DefaultXmlFormatter } from "./DefaultXmlFormatter";
 import {
+  EditorInitArgs,
   ResourceContentOptions,
   ResourceListOptions,
   Tutorial,
-  UserInteraction,
-  EditorInitArgs
+  UserInteraction
 } from "@kogito-tooling/editor-envelope-protocol";
 import { GuidedTourApi } from "./api/GuidedTourApi";
 import { ResourceContentApi } from "./api/ResourceContentApi";
@@ -79,6 +79,10 @@ export class GwtEditorWrapperFactory implements EditorFactory {
         res(this.newGwtEditorWrapper(languageData, envelopeContext));
         return Promise.resolve();
       });
+    });
+
+    envelopeContext.channelApi.subscribe("receive_newEdit", edit => {
+      console.info(`Received new edit: ${edit.id}`);
     });
 
     return Promise.all(languageData.resources.map(resource => this.loadResource(resource))).then(() => {

@@ -88,7 +88,9 @@ describe("GwtEditorWrapperFactory", () => {
       {
         channelApi: {
           notify: jest.fn(),
-          request: jest.fn()
+          request: jest.fn(),
+          subscribe: jest.fn(),
+          unsubscribe: jest.fn()
         },
         context: {} as any,
         services: {
