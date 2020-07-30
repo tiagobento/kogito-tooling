@@ -26,28 +26,20 @@ import {
   WebviewPanel
 } from "vscode";
 import * as fs from "fs";
-import {KogitoEditorFactory} from "./KogitoEditorFactory";
-import {KogitoEditorStore} from "./KogitoEditorStore";
-import {KogitoEditableDocument} from "./KogitoEditableDocument";
+import { KogitoEditorFactory } from "./KogitoEditorFactory";
+import { KogitoEditorStore } from "./KogitoEditorStore";
+import { KogitoEditableDocument } from "./KogitoEditableDocument";
 
-export class KogitoWebviewProvider implements CustomEditorProvider<KogitoEditableDocument> {
+export class KogitoEditorWebviewProvider implements CustomEditorProvider<KogitoEditableDocument> {
   private readonly _onDidChangeCustomDocument = new EventEmitter<CustomDocumentEditEvent<KogitoEditableDocument>>();
   public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
   public constructor(
+    private readonly context: vscode.ExtensionContext,
     private readonly viewType: string,
-    private readonly editorFactory: KogitoEditorFactory,
     private readonly editorStore: KogitoEditorStore,
-    private readonly context: vscode.ExtensionContext
+    private readonly editorFactory: KogitoEditorFactory
   ) {}
-
-  public register() {
-    return vscode.window.registerCustomEditorProvider(this.viewType, this, {
-      webviewOptions: {
-        retainContextWhenHidden: true
-      }
-    });
-  }
 
   public async resolveCustomEditor(
     document: KogitoEditableDocument,
@@ -68,11 +60,7 @@ export class KogitoWebviewProvider implements CustomEditorProvider<KogitoEditabl
     return document.save(document.uri, cancellation);
   }
 
-  public async saveCustomDocumentAs(
-    document: KogitoEditableDocument,
-    dest: Uri,
-    cancellation: CancellationToken
-  ) {
+  public async saveCustomDocumentAs(document: KogitoEditableDocument, dest: Uri, cancellation: CancellationToken) {
     return document.save(dest, cancellation);
   }
 

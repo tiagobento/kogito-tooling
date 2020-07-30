@@ -30,10 +30,10 @@ export function activate(context: vscode.ExtensionContext) {
     editorEnvelopeLocator: {
       targetOrigin: envelopeTargetOrigin,
       mapping: new Map([
-        ["bpmn", { resourcesPathPrefix: "dist/webview/editors/bpmn", envelopePath: "dist/webview/index.js" }],
-        ["bpmn2", { resourcesPathPrefix: "dist/webview/editors/bpmn", envelopePath: "dist/webview/index.js" }],
-        ["dmn", { resourcesPathPrefix: "dist/webview/editors/dmn", envelopePath: "dist/webview/index.js" }],
-        ["scesim", { resourcesPathPrefix: "dist/webview/editors/scesim", envelopePath: "dist/webview/index.js" }]
+        ["bpmn", { resourcesPathPrefix: "dist/webview/editors/bpmn", envelopePath: "dist/webview/GwtEditorEnvelopeApp.js" }],
+        ["bpmn2", { resourcesPathPrefix: "dist/webview/editors/bpmn", envelopePath: "dist/webview/GwtEditorEnvelopeApp.js" }],
+        ["dmn", { resourcesPathPrefix: "dist/webview/editors/dmn", envelopePath: "dist/webview/GwtEditorEnvelopeApp.js" }],
+        ["scesim", { resourcesPathPrefix: "dist/webview/editors/scesim", envelopePath: "dist/webview/GwtEditorEnvelopeApp.js" }]
       ])
     },
     pageEnvelopeLocator: {
@@ -42,8 +42,8 @@ export function activate(context: vscode.ExtensionContext) {
         [
           "myPage",
           {
-            title: "My Kogito Page",
-            envelopePath: "dist/webview/myPage.js",
+            title: "My Page",
+            envelopePath: "dist/webview/MyPageEnvelope.js",
             backendUrl: "http://localhost:9000/my-page-backend/"
           }
         ]

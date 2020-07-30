@@ -34,8 +34,8 @@ import { EnvelopeBusMessageBroadcaster } from "./EnvelopeBusMessageBroadcaster";
 export class KogitoEditorFactory {
   constructor(
     private readonly context: vscode.ExtensionContext,
-    private readonly editorStore: KogitoEditorStore,
     private readonly editorEnvelopeLocator: EditorEnvelopeLocator,
+    private readonly editorStore: KogitoEditorStore,
     private readonly messageBroadcaster: EnvelopeBusMessageBroadcaster,
     private readonly workspaceApi: WorkspaceApi
   ) {}

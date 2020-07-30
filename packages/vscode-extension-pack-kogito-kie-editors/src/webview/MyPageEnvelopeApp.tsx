@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { EditorContent, StateControlCommand, Tutorial, UserInteraction } from "./api";
-import { KogitoChannelCommonApi } from "./KogitoCommonChannelApi";
+import * as React from "react";
+import * as PageEnvelope from "@kogito-tooling/page-envelope";
+import { MyPageFactory } from "./MyPage";
 
-export interface KogitoEditorChannelApi extends KogitoChannelCommonApi {
-  receive_setContentError(errorMessage: string): void;
-  receive_guidedTourUserInteraction(userInteraction: UserInteraction): void;
-  receive_guidedTourRegisterTutorial(tutorial: Tutorial): void;
-  receive_stateControlCommandUpdate(command: StateControlCommand): void;
-  receive_contentRequest(): Promise<EditorContent>;
-}
+PageEnvelope.init({
+  container: document.getElementById("page-app")!,
+  bus: acquireVsCodeApi(),
+  pageFactory: new MyPageFactory()
+});
