@@ -19,6 +19,8 @@ const CopyPlugin = require("copy-webpack-plugin");
 const pfWebpackOptions = require("@kogito-tooling/patternfly-base/patternflyWebpackOptions");
 const { merge } = require("webpack-merge");
 const common = require("../../webpack.common.config");
+const webpack = require('webpack');
+const dependencies = require("./package.json").dependencies;
 
 function getLatestGitTag() {
   const tagName = require("child_process")
@@ -59,7 +61,8 @@ module.exports = async (env, argv) => {
 
   return merge(common, {
     entry: {
-      index: "./src/index.tsx"
+      index: "./src/index.tsx",
+      "envelope/envelope": "./src/envelope/index.ts"
     },
     plugins: [
       new CopyPlugin([
@@ -68,10 +71,30 @@ module.exports = async (env, argv) => {
         { from: "./static/samples", to: "./samples" },
         { from: "./static/index.html", to: "./index.html" },
         { from: "./static/favicon.ico", to: "./favicon.ico" },
-        { from: "../../node_modules/@kogito-tooling/kie-bc-editors/dist/envelope-dist", to: "./envelope" },
+        { from: "../../node_modules/@kogito-tooling/kie-bc-editors/dist/envelope-dist/envelope.html", to: "./envelope/envelope.html" },
         { from: "../kie-bc-editors-unpacked/dmn", to: "./gwt-editors/dmn" },
         { from: "../kie-bc-editors-unpacked/bpmn", to: "./gwt-editors/bpmn" }
-      ])
+      ]),
+      new webpack.container.ModuleFederationPlugin({
+        name: "kogitoOnline",
+        filename: "remoteEntry.js",
+        exposes: {
+          "./KogitoOnlineEditor": "./src/remotes/KogitoOnlineEditor",
+        },
+        shared: {
+          // ...dependencies,
+          react: {
+            eager: true,
+            singleton: true,
+            requiredVersion: dependencies.react,
+          },
+          "react-dom": {
+            eager: true,
+            singleton: true,
+            requiredVersion: dependencies["react-dom"],
+          },
+        },
+      }),
     ],
     module: {
       rules: [
@@ -105,6 +128,6 @@ module.exports = async (env, argv) => {
       contentBase: [path.join(__dirname, "./dist"), path.join(__dirname, "./static")],
       compress: true,
       port: 9001
-    }
+    },
   });
 };
