@@ -74,6 +74,9 @@ jobs:
 
       - name: Build droolsjbpm-build-bootstrap
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/droolsjbpm-build-bootstrap.git
@@ -92,6 +95,9 @@ jobs:
 
       - name: Build kie-soup
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/kie-soup.git
@@ -110,6 +116,9 @@ jobs:
 
       - name: Build appformer
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/appformer.git
@@ -128,6 +137,9 @@ jobs:
 
       - name: Build kie-wb-common
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/kie-wb-common.git
@@ -160,6 +172,9 @@ jobs:
 
       - name: Build drools-wb
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/drools-wb.git
@@ -190,6 +205,9 @@ jobs:
 
       - name: Merge kogito-tooling changes
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
           cd kogito-tooling
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
@@ -219,11 +237,18 @@ jobs:
         run: /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
       - name: Download dependencies
-        run: cd kogito-tooling && yarn run init
+        run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
+          cd kogito-tooling && yarn run init
 
       - name: Check yarn.lock md5
         id: check-yarn-lock-md5
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
           cd kogito-tooling
           git diff yarn.lock;
           [ "0" == "$(git diff yarn.lock | wc -l)" ]
@@ -240,7 +265,11 @@ jobs:
           DOWNLOAD_HUB_macOsUrl: "https://kiegroup.github.io/kogito-online-ci/hub_download_unsupported.html"
           DOWNLOAD_HUB_windowsUrl: "https://kiegroup.github.io/kogito-online-ci/hub_download_unsupported.html"
           DISPLAY: ":99.0"
-        run: ECHO ${{ github.workspace }} && cd kogito-tooling && yarn run build:prod && cd .. && pwd && ls
+        run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
+          echo ${{ github.workspace }} && cd kogito-tooling && yarn run build:prod && cd .. && pwd && ls
 
       - name: Upload VS Code Extension
         uses: actions/upload-artifact@v1
@@ -280,7 +309,11 @@ jobs:
           ROUTER_targetOrigin: "https://localhost:9000"
           ROUTER_relativePath: ""
           ONLINEEDITOR_url: "http://localhost:9001"
-        run: echo ${{ github.workspace }} && cd kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run build:prod && cd -
+        run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
+          echo ${{ github.workspace }} && cd kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run build:prod && cd -
 
       - name: Run Chrome Extension integration tests
         env:
@@ -292,6 +325,9 @@ jobs:
           ROUTER_relativePath: ""
           ONLINEEDITOR_url: "http://localhost:9001"
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
+          pwd
           cd kogito-tooling/packages/online-editor && yarn run start &
           cd kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run serve-envelope &
           sleep 30
