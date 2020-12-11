@@ -78,6 +78,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
+          cd ${{ github.workspace }}/droolsjbpm-build-bootstrap
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/droolsjbpm-build-bootstrap.git
@@ -100,6 +101,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
+          ${{ github.workspace }}/kie-soup
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/kie-soup.git
@@ -122,6 +124,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
+          ${{ github.workspace }}/appformer
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/appformer.git
@@ -144,6 +147,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
+          ${{ github.workspace }}/kie-wb-common
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/kie-wb-common.git
@@ -160,13 +164,13 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: dmn-editor-fdb
-          path: kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime
+          path: ${{ github.workspace }}/kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime
 
       - name: Upload BPMN editor
         uses: actions/upload-artifact@v1
         with:
           name: bpmn-editor-fdb
-          path: kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime
+          path: ${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime
 
       - name: Checkout drools-wb
         uses: actions/checkout@v2
@@ -180,6 +184,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
+          ${{ github.workspace }}/drools-wb
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/drools-wb.git
@@ -194,7 +199,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: scesim-editor-fdb
-          path: drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime/
+          path: ${{ github.workspace }}/drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime/
 
       - name: Checkout kogito-tooling
         uses: actions/checkout@v2
@@ -246,7 +251,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
-          cd kogito-tooling && yarn run init
+          cd ${{ github.workspace }}/kogito-tooling && yarn run init
 
       - name: Check yarn.lock md5
         id: check-yarn-lock-md5
@@ -254,7 +259,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
-          cd kogito-tooling
+          cd ${{ github.workspace }}/kogito-tooling
           git diff yarn.lock;
           [ "0" == "$(git diff yarn.lock | wc -l)" ]
         shell: bash
@@ -274,37 +279,37 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
-          echo ${{ github.workspace }} && cd kogito-tooling && yarn run build:prod && cd .. && pwd && ls
+          cd ${{ github.workspace }}/kogito-tooling && yarn run build:prod && cd .. && pwd && ls
 
       - name: Upload VS Code Extension
         uses: actions/upload-artifact@v1
         with:
           name: vscode-extension-fdb
-          path: kogito-tooling/packages/vscode-extension-pack-kogito-kie-editors/dist/vscode_extension_kogito_kie_editors_${{ steps.version.outputs.version }}.vsix
+          path: ${{ github.workspace }}/kogito-tooling/packages/vscode-extension-pack-kogito-kie-editors/dist/vscode_extension_kogito_kie_editors_${{ steps.version.outputs.version }}.vsix
 
       - name: Upload Backend VS Code Extension
         uses: actions/upload-artifact@v1
         with:
           name: vscode-extension-backend-fdb
-          path: kogito-tooling/packages/vscode-extension-backend/dist/vscode-extension-backend_${{ steps.version.outputs.version }}.vsix
+          path: ${{ github.workspace }}/kogito-tooling/packages/vscode-extension-backend/dist/vscode-extension-backend_${{ steps.version.outputs.version }}.vsix
 
       - name: Upload Chrome Extension
         uses: actions/upload-artifact@v1
         with:
           name: chrome-extension-fdb
-          path: kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/chrome_extension_kogito_kie_editors_${{ steps.version.outputs.version }}.zip
+          path: ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/chrome_extension_kogito_kie_editors_${{ steps.version.outputs.version }}.zip
 
       - name: Upload Desktop App
         uses: actions/upload-artifact@v1
         with:
           name: desktop-app-linux-fdb
-          path: kogito-tooling/packages/desktop/out/Business Modeler Preview-linux-x64.tar.gz
+          path: ${{ github.workspace }}/kogito-tooling/packages/desktop/out/Business Modeler Preview-linux-x64.tar.gz
 
       - name: Upload Hub App
         uses: actions/upload-artifact@v1
         with:
           name: hub-app-linux-fdb
-          path: kogito-tooling/packages/hub/out/Business Modeler Hub Preview-linux-x64.tar.gz
+          path: ${{ github.workspace }}/kogito-tooling/packages/hub/out/Business Modeler Hub Preview-linux-x64.tar.gz
 
       - name: Rebuild Chrome Extension to use servers running on localhost
         env:
@@ -318,7 +323,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
-          echo ${{ github.workspace }} && cd kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run build:prod && cd -
+          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run build:prod
 
       - name: Run Chrome Extension integration tests
         env:
@@ -333,25 +338,24 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
-          cd kogito-tooling/packages/online-editor && yarn run start &
-          cd kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run serve-envelope &
+          cd ${{ github.workspace }}/kogito-tooling/packages/online-editor && yarn run start &
+          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run serve-envelope &
           sleep 30
-          cd kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run test:it
-          cd -
+          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run test:it
 
       - name: Archive Chrome Extension integration tests screenshots
         if: success() || failure()	
         uses: actions/upload-artifact@v1	
         with:	
           name: chrome-extension-it-tests-screenshots-${{ matrix.os }}	
-          path: kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/screenshots	
+          path: ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/screenshots	
 
       - name: Archive Chrome Extension integration tests logs
         if: success() || failure()	
         uses: actions/upload-artifact@v1	
         with:	
           name: chrome-extension-it-tests-logs-${{ matrix.os }}	
-          path: kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/logs
+          path: ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/logs
           
       - name: Checkout kogito-online-ci
         uses: actions/checkout@v2
@@ -376,4 +380,3 @@ jobs:
           git config --global user.name "Kogito Tooling Bot (kiegroup)"
           git add . && git commit -m "Kogito Tooling FDB - ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}" || echo "No changes."
           git push origin gh-pages
-          cd -
