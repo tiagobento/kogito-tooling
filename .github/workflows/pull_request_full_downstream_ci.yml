@@ -69,6 +69,7 @@ jobs:
       - name: Checkout droolsjbpm-build-bootstrap
         uses: actions/checkout@v2
         with:
+          path: ${{ github.workspace }}/droolsjbpm-build-bootstrap
           repository: kiegroup/droolsjbpm-build-bootstrap
           fetch-depth: 0
 
@@ -90,6 +91,7 @@ jobs:
       - name: Checkout kie-soup
         uses: actions/checkout@v2
         with:
+          path: ${{ github.workspace }}/kie-soup
           repository: kiegroup/kie-soup
           fetch-depth: 0
 
@@ -111,6 +113,7 @@ jobs:
       - name: Checkout appformer
         uses: actions/checkout@v2
         with:
+          path: ${{ github.workspace }}/appformer
           repository: kiegroup/appformer
           fetch-depth: 0
 
@@ -132,6 +135,7 @@ jobs:
       - name: Checkout kie-wb-common
         uses: actions/checkout@v2
         with:
+          path: ${{ github.workspace }}/kie-wb-common
           repository: kiegroup/kie-wb-common
           fetch-depth: 0
 
@@ -167,6 +171,7 @@ jobs:
       - name: Checkout drools-wb
         uses: actions/checkout@v2
         with:
+          path: ${{ github.workspace }}/drools-wb
           repository: kiegroup/drools-wb
           fetch-depth: 0
 
@@ -195,11 +200,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          path: kogito-tooling
+          path: ${{ github.workspace }}/kogito-tooling
 
       - name: Setup kogito-tooling
         run: |
-          cd kogito-tooling
+          cd ${{ github.workspace }}/kogito-tooling
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           git status
 
@@ -208,7 +213,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
-          cd kogito-tooling
+          cd ${{ github.workspace }}/kogito-tooling
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
           git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/kogito-tooling.git
@@ -222,7 +227,7 @@ jobs:
       - name: Output version
         id: version
         run: |
-          cd kogito-tooling && echo ::set-output name=version::$(node -e "console.log(require('./lerna.json').version);")
+          cd ${{ github.workspace }}/kogito-tooling && echo ::set-output name=version::$(node -e "console.log(require('./lerna.json').version);")
         shell: bash
 
       - name: Setup Node
@@ -352,14 +357,14 @@ jobs:
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.KOGITO_TOOLING_BOT_TOKEN }}
-          path: kogito-online-ci
+          path: ${{ github.workspace }}/kogito-online-ci
           repository: ${{ github.repository_owner }}/kogito-online-ci
           ref: gh-pages
 
       # For this step to work properly, you have to add the owner of KOGITO_TOOLING_BOT_TOKEN as collaborator on 'kogito-online-ci'.
       - name: Update kogito-online-ci resources
         run: |
-          cd kogito-online-ci
+          cd ${{ github.workspace }}/kogito-online-ci
           rm -rf ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}
           mkdir -p ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors
           cp -r ../kogito-tooling/node_modules/@kogito-tooling/dmn-editor-unpacked/target/dmn ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
