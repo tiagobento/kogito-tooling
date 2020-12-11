@@ -229,18 +229,18 @@ jobs:
 
       - name: Build kogito-tooling
         env:
-          EXTERNAL_RESOURCE_PATH__dmnEditor: "../kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__bpmnEditor: "../kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__scesimEditor: "../drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__dmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__bpmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__scesimEditor: "${{ github.workspace }}/drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
           ROUTER_targetOrigin: "https://kiegroup.github.io"
           ROUTER_relativePath: "kogito-online-ci/${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/"
           DOWNLOAD_HUB_linuxUrl: "https://kiegroup.github.io/kogito-online-ci/hub_download_unsupported.html"
           DOWNLOAD_HUB_macOsUrl: "https://kiegroup.github.io/kogito-online-ci/hub_download_unsupported.html"
           DOWNLOAD_HUB_windowsUrl: "https://kiegroup.github.io/kogito-online-ci/hub_download_unsupported.html"
           DISPLAY: ":99.0"
-        run: cd kogito-tooling && yarn run build:prod && cd .. && pwd && ls
+        run: ECHO ${{ github.workspace }} && cd kogito-tooling && yarn run build:prod && cd .. && pwd && ls
 
-      - name: Upload VSCode Extension
+      - name: Upload VS Code Extension
         uses: actions/upload-artifact@v1
         with:
           name: vscode-extension-fdb
@@ -272,20 +272,20 @@ jobs:
 
       - name: Rebuild Chrome Extension to use servers running on localhost
         env:
-          EXTERNAL_RESOURCE_PATH__dmnEditor: "../../../kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__bpmnEditor: "../../../kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__scesimEditor: "../../../drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__dmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__bpmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__scesimEditor: "${{ github.workspace }}/drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
           ROUTER_targetOrigin: "https://localhost:9000"
           ROUTER_relativePath: ""
           ONLINEEDITOR_url: "http://localhost:9001"
-        run: cd kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run build:prod && cd -
+        run: echo ${{ github.workspace }} && cd kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run build:prod && cd -
 
       - name: Run Chrome Extension integration tests
         env:
           DISPLAY: ":99.0"
-          EXTERNAL_RESOURCE_PATH__dmnEditor: "../../../kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__bpmnEditor: "../../../kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__scesimEditor: "../../../drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__dmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__bpmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__scesimEditor: "${{ github.workspace }}/drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
           ROUTER_targetOrigin: "https://localhost:9000"
           ROUTER_relativePath: ""
           ONLINEEDITOR_url: "http://localhost:9001"
