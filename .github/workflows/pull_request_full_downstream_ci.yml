@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-    # if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -21,18 +20,20 @@ jobs:
       MERGE_WARNING_MESSAGE: "ATTENTION: A merge attempt is being made to get your changes. If a conflict happens, please do a rebase/merge manually in your branch to get the latest kiegroup/master commits."
 
     steps:
-#       - name: Fetch user membership to kiegroup
-#         uses: octokit/request-action@v2.x
-#         id: checkUserMembership
-#         with:
-#           route: GET /orgs/kiegroup/members/:username
-#           username: ${{ github.actor }}
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.KOGITO_TOOLING_BOT_TOKEN }}
+      - name: Fetch user membership to kiegroup
+        if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
+        uses: octokit/request-action@v2.x
+        id: checkUserMembership
+        with:
+          route: GET /orgs/kiegroup/members/:username
+          username: ${{ github.actor }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.KOGITO_TOOLING_BOT_TOKEN }}
 
-#       - name: Check user membership to kiegroup
-#         run: |
-#           [ "204" == "${{ steps.checkUserMembership.outputs.status }}" ]
+      - name: Check user membership to kiegroup
+        if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
+        run: |
+          [ "204" == "${{ steps.checkUserMembership.outputs.status }}" ]
 
       - name: Output Build info
         id: buildInfo
