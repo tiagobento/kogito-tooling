@@ -37,6 +37,8 @@ jobs:
       - name: Output Build info
         id: buildInfo
         run: |
+          echo ${{ github.workspace }}
+          ls ${{ github.workspace }}
           if [ -z "${{ github.event.pull_request }}" ]; then
             user=$(node -e "console.log('${{ github.event.comment.body }}'.match(/Build: (.+)\/(.+)$/)[1])");
             ref=$(node -e "console.log('${{ github.event.comment.body }}'.match(/Build: (.+)\/(.+)$/)[2])");
