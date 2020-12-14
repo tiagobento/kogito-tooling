@@ -41,8 +41,6 @@ jobs:
       - name: Output Build info
         id: buildInfo
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
           if [ -z "${{ github.event.pull_request }}" ]; then
             user=$(node -e "console.log('${{ github.event.comment.body }}'.match(/Build: (.+)\/(.+)$/)[1])");
             ref=$(node -e "console.log('${{ github.event.comment.body }}'.match(/Build: (.+)\/(.+)$/)[2])");
@@ -76,12 +74,37 @@ jobs:
           path: ${{ github.workspace }}/droolsjbpm-build-bootstrap
           repository: kiegroup/droolsjbpm-build-bootstrap
           fetch-depth: 0
+          
+      - name: Checkout kie-soup
+        uses: actions/checkout@v2
+        with:
+          path: ${{ github.workspace }}/kie-soup
+          repository: kiegroup/kie-soup
+          fetch-depth: 0
+        
+      - name: Checkout appformer
+        uses: actions/checkout@v2
+        with:
+          path: ${{ github.workspace }}/appformer
+          repository: kiegroup/appformer
+          fetch-depth: 0
+        
+      - name: Checkout kie-wb-common
+        uses: actions/checkout@v2
+        with:
+          path: ${{ github.workspace }}/kie-wb-common
+          repository: kiegroup/kie-wb-common
+          fetch-depth: 0
+      
+      - name: Checkout drools-wb
+        uses: actions/checkout@v2
+        with:
+          path: ${{ github.workspace }}/drools-wb
+          repository: kiegroup/drools-wb
+          fetch-depth: 0
 
       - name: Build droolsjbpm-build-bootstrap
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
           cd ${{ github.workspace }}/droolsjbpm-build-bootstrap
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
@@ -93,18 +116,8 @@ jobs:
           fi
           mvn clean install -DskipTests -Dgwt.compiler.skip -Denforcer.skip -T 2 -B
 
-      - name: Checkout kie-soup
-        uses: actions/checkout@v2
-        with:
-          path: ${{ github.workspace }}/kie-soup
-          repository: kiegroup/kie-soup
-          fetch-depth: 0
-
       - name: Build kie-soup
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
           cd ${{ github.workspace }}/kie-soup
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
@@ -116,18 +129,8 @@ jobs:
           fi
           mvn clean install -DskipTests -Dgwt.compiler.skip -Denforcer.skip -T 2 -B
 
-      - name: Checkout appformer
-        uses: actions/checkout@v2
-        with:
-          path: ${{ github.workspace }}/appformer
-          repository: kiegroup/appformer
-          fetch-depth: 0
-
       - name: Build appformer
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
           cd ${{ github.workspace }}/appformer
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
@@ -139,18 +142,8 @@ jobs:
           fi
           mvn clean install -DskipTests -Dgwt.compiler.skip -Denforcer.skip -T 2 -B
 
-      - name: Checkout kie-wb-common
-        uses: actions/checkout@v2
-        with:
-          path: ${{ github.workspace }}/kie-wb-common
-          repository: kiegroup/kie-wb-common
-          fetch-depth: 0
-
       - name: Build kie-wb-common
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
           cd ${{ github.workspace }}/kie-wb-common
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
@@ -162,6 +155,19 @@ jobs:
           fi
           mvn clean install -DskipTests -Denforcer.skip -T 2 -B -am -pl kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime,kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime
 
+      - name: Build drools-wb
+        run: |
+          cd ${{ github.workspace }}/drools-wb
+          git config --global user.email "kietooling@gmail.com"
+          git config --global user.name "Kogito Tooling Bot"
+          git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/drools-wb.git
+          git fetch --all || true
+          if [ -n "$(git show-ref refs/remotes/${{ steps.buildInfo.outputs.user }}/${{ steps.buildInfo.outputs.ref }})" ]; then
+            echo $MERGE_WARNING_MESSAGE
+            git merge ${{ steps.buildInfo.outputs.user }}/${{ steps.buildInfo.outputs.ref }}
+          fi
+          mvn clean install -DskipTests -Denforcer.skip -pl drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime -am -T 2 -B
+          
       - name: Upload DMN editor
         uses: actions/upload-artifact@v1
         with:
@@ -173,29 +179,6 @@ jobs:
         with:
           name: bpmn-editor-fdb
           path: ${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime
-
-      - name: Checkout drools-wb
-        uses: actions/checkout@v2
-        with:
-          path: ${{ github.workspace }}/drools-wb
-          repository: kiegroup/drools-wb
-          fetch-depth: 0
-
-      - name: Build drools-wb
-        run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
-          cd ${{ github.workspace }}/drools-wb
-          git config --global user.email "kietooling@gmail.com"
-          git config --global user.name "Kogito Tooling Bot"
-          git remote add ${{ steps.buildInfo.outputs.user }} https://github.com/${{ steps.buildInfo.outputs.user }}/drools-wb.git
-          git fetch --all || true
-          if [ -n "$(git show-ref refs/remotes/${{ steps.buildInfo.outputs.user }}/${{ steps.buildInfo.outputs.ref }})" ]; then
-            echo $MERGE_WARNING_MESSAGE
-            git merge ${{ steps.buildInfo.outputs.user }}/${{ steps.buildInfo.outputs.ref }}
-          fi
-          mvn clean install -DskipTests -Denforcer.skip -pl drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime -am -T 2 -B
 
       - name: Upload SceSim editor
         uses: actions/upload-artifact@v1
@@ -217,9 +200,6 @@ jobs:
 
       - name: Merge kogito-tooling changes
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
           cd ${{ github.workspace }}/kogito-tooling
           git config --global user.email "kietooling@gmail.com"
           git config --global user.name "Kogito Tooling Bot"
@@ -234,7 +214,8 @@ jobs:
       - name: Output version
         id: version
         run: |
-          cd ${{ github.workspace }}/kogito-tooling && echo ::set-output name=version::$(node -e "console.log(require('./lerna.json').version);")
+          cd ${{ github.workspace }}/kogito-tooling
+          echo ::set-output name=version::$(node -e "console.log(require('./lerna.json').version);")
         shell: bash
 
       - name: Setup Node
@@ -250,17 +231,12 @@ jobs:
 
       - name: Download dependencies
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
-          cd ${{ github.workspace }}/kogito-tooling && yarn run init
+          cd ${{ github.workspace }}/kogito-tooling
+          yarn run init
 
       - name: Check yarn.lock
         id: check-yarn-lock
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
           cd ${{ github.workspace }}/kogito-tooling
           git diff yarn.lock;
           [ "0" == "$(git diff yarn.lock | wc -l)" ]
@@ -278,11 +254,63 @@ jobs:
           DOWNLOAD_HUB_windowsUrl: "https://kiegroup.github.io/kogito-online-ci/hub_download_unsupported.html"
           DISPLAY: ":99.0"
         run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
-          cd ${{ github.workspace }}/kogito-tooling && yarn build:prod && cd .. && pwd && ls
+          cd ${{ github.workspace }}/kogito-tooling
+          yarn build:prod
+      
+      - name: Checkout kogito-online-ci
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.KOGITO_TOOLING_BOT_TOKEN }}
+          path: ${{ github.workspace }}/kogito-online-ci
+          repository: ${{ github.repository_owner }}/kogito-online-ci
+          ref: gh-pages
 
+      # For this step to work properly, you have to add the owner of KOGITO_TOOLING_BOT_TOKEN as collaborator on 'kogito-online-ci'.
+      - name: Update kogito-online-ci resources
+        run: |
+          cd ${{ github.workspace }}/kogito-online-ci
+          rm -rf ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}
+          mkdir -p ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors
+          cp -r ../kogito-tooling/node_modules/@kogito-tooling/dmn-editor-unpacked/target/dmn ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
+          cp -r ../kogito-tooling/node_modules/@kogito-tooling/bpmn-editor-unpacked/target/bpmn ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
+          cp -r ../kogito-tooling/node_modules/@kogito-tooling/scesim-editor-unpacked/target/scesim ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
+          cp -r ../kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/envelope ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
+          cp -r ../kogito-tooling/packages/online-editor/dist/* ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/
+          git config --global user.email "kietooling@gmail.com"
+          git config --global user.name "Kogito Tooling Bot (kiegroup)"
+          git add . && git commit -m "Kogito Tooling FDB - ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}" || echo "No changes."
+          git push origin gh-pages
+
+      - name: Rebuild Chrome Extension to use servers running on localhost and run integration tests
+        env:
+          EXTERNAL_RESOURCE_PATH__dmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__bpmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
+          EXTERNAL_RESOURCE_PATH__scesimEditor: "${{ github.workspace }}/drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
+          ROUTER_targetOrigin: "https://localhost:9000"
+          ROUTER_relativePath: ""
+          ONLINEEDITOR_url: "http://localhost:9001"
+        run: |
+          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors
+          yarn build:fast
+          cd ${{ github.workspace }}/kogito-tooling/packages/online-editor && yarn run start &
+          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run serve-envelope &
+          sleep 30
+          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run test:it
+
+      - name: Archive Chrome Extension integration tests screenshots
+        if: success() || failure()	
+        uses: actions/upload-artifact@v1	
+        with:	
+          name: chrome-extension-it-tests-screenshots-${{ matrix.os }}	
+          path: ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/screenshots	
+
+      - name: Archive Chrome Extension integration tests logs
+        if: success() || failure()	
+        uses: actions/upload-artifact@v1	
+        with:	
+          name: chrome-extension-it-tests-logs-${{ matrix.os }}	
+          path: ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/logs
+      
       - name: Upload VS Code Extension
         uses: actions/upload-artifact@v1
         with:
@@ -312,73 +340,3 @@ jobs:
         with:
           name: hub-app-linux-fdb
           path: ${{ github.workspace }}/kogito-tooling/packages/hub/out/Business Modeler Hub Preview-linux-x64.tar.gz
-
-      - name: Rebuild Chrome Extension to use servers running on localhost
-        env:
-          EXTERNAL_RESOURCE_PATH__dmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__bpmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__scesimEditor: "${{ github.workspace }}/drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
-          ROUTER_targetOrigin: "https://localhost:9000"
-          ROUTER_relativePath: ""
-          ONLINEEDITOR_url: "http://localhost:9001"
-        run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
-          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn build:fast
-
-      - name: Run Chrome Extension integration tests
-        env:
-          DISPLAY: ":99.0"
-          EXTERNAL_RESOURCE_PATH__dmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__bpmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
-          EXTERNAL_RESOURCE_PATH__scesimEditor: "${{ github.workspace }}/drools-wb/drools-wb-screens/drools-wb-scenario-simulation-editor/drools-wb-scenario-simulation-editor-kogito-runtime/target/drools-wb-scenario-simulation-editor-kogito-runtime"
-          ROUTER_targetOrigin: "https://localhost:9000"
-          ROUTER_relativePath: ""
-          ONLINEEDITOR_url: "http://localhost:9001"
-        run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }}
-          pwd
-          cd ${{ github.workspace }}/kogito-tooling/packages/online-editor && yarn run start &
-          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run serve-envelope &
-          sleep 30
-          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run test:it
-
-      - name: Archive Chrome Extension integration tests screenshots
-        if: success() || failure()	
-        uses: actions/upload-artifact@v1	
-        with:	
-          name: chrome-extension-it-tests-screenshots-${{ matrix.os }}	
-          path: ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/screenshots	
-
-      - name: Archive Chrome Extension integration tests logs
-        if: success() || failure()	
-        uses: actions/upload-artifact@v1	
-        with:	
-          name: chrome-extension-it-tests-logs-${{ matrix.os }}	
-          path: ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/logs
-          
-      - name: Checkout kogito-online-ci
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.KOGITO_TOOLING_BOT_TOKEN }}
-          path: ${{ github.workspace }}/kogito-online-ci
-          repository: ${{ github.repository_owner }}/kogito-online-ci
-          ref: gh-pages
-
-      # For this step to work properly, you have to add the owner of KOGITO_TOOLING_BOT_TOKEN as collaborator on 'kogito-online-ci'.
-      - name: Update kogito-online-ci resources
-        run: |
-          cd ${{ github.workspace }}/kogito-online-ci
-          rm -rf ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}
-          mkdir -p ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors
-          cp -r ../kogito-tooling/node_modules/@kogito-tooling/dmn-editor-unpacked/target/dmn ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
-          cp -r ../kogito-tooling/node_modules/@kogito-tooling/bpmn-editor-unpacked/target/bpmn ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
-          cp -r ../kogito-tooling/node_modules/@kogito-tooling/scesim-editor-unpacked/target/scesim ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
-          cp -r ../kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors/dist/envelope ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/editors/
-          cp -r ../kogito-tooling/packages/online-editor/dist/* ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}/
-          git config --global user.email "kietooling@gmail.com"
-          git config --global user.name "Kogito Tooling Bot (kiegroup)"
-          git add . && git commit -m "Kogito Tooling FDB - ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}" || echo "No changes."
-          git push origin gh-pages
