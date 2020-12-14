@@ -134,7 +134,7 @@ jobs:
             echo $MERGE_WARNING_MESSAGE
             git merge ${{ steps.buildInfo.outputs.user }}/${{ steps.buildInfo.outputs.ref }}
           fi
-          mvn clean install -DskipTests -Dgwt.compiler.skip -Denforcer.skip -B
+          mvn clean install -DskipTests -Dgwt.compiler.skip -Denforcer.skip -T 2 -B
 
       - name: Checkout kie-wb-common
         uses: actions/checkout@v2
@@ -157,9 +157,7 @@ jobs:
             echo $MERGE_WARNING_MESSAGE
             git merge ${{ steps.buildInfo.outputs.user }}/${{ steps.buildInfo.outputs.ref }}
           fi
-          mvn clean install -DskipTests -Dgwt.compiler.skip -Denforcer.skip -T 2 -B
-          mvn clean install -DskipTests -Denforcer.skip -pl kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime -B
-          mvn clean install -DskipTests -Denforcer.skip -pl kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime -B
+          mvn clean install -DskipTests -Denforcer.skip -T 2 -B -am -pl kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime, kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime
 
       - name: Upload DMN editor
         uses: actions/upload-artifact@v1
@@ -254,8 +252,8 @@ jobs:
           pwd
           cd ${{ github.workspace }}/kogito-tooling && yarn run init
 
-      - name: Check yarn.lock md5
-        id: check-yarn-lock-md5
+      - name: Check yarn.lock
+        id: check-yarn-lock
         run: |
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
@@ -336,9 +334,6 @@ jobs:
           ROUTER_relativePath: ""
           ONLINEEDITOR_url: "http://localhost:9001"
         run: |
-          echo fs.inotify.max_user_instances=524288 | tee -a /etc/sysctl.conf && sysctl -p
-          echo fs.inotify.max_user_watches=524288 | tee -a /etc/sysctl.conf && sysctl -p
-          echo fs.inotify.max_queued_events=524288 | tee -a /etc/sysctl.conf && sysctl -p
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
