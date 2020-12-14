@@ -98,9 +98,9 @@ module.exports = async (env, argv) => {
         { from: `./${manifestFile}`, to: "./manifest.json" },
 
         // These are used for development only.
-        { from: externalAssets.dmnEditorPath(argv), to: "dmn" },
-        { from: externalAssets.bpmnEditorPath(argv), to: "bpmn" },
-        { from: externalAssets.scesimEditorPath(argv), to: "scesim" }
+        { from: externalAssets.dmnEditorPath(argv), to: "dmn", ignore: ["WEB-INF/*"] },
+        { from: externalAssets.bpmnEditorPath(argv), to: "bpmn", ignore: ["WEB-INF/*"] },
+        { from: externalAssets.scesimEditorPath(argv), to: "scesim", ignore: ["WEB-INF/*"] }
       ]),
       new ZipPlugin({
         filename: "chrome_extension_kogito_kie_editors_" + packageJson.version + ".zip",
