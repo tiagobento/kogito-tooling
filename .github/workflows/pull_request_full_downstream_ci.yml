@@ -281,7 +281,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
-          cd ${{ github.workspace }}/kogito-tooling && yarn run build:prod && cd .. && pwd && ls
+          cd ${{ github.workspace }}/kogito-tooling && yarn build:prod && cd .. && pwd && ls
 
       - name: Upload VS Code Extension
         uses: actions/upload-artifact@v1
@@ -325,7 +325,7 @@ jobs:
           echo ${{ github.workspace }}
           ls ${{ github.workspace }}
           pwd
-          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run build:prod
+          cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn build:fast
 
       - name: Run Chrome Extension integration tests
         env:
