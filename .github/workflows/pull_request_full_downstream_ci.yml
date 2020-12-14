@@ -258,6 +258,7 @@ jobs:
           yarn build:prod
       
       - name: Checkout kogito-online-ci
+        if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.KOGITO_TOOLING_BOT_TOKEN }}
@@ -267,6 +268,7 @@ jobs:
 
       # For this step to work properly, you have to add the owner of KOGITO_TOOLING_BOT_TOKEN as collaborator on 'kogito-online-ci'.
       - name: Update kogito-online-ci resources
+        if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
         run: |
           cd ${{ github.workspace }}/kogito-online-ci
           rm -rf ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}
