@@ -20,6 +20,9 @@ jobs:
       MERGE_WARNING_MESSAGE: "ATTENTION: A merge attempt is being made to get your changes. If a conflict happens, please do a rebase/merge manually in your branch to get the latest kiegroup/master commits."
 
     steps:
+      - name: Setup kernel for react native, increase watchers
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+        
       - name: Fetch user membership to kiegroup
         if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
         uses: octokit/request-action@v2.x
