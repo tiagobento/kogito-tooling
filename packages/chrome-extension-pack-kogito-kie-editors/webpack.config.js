@@ -36,12 +36,10 @@ function getLatestGitTag() {
 }
 
 function getRouterArgs(argv) {
-  const isProd = argv.mode === "production";
-
   let targetOrigin = argv["ROUTER_targetOrigin"] || process.env["ROUTER_targetOrigin"];
   let relativePath = argv["ROUTER_relativePath"] || process.env["ROUTER_relativePath"];
 
-  if (isProd) {
+  if (argv.mode === "production") {
     targetOrigin = targetOrigin || "https://kiegroup.github.io";
     relativePath = relativePath || `kogito-online/editors/${getLatestGitTag()}/`;
   } else {
@@ -56,12 +54,10 @@ function getRouterArgs(argv) {
 }
 
 function getOnlineEditorArgs(argv) {
-  const isProd = argv.mode === "production";
-
   let onlineEditorUrl = argv["ONLINEEDITOR_url"] || process.env["ONLINEEDITOR_url"];
   let manifestFile;
 
-  if (isProd) {
+  if (argv.mode === "production") {
     onlineEditorUrl = onlineEditorUrl || "https://kiegroup.github.io/kogito-online";
     manifestFile = "manifest.prod.json";
   } else {
