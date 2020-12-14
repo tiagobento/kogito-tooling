@@ -257,7 +257,7 @@ jobs:
           cd ${{ github.workspace }}/kogito-tooling
           yarn build:prod
       
-      - name: Checkout kogito-online-ci
+      - name: 'Checkout kogito-online-ci 2'
         if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
         uses: actions/checkout@v2
         with:
@@ -267,7 +267,7 @@ jobs:
           ref: gh-pages
 
       # For this step to work properly, you have to add the owner of KOGITO_TOOLING_BOT_TOKEN as collaborator on 'kogito-online-ci'.
-      - name: Update kogito-online-ci resources
+      - name: 'Update kogito-online-ci resources 2'
         if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
         run: |
           cd ${{ github.workspace }}/kogito-online-ci
