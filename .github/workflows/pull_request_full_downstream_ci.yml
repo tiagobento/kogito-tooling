@@ -20,7 +20,7 @@ jobs:
       MERGE_WARNING_MESSAGE: "ATTENTION: A merge attempt is being made to get your changes. If a conflict happens, please do a rebase/merge manually in your branch to get the latest kiegroup/master commits."
 
     steps:
-      - name: Setup kernel for react native, increase watchers
+      - name: Increase inotify watches
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
       - name: Fetch user membership to kiegroup
@@ -257,7 +257,7 @@ jobs:
           cd ${{ github.workspace }}/kogito-tooling
           yarn build:prod
 
-      - name: 'Checkout kogito-online-ci 2'
+      - name: 'Checkout kogito-online-ci'
         if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
         uses: actions/checkout@v2
         with:
@@ -267,7 +267,7 @@ jobs:
           ref: gh-pages
 
       # For this step to work properly, you have to add the owner of KOGITO_TOOLING_BOT_TOKEN as collaborator on 'kogito-online-ci'.
-      - name: 'Update kogito-online-ci resources 2'
+      - name: 'Update kogito-online-ci resources'
         if: github.repository == 'kiegroup/kogito-tooling' && (github.event_name != 'issue_comment' || startsWith(github.event.comment.body, 'Build:'))
         run: |
           cd ${{ github.workspace }}/kogito-online-ci
@@ -283,7 +283,7 @@ jobs:
           git add . && git commit -m "Kogito Tooling FDB - ${{ steps.buildInfo.outputs.category }}/${{ steps.buildInfo.outputs.id }}" || echo "No changes."
           git push origin gh-pages
 
-      - name: Rebuild 2 Chrome Extension to use servers running on localhost and run integration tests
+      - name: Rebuild Chrome Extension to use servers running on localhost and run integration tests
         env:
           EXTERNAL_RESOURCE_PATH__dmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-dmn/kie-wb-common-dmn-webapp-kogito-runtime/target/kie-wb-common-dmn-webapp-kogito-runtime"
           EXTERNAL_RESOURCE_PATH__bpmnEditor: "${{ github.workspace }}/kie-wb-common/kie-wb-common-stunner/kie-wb-common-stunner-sets/kie-wb-common-stunner-bpmn/kie-wb-common-stunner-bpmn-kogito-runtime/target/kie-wb-common-stunner-bpmn-kogito-runtime"
