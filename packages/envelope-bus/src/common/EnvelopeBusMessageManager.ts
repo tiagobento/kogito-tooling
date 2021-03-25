@@ -132,20 +132,14 @@ export class EnvelopeBusMessageManager<
   >(method: M, callback: Func, config: { owned: boolean }) {
     const activeSubscriptions = this.localSharedValueSubscriptions.get(method) ?? [];
     this.localSharedValueSubscriptions.set(method, [...activeSubscriptions, callback]);
-    if (!config.owned && !this.localSharedValuesStore.get(method)) {
+    if (config.owned || this.localSharedValuesStore.get(method)) {
+      callback(this.getCurrentStoredSharedValueOrDefault(method, this.currentApiImpl));
+    } else {
       this.send({
         type: method,
         purpose: EnvelopeBusMessagePurpose.SHARED_VALUE_GET_DEFAULT,
         data: []
       });
-    } else {
-      const m = method as SharedValueProviderPropertyNames<ApiToProvide>;
-      const val =
-        this.localSharedValuesStore.get(method) ??
-        this.localSharedValuesStore
-          .set(method, this.currentApiImpl?.[m]?.apply(this.currentApiImpl).defaultValue)
-          .get(method);
-      callback(val as ApiToConsume[keyof ApiToConsume]);
     }
     return callback;
   }
@@ -164,6 +158,16 @@ export class EnvelopeBusMessageManager<
     }
 
     activeSubscriptions.splice(index, 1);
+  }
+
+  private getCurrentStoredSharedValueOrDefault<
+    M extends SharedValueProviderPropertyNames<ApiToProvide> | SharedValueProviderPropertyNames<ApiToConsume>
+  >(method: M, apiImpl?: ApiToProvide) {
+    const m = method as SharedValueProviderPropertyNames<ApiToProvide>;
+    return (
+      this.localSharedValuesStore.get(m) ??
+      this.localSharedValuesStore.set(m, apiImpl?.[m]?.apply(apiImpl).defaultValue).get(method)
+    );
   }
 
   private subscribeToNotification<M extends NotificationPropertyNames<ApiToConsume>>(
@@ -348,9 +352,7 @@ export class EnvelopeBusMessageManager<
       this.send({
         type: method,
         purpose: EnvelopeBusMessagePurpose.SHARED_VALUE_UPDATE,
-        data:
-          this.localSharedValuesStore.get(method) ??
-          this.localSharedValuesStore.set(method, apiImpl[method]?.apply(apiImpl).defaultValue).get(method)
+        data: this.getCurrentStoredSharedValueOrDefault(method, apiImpl)
       });
       return;
     }

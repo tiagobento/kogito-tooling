@@ -37,10 +37,6 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
     private readonly resources?: Map<string, { contentType: ContentType; content: Promise<string> }>
   ) {}
 
-  public foo() {
-    return { defaultValue: "foo" };
-  }
-
   public receive_newEdit(edit: KogitoEdit) {
     this.stateControl.updateCommandStack({ id: edit.id });
     this.overrides.receive_newEdit?.(edit);
