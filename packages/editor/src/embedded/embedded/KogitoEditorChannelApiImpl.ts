@@ -35,10 +35,6 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
     private readonly overrides: Partial<KogitoEditorChannelApi>
   ) {}
 
-  public foo() {
-    return this.overrides.foo?.() ?? { defaultValue: "foo" };
-  }
-
   public receive_newEdit(edit: KogitoEdit) {
     this.stateControl.updateCommandStack({ id: edit.id });
     this.overrides.receive_newEdit?.(edit);
