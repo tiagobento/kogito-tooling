@@ -141,10 +141,10 @@ export class GwtEditorWrapperFactory implements EditorFactory {
       keyboardShortcuts: envelopeContext.services.keyboardShortcuts,
       guidedTourService: {
         refresh(userInteraction: UserInteraction): void {
-          envelopeContext.channelApi.notifications.receive_guidedTourUserInteraction(userInteraction);
+          envelopeContext.channelApi.notifications.receive_guidedTourUserInteraction.send(userInteraction);
         },
         registerTutorial(tutorial: Tutorial): void {
-          envelopeContext.channelApi.notifications.receive_guidedTourRegisterTutorial(tutorial);
+          envelopeContext.channelApi.notifications.receive_guidedTourRegisterTutorial.send(tutorial);
         },
         isEnabled(): boolean {
           return envelopeContext.services.guidedTour.isEnabled();
@@ -164,7 +164,7 @@ export class GwtEditorWrapperFactory implements EditorFactory {
       },
       workspaceService: {
         openFile(path: string): void {
-          envelopeContext.channelApi.notifications.receive_openFile(path);
+          envelopeContext.channelApi.notifications.receive_openFile.send(path);
         }
       },
       i18nService: {
@@ -178,13 +178,13 @@ export class GwtEditorWrapperFactory implements EditorFactory {
       pmmlEditorMarshallerService: new PMMLEditorMarshallerService(),
       notificationsService: {
         createNotification: (notification: Notification) => {
-          envelopeContext.channelApi.notifications.createNotification(notification);
+          envelopeContext.channelApi.notifications.createNotification.send(notification);
         },
         removeNotifications: (path: string) => {
-          envelopeContext.channelApi.notifications.removeNotifications(path);
+          envelopeContext.channelApi.notifications.removeNotifications.send(path);
         },
         setNotifications: (path: string, notifications: Notification[]) => {
-          envelopeContext.channelApi.notifications.setNotifications(path, notifications);
+          envelopeContext.channelApi.notifications.setNotifications.send(path, notifications);
         }
       }
     };

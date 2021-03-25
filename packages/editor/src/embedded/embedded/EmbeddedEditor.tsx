@@ -110,7 +110,7 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
   useConnectedEnvelopeServer(envelopeServer, kogitoEditorChannelApiImpl);
 
   useEffectAfterFirstRender(() => {
-    envelopeServer.envelopeApi.notifications.receive_localeChange(props.locale);
+    envelopeServer.envelopeApi.notifications.receive_localeChange.send(props.locale);
   }, [props.locale]);
 
   useEffectAfterFirstRender(() => {
@@ -138,8 +138,8 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
         getEnvelopeServer: () => envelopeServer,
         getElementPosition: selector =>
           envelopeServer.envelopeApi.requests.receive_guidedTourElementPositionRequest(selector),
-        undo: () => Promise.resolve(envelopeServer.envelopeApi.notifications.receive_editorUndo()),
-        redo: () => Promise.resolve(envelopeServer.envelopeApi.notifications.receive_editorRedo()),
+        undo: () => Promise.resolve(envelopeServer.envelopeApi.notifications.receive_editorUndo.send()),
+        redo: () => Promise.resolve(envelopeServer.envelopeApi.notifications.receive_editorRedo.send()),
         getContent: () => envelopeServer.envelopeApi.requests.receive_contentRequest().then(c => c.content),
         getPreview: () => envelopeServer.envelopeApi.requests.receive_previewRequest(),
         setContent: (path, content) => envelopeServer.envelopeApi.requests.receive_contentChanged({ path, content }),

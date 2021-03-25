@@ -45,6 +45,10 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
     private initialBackup = editor.document.initialBackup
   ) {}
 
+  public foo() {
+    return { defaultValue: "foo " };
+  }
+
   public receive_newEdit(edit: KogitoEdit) {
     this.editor.document.notifyEdit(this.editor, edit);
   }

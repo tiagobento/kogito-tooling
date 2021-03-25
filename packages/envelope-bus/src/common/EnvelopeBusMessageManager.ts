@@ -16,8 +16,9 @@
 
 import {
   ApiDefinition,
-  ApiNotifications,
+  ApiNotificationConsumers,
   ApiRequests,
+  ApiSharedValueConsumers,
   ArgsType,
   EnvelopeBusMessage,
   EnvelopeBusMessagePurpose,
@@ -25,8 +26,11 @@ import {
   MessageBusClientApi,
   MessageBusServer,
   NotificationCallback,
+  NotificationConsumer,
   NotificationPropertyNames,
-  RequestPropertyNames
+  RequestPropertyNames,
+  SharedValueConsumer,
+  SharedValueProviderPropertyNames
 } from "../api";
 
 export class EnvelopeBusMessageManager<
@@ -35,10 +39,18 @@ export class EnvelopeBusMessageManager<
 > {
   private readonly callbacks = new Map<string, { resolve: (arg: unknown) => void; reject: (arg: unknown) => void }>();
 
-  private readonly remoteSubscriptions: Array<NotificationPropertyNames<ApiToProvide>> = [];
-
   // tslint:disable-next-line:ban-types
-  private readonly localSubscriptions = new Map<NotificationPropertyNames<ApiToConsume>, Function[]>();
+  private readonly localNotificationsSubscriptions = new Map<NotificationPropertyNames<ApiToConsume>, Function[]>();
+  private readonly remoteNotificationsSubscriptions: Array<NotificationPropertyNames<ApiToProvide>> = [];
+
+  //FIXME: tiago
+  // tslint:disable-next-line:ban-types
+  private readonly localSharedValueSubscriptions = new Map<SharedValueProviderPropertyNames<ApiToConsume>, Function[]>();
+  private readonly remoteSharedValueSubscriptions: Array<NotificationPropertyNames<ApiToProvide>> = [];
+  private readonly localSharedValuesCache = new Map<
+      SharedValueProviderPropertyNames<ApiToProvide>,
+      SharedValueConsumer<ApiToProvide[keyof ApiToProvide]>
+      >();
 
   private requestIdCounter: number;
 
@@ -50,7 +62,12 @@ export class EnvelopeBusMessageManager<
 
     const notificationsCache = new Map<
       NotificationPropertyNames<ApiToConsume>,
-      (...args: ArgsType<ApiToConsume[keyof ApiToConsume]>) => void
+      NotificationConsumer<ApiToConsume[keyof ApiToConsume]>
+    >();
+
+    const sharedValuesCache = new Map<
+      SharedValueProviderPropertyNames<ApiToConsume>,
+      SharedValueConsumer<ApiToConsume[keyof ApiToConsume]>
     >();
 
     const requests: ApiRequests<ApiToConsume> = new Proxy<ApiRequests<ApiToConsume>>({} as ApiRequests<ApiToConsume>, {
@@ -67,29 +84,73 @@ export class EnvelopeBusMessageManager<
       }
     });
 
-    const notifications = new Proxy<ApiNotifications<ApiToConsume>>({} as ApiNotifications<ApiToConsume>, {
+    const notifications = new Proxy<ApiNotificationConsumers<ApiToConsume>>(
+      {} as ApiNotificationConsumers<ApiToConsume>,
+      {
+        set: (target, name, value) => {
+          notificationsCache.set(name as NotificationPropertyNames<ApiToConsume>, value);
+          return true;
+        },
+        get: (target, name) => {
+          const method = name as NotificationPropertyNames<ApiToConsume>;
+          return (
+            notificationsCache.get(method) ??
+            notificationsCache
+              .set(method, {
+                subscribe: callback => this.subscribe(method, callback),
+                unsubscribe: subscription => this.unsubscribe(method, subscription),
+                send: (...args) => this.notify(method, ...args)
+              })
+              .get(method)
+          );
+        }
+      }
+    );
+
+    //TODO: tiago: My consumed shared values
+    const shared = new Proxy<ApiSharedValueConsumers<ApiToConsume>>({} as ApiSharedValueConsumers<ApiToConsume>, {
       set: (target, name, value) => {
-        notificationsCache.set(name as NotificationPropertyNames<ApiToConsume>, value);
+        sharedValuesCache.set(name as SharedValueProviderPropertyNames<ApiToConsume>, value);
         return true;
       },
       get: (target, name) => {
-        const method = name as NotificationPropertyNames<ApiToConsume>;
+        const method = name as SharedValueProviderPropertyNames<ApiToConsume>;
         return (
-          notificationsCache.get(method) ??
-          notificationsCache.set(method, (...args) => this.notify(method, ...args)).get(method)
+          sharedValuesCache.get(method) ?? sharedValuesCache.set(method, this.sharedValueConsumer(method)).get(method)
         );
       }
     });
 
-    const clientApi: MessageBusClientApi<ApiToConsume> = {
-      requests,
-      notifications,
-      subscribe: (m, a) => this.subscribe(m, a),
-      unsubscribe: (m, a) => this.unsubscribe(m, a)
-    };
-
+    const clientApi: MessageBusClientApi<ApiToConsume> = { requests, notifications, shared };
     return clientApi;
   })();
+
+  //TODO: tiago: My own shared values
+  public get shared(): ApiSharedValueConsumers<ApiToProvide> {
+    return new Proxy<ApiSharedValueConsumers<ApiToProvide>>({} as ApiSharedValueConsumers<ApiToProvide>, {
+      set: (target, name, value) => {
+        this.localSharedValuesCache.set(name as SharedValueProviderPropertyNames<ApiToProvide>, value);
+        return true;
+      },
+      get: (target, name) => {
+        const method = name as SharedValueProviderPropertyNames<ApiToProvide>;
+        return (
+          this.localSharedValuesCache.get(method) ??
+          this.localSharedValuesCache.set(method, this.sharedValueConsumer(method)).get(method)
+        );
+      }
+    });
+  }
+
+  private sharedValueConsumer<Api extends ApiDefinition<Api>>(
+    method: SharedValueProviderPropertyNames<Api>
+  ): SharedValueConsumer<any> {
+    return {
+      set: () => ({}),
+      subscribe: subscription => subscription,
+      unsubscribe: () => ({})
+    };
+  }
 
   public get server(): MessageBusServer<ApiToProvide, ApiToConsume> {
     return {
@@ -111,8 +172,8 @@ export class EnvelopeBusMessageManager<
     method: M,
     callback: (...args: ArgsType<ApiToConsume[M]>) => void
   ) {
-    const activeSubscriptions = this.localSubscriptions.get(method) ?? [];
-    this.localSubscriptions.set(method, [...activeSubscriptions, callback]);
+    const activeSubscriptions = this.localNotificationsSubscriptions.get(method) ?? [];
+    this.localNotificationsSubscriptions.set(method, [...activeSubscriptions, callback]);
     this.send({
       type: method,
       purpose: EnvelopeBusMessagePurpose.SUBSCRIPTION,
@@ -125,7 +186,7 @@ export class EnvelopeBusMessageManager<
     method: M,
     callback: NotificationCallback<ApiToConsume, M>
   ) {
-    const values = this.localSubscriptions.get(method);
+    const values = this.localNotificationsSubscriptions.get(method);
     if (!values) {
       return;
     }
@@ -248,7 +309,7 @@ export class EnvelopeBusMessageManager<
       const method = message.type as NotificationPropertyNames<ApiToProvide>;
       apiImpl[method]?.apply(apiImpl, message.data);
 
-      if (this.remoteSubscriptions.indexOf(method) >= 0) {
+      if (this.remoteNotificationsSubscriptions.indexOf(method) >= 0) {
         this.send({
           type: method,
           purpose: EnvelopeBusMessagePurpose.NOTIFICATION,
@@ -258,7 +319,7 @@ export class EnvelopeBusMessageManager<
 
       // We can only receive notifications from subscriptions of the API we consume.
       const localSubscriptionMethod = message.type as NotificationPropertyNames<ApiToConsume>;
-      (this.localSubscriptions.get(localSubscriptionMethod) ?? []).forEach(callback => {
+      (this.localNotificationsSubscriptions.get(localSubscriptionMethod) ?? []).forEach(callback => {
         callback(...(message.data as any[]));
       });
 
@@ -268,8 +329,8 @@ export class EnvelopeBusMessageManager<
     if (message.purpose === EnvelopeBusMessagePurpose.SUBSCRIPTION) {
       // We can only receive subscriptions for methods of the API we provide.
       const method = message.type as NotificationPropertyNames<ApiToProvide>;
-      if (this.remoteSubscriptions.indexOf(method) < 0) {
-        this.remoteSubscriptions.push(method);
+      if (this.remoteNotificationsSubscriptions.indexOf(method) < 0) {
+        this.remoteNotificationsSubscriptions.push(method);
       }
       return;
     }
@@ -277,9 +338,9 @@ export class EnvelopeBusMessageManager<
     if (message.purpose === EnvelopeBusMessagePurpose.UNSUBSCRIPTION) {
       // We can only receive unsubscriptions for methods of the API we provide.
       const method = message.type as NotificationPropertyNames<ApiToProvide>;
-      const index = this.remoteSubscriptions.indexOf(method);
+      const index = this.remoteNotificationsSubscriptions.indexOf(method);
       if (index >= 0) {
-        this.remoteSubscriptions.splice(index, 1);
+        this.remoteNotificationsSubscriptions.splice(index, 1);
       }
       return;
     }

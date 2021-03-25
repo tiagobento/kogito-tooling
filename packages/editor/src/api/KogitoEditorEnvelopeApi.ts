@@ -19,6 +19,7 @@ import { KeyboardShortcutsEnvelopeApi } from "@kogito-tooling/keyboard-shortcuts
 import { GuidedTourEnvelopeApi } from "@kogito-tooling/guided-tour/dist/api";
 import { I18nEnvelopeApi } from "@kogito-tooling/i18n/dist/api";
 import { Notification } from "@kogito-tooling/notifications/dist/api";
+import { SharedValueProvider } from "@kogito-tooling/envelope-bus/dist/api";
 
 export interface Association {
   origin: string;
@@ -50,4 +51,5 @@ export interface KogitoEditorEnvelopeApi extends KeyboardShortcutsEnvelopeApi, G
   receive_contentRequest(): Promise<EditorContent>;
   receive_previewRequest(): Promise<string>;
   validate(): Promise<Notification[]>;
+  something(): SharedValueProvider<string>;
 }

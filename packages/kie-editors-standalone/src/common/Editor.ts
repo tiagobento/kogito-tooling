@@ -50,11 +50,11 @@ export const createEditor = (
       envelopeServer.envelopeApi.requests.receive_guidedTourElementPositionRequest(selector),
     undo: () => {
       stateControl.undo();
-      return Promise.resolve(envelopeServer.envelopeApi.notifications.receive_editorUndo());
+      return Promise.resolve(envelopeServer.envelopeApi.notifications.receive_editorUndo.send());
     },
     redo: () => {
       stateControl.redo();
-      return Promise.resolve(envelopeServer.envelopeApi.notifications.receive_editorRedo());
+      return Promise.resolve(envelopeServer.envelopeApi.notifications.receive_editorRedo.send());
     },
     getContent: () => envelopeServer.envelopeApi.requests.receive_contentRequest().then(c => c.content),
     getPreview: () => envelopeServer.envelopeApi.requests.receive_previewRequest(),

@@ -15,7 +15,7 @@
  */
 
 import { EnvelopeBusMessageManager } from "../EnvelopeBusMessageManager";
-import { EnvelopeBusMessagePurpose } from "../../api";
+import { EnvelopeBusMessagePurpose, SharedValueProvider } from "../../api";
 
 interface ApiToProvide {
   setText(text: string): void;
@@ -121,7 +121,7 @@ describe("request", () => {
 
 describe("notify", () => {
   test("simple notification", async () => {
-    manager.clientApi.notifications.setSomething("something");
+    manager.clientApi.notifications.setSomething.send("something");
     expect(sentMessages).toStrictEqual([
       {
         type: "setSomething",
@@ -139,7 +139,7 @@ describe("subscribe", () => {
       expect(b).toStrictEqual("bar");
     });
 
-    const subscription = manager.clientApi.subscribe("setSomethings", callback);
+    const subscription = manager.clientApi.notifications.setSomethings.subscribe(callback);
     expect(subscription).toStrictEqual(callback);
     expect(sentMessages).toStrictEqual([
       {
@@ -163,7 +163,7 @@ describe("subscribe", () => {
 
 describe("unsubscribe", () => {
   test("simple unsubscription", async () => {
-    const subscription = manager.clientApi.subscribe("setSomething", jest.fn());
+    const subscription = manager.clientApi.notifications.setSomething.subscribe(jest.fn());
     await manager.server.receive(
       {
         type: "setSomething",
@@ -176,7 +176,7 @@ describe("unsubscribe", () => {
     expect(subscription).toHaveBeenCalledWith("something");
     expect(subscription).toHaveBeenCalledTimes(1);
 
-    manager.clientApi.unsubscribe("setSomething", subscription);
+    manager.clientApi.notifications.setSomething.unsubscribe(subscription);
     expect(sentMessages).toStrictEqual([
       {
         type: "setSomething",

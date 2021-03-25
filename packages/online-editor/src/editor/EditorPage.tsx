@@ -32,6 +32,8 @@ import { Alert, AlertActionCloseButton, AlertActionLink } from "@patternfly/reac
 import { Button } from "@patternfly/react-core/dist/js/components/Button";
 import { Page, PageSection } from "@patternfly/react-core/dist/js/components/Page";
 import { Modal } from "@patternfly/react-core/dist/js/components/Modal";
+import { SharedValueConsumer } from "@kogito-tooling/envelope-bus/dist/api";
+
 const importMonacoEditor = () => import(/* webpackChunkName: "monaco-editor" */ "@kiegroup/monaco-editor");
 
 export enum AlertTypes {
@@ -329,6 +331,32 @@ export function EditorPage(props: Props) {
         });
     };
   }, [openModalType, editor, context.file, textEditorContent]);
+
+  // function useSharedValue<T>(delegate: (() => SharedValueConsumer<T>) | undefined): ReturnType<typeof useState> {
+  //   const [value, setValue] = useState<T>();
+  //
+  //   useEffect(() => {
+  //     const sharedValue = delegate?.();
+  //     if (!sharedValue) {
+  //       return;
+  //     }
+  //
+  //     const subscription = sharedValue.subscribe(newValue => setValue(newValue));
+  //     return () => sharedValue.unsubscribe(subscription);
+  //   }, [delegate]);
+  //
+  //   useEffect(() => {
+  //     delegate?.().set(value!);
+  //   }, [value]);
+  //
+  //   return [value, setValue];
+  // }
+  //
+  // const [something, setSomething] = useSharedValue(editor?.getEnvelopeServer().envelopeApi.shared.something);
+  // const [foo, setFoo] = useSharedValue(editor?.getEnvelopeServer().manager.shared.foo);
+  // useEffect(() => {
+  //   setFoo("initial-foo")
+  // }, []);
 
   return (
     <Page
