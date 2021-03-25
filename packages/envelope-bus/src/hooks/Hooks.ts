@@ -14,24 +14,30 @@
  * limitations under the License.
  */
 
-import { useEffect } from "react";
-import { ApiDefinition, NotificationConsumer, NotificationPropertyNames, SubscriptionCallback } from "../api";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  ApiDefinition,
+  NotificationConsumer,
+  NotificationPropertyNames,
+  SharedValueConsumer,
+  SubscriptionCallback
+} from "../api";
 import { EnvelopeServer } from "../channel";
 
 export function useConnectedEnvelopeServer<Api extends ApiDefinition<Api>>(
   envelopeServer: EnvelopeServer<Api, any>,
-  api: Api
+  apiImpl: Api
 ) {
   useEffect(() => {
-    const listener = (msg: MessageEvent) => envelopeServer.receive(msg.data, api);
+    const listener = (msg: MessageEvent) => envelopeServer.receive(msg.data, apiImpl);
     window.addEventListener("message", listener, false);
-    envelopeServer.startInitPolling();
+    envelopeServer.startInitPolling(apiImpl);
 
     return () => {
       envelopeServer.stopInitPolling();
       window.removeEventListener("message", listener);
     };
-  }, [envelopeServer, api]);
+  }, [envelopeServer, apiImpl]);
 }
 
 export function useSubscription<Api extends ApiDefinition<Api>, M extends NotificationPropertyNames<Api>>(
@@ -65,4 +71,30 @@ export function useSubscriptionOnce<Api extends ApiDefinition<Api>, M extends No
       }
     };
   }, [callback]);
+}
+
+export function useSharedValue<T>(sharedValue: SharedValueConsumer<T> | undefined): [T | undefined, (t: T) => void] {
+  const [value, setValue] = useState<T>();
+
+  useEffect(() => {
+    if (!sharedValue) {
+      return;
+    }
+
+    const subscription = sharedValue.subscribe(newValue => setValue(newValue));
+    return () => sharedValue.unsubscribe(subscription);
+  }, [sharedValue]);
+
+  // keep the same reference, like React does
+  const sharedValueRef = useRef(sharedValue);
+  const ret__setValue = useCallback((t: T) => {
+    sharedValueRef.current?.set(t);
+  }, []);
+
+  // update the ref value when the sharedValue changes
+  useEffect(() => {
+    sharedValueRef.current = sharedValue;
+  }, [sharedValue]);
+
+  return [value, ret__setValue];
 }

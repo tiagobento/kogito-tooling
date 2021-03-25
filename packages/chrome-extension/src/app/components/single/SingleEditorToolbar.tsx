@@ -88,7 +88,7 @@ export function SingleEditorToolbar(props: {
         <textarea
           ref={linkToExternalEditorTextAreaRef}
           defaultValue={props.linkToExternalEditor}
-          style={{ opacity: 0, width: 0, height: 0 }}
+          style={{ border: 0, opacity: 0, width: 0, height: 0 }}
         />
         {!props.textMode && (
           <button

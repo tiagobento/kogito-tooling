@@ -387,7 +387,7 @@ export function EditorPage(props: Props) {
             </Modal>
           </StackItem>
         </Stack>
-        <textarea ref={copyContentTextArea} style={{ opacity: 0, width: 0, height: 0 }} />
+        <textarea ref={copyContentTextArea} style={{ border: 0, opacity: 0, width: 0, height: 0 }} />
       </PageSection>
     </Page>
   );
