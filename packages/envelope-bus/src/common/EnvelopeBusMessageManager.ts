@@ -32,24 +32,24 @@ import {
   SharedValueProviderPropertyNames
 } from "../api";
 
+type Func = (...args: any[]) => any;
+interface StoredPromise {
+  resolve: (arg: unknown) => void;
+  reject: (arg: unknown) => void;
+}
+
 export class EnvelopeBusMessageManager<
   ApiToProvide extends ApiDefinition<ApiToProvide>,
   ApiToConsume extends ApiDefinition<ApiToConsume>
 > {
-  private readonly requestCallbacks = new Map<
-    string,
-    { resolve: (arg: unknown) => void; reject: (arg: unknown) => void }
-  >();
+  private readonly requestCallbacks = new Map<string, StoredPromise>();
 
-  private readonly localNotificationsSubscriptions = new Map<
-    NotificationPropertyNames<ApiToConsume>,
-    Array<(...args: any[]) => any>
-  >();
+  private readonly localNotificationsSubscriptions = new Map<NotificationPropertyNames<ApiToConsume>, Func[]>();
   private readonly remoteNotificationsSubscriptions: Array<NotificationPropertyNames<ApiToProvide>> = [];
 
   private readonly localSharedValueSubscriptions = new Map<
     SharedValueProviderPropertyNames<ApiToProvide> | SharedValueProviderPropertyNames<ApiToConsume>,
-    Array<(...args: any[]) => any>
+    Func[]
   >();
   private readonly localSharedValuesStore = new Map<
     SharedValueProviderPropertyNames<ApiToProvide> | SharedValueProviderPropertyNames<ApiToConsume>,
@@ -129,7 +129,7 @@ export class EnvelopeBusMessageManager<
 
   private subscribeToSharedValue<
     M extends SharedValueProviderPropertyNames<ApiToProvide> | SharedValueProviderPropertyNames<ApiToConsume>
-  >(method: M, callback: (...args: any[]) => any, config: { owned: boolean }) {
+  >(method: M, callback: Func, config: { owned: boolean }) {
     const activeSubscriptions = this.localSharedValueSubscriptions.get(method) ?? [];
     this.localSharedValueSubscriptions.set(method, [...activeSubscriptions, callback]);
     if (!config.owned && !this.localSharedValuesStore.get(method)) {
