@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { StateControl } from "../../channel";
+import { File, StateControl } from "../../channel";
 import { KogitoGuidedTour } from "@kogito-tooling/guided-tour/dist/channel";
 import { Tutorial, UserInteraction } from "@kogito-tooling/guided-tour/dist/api";
-import { KogitoEditorChannelApi, StateControlCommand, EditorContent } from "../../api";
+import { EditorContent, KogitoEditorChannelApi, StateControlCommand } from "../../api";
 import {
   KogitoEdit,
   ResourceContent,
@@ -25,7 +25,6 @@ import {
   ResourceListRequest,
   ResourcesList
 } from "@kogito-tooling/channel-common-api";
-import { File } from "../../channel";
 import { Notification } from "@kogito-tooling/notifications/dist/api";
 
 export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
@@ -35,6 +34,10 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
     private readonly locale: string,
     private readonly overrides: Partial<KogitoEditorChannelApi>
   ) {}
+
+  public foo() {
+    return this.overrides.foo?.() ?? { defaultValue: "foo" };
+  }
 
   public receive_newEdit(edit: KogitoEdit) {
     this.stateControl.updateCommandStack({ id: edit.id });

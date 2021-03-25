@@ -16,6 +16,7 @@
 
 import {
   Association,
+  ChannelType,
   Editor,
   EditorContent,
   EditorFactory,
@@ -23,8 +24,7 @@ import {
   KogitoEditorChannelApi,
   KogitoEditorEnvelopeApi,
   KogitoEditorEnvelopeContextType,
-  StateControlCommand,
-  ChannelType
+  StateControlCommand
 } from "../api";
 import { EnvelopeApiFactory, EnvelopeApiFactoryArgs } from "@kogito-tooling/envelope";
 import { EditorEnvelopeViewApi } from "./EditorEnvelopeView";
@@ -70,6 +70,10 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
     private readonly i18n: I18n<EditorEnvelopeI18n>
   ) {}
 
+  public something() {
+    return { defaultValue: "asd" };
+  }
+
   private hasCapturedInitRequestYet() {
     return this.capturedInitRequestYet;
   }
@@ -102,12 +106,12 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
 
     await this.editor
       .setContent(editorContent.path ?? "", editorContent.content)
-      .catch(e => this.args.envelopeContext.channelApi.notifications.receive_setContentError(editorContent))
+      .catch(e => this.args.envelopeContext.channelApi.notifications.receive_setContentError.send(editorContent))
       .finally(() => this.args.view().setLoadingFinished());
 
     this.registerDefaultShortcuts(initArgs);
 
-    this.args.envelopeContext.channelApi.notifications.receive_ready();
+    this.args.envelopeContext.channelApi.notifications.receive_ready.send();
   };
 
   public receive_contentChanged = (editorContent: EditorContent) => {
@@ -115,7 +119,7 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
     return this.editor
       .setContent(editorContent.path ?? "", editorContent.content)
       .catch(e => {
-        this.args.envelopeContext.channelApi.notifications.receive_setContentError(editorContent);
+        this.args.envelopeContext.channelApi.notifications.receive_setContentError.send(editorContent);
         throw e;
       })
       .finally(() => this.args.view().setLoadingFinished());
@@ -172,7 +176,7 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
       `${i18n.keyBindingsHelpOverlay.categories.edit} | ${i18n.keyBindingsHelpOverlay.commands.redo}`,
       async () => {
         this.editor.redo();
-        this.args.envelopeContext.channelApi.notifications.receive_stateControlCommandUpdate(StateControlCommand.REDO);
+        this.args.envelopeContext.channelApi.notifications.receive_stateControlCommandUpdate.send(StateControlCommand.REDO);
       }
     );
     const undoId = this.args.envelopeContext.services.keyboardShortcuts.registerKeyPress(
@@ -180,7 +184,7 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
       `${i18n.keyBindingsHelpOverlay.categories.edit} | ${i18n.keyBindingsHelpOverlay.commands.undo}`,
       async () => {
         this.editor.undo();
-        this.args.envelopeContext.channelApi.notifications.receive_stateControlCommandUpdate(StateControlCommand.UNDO);
+        this.args.envelopeContext.channelApi.notifications.receive_stateControlCommandUpdate.send(StateControlCommand.UNDO);
       }
     );
 

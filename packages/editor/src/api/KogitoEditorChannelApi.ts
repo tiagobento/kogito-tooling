@@ -22,6 +22,7 @@ import { I18nChannelApi } from "@kogito-tooling/i18n/dist/api";
 import { WorkspaceApi } from "@kogito-tooling/workspace/dist/api";
 import { EditorContent } from "./EditorContent";
 import { StateControlCommand } from "./StateControlCommand";
+import { SharedValueProvider } from "@kogito-tooling/envelope-bus/dist/api";
 
 export interface KogitoEditorChannelApi
   extends KogitoToolingChannelCommonApi,
@@ -33,4 +34,5 @@ export interface KogitoEditorChannelApi
   receive_setContentError(content: EditorContent): void;
   receive_stateControlCommandUpdate(command: StateControlCommand): void;
   receive_contentRequest(): Promise<EditorContent>;
+  foo(): SharedValueProvider<string>;
 }

@@ -15,7 +15,7 @@
  */
 
 import { useEffect } from "react";
-import { ApiDefinition, MessageBusClientApi, NotificationPropertyNames, SubscriptionCallback } from "../api";
+import { ApiDefinition, NotificationConsumer, NotificationPropertyNames, SubscriptionCallback } from "../api";
 import { EnvelopeServer } from "../channel";
 
 export function useConnectedEnvelopeServer<Api extends ApiDefinition<Api>>(
@@ -35,36 +35,34 @@ export function useConnectedEnvelopeServer<Api extends ApiDefinition<Api>>(
 }
 
 export function useSubscription<Api extends ApiDefinition<Api>, M extends NotificationPropertyNames<Api>>(
-  bus: MessageBusClientApi<Api>,
-  method: M,
+  notificationConsumer: NotificationConsumer<Api[M]>,
   callback: SubscriptionCallback<Api, M>
 ) {
   useEffect(() => {
-    const subscription = bus.subscribe(method, callback);
+    const subscription = notificationConsumer.subscribe(callback);
     return () => {
-      bus.unsubscribe(method, subscription);
+      notificationConsumer.unsubscribe(subscription);
     };
-  }, [bus, method, callback]);
+  }, [notificationConsumer, callback]);
 }
 
 export function useSubscriptionOnce<Api extends ApiDefinition<Api>, M extends NotificationPropertyNames<Api>>(
-  bus: MessageBusClientApi<Api>,
-  method: M,
+  notificationConsumer: NotificationConsumer<Api[M]>,
   callback: SubscriptionCallback<Api, M>
 ) {
   useEffect(() => {
     let unsubscribed = false;
 
-    const subscription = bus.subscribe(method, (...args) => {
+    const subscription = notificationConsumer.subscribe((...args) => {
       callback(...args);
       unsubscribed = true;
-      bus.unsubscribe(method, subscription);
+      notificationConsumer.unsubscribe(subscription);
     });
 
     return () => {
       if (!unsubscribed) {
-        bus.unsubscribe(method, subscription);
+        notificationConsumer.unsubscribe(subscription);
       }
     };
-  }, [bus, method, callback]);
+  }, [callback]);
 }

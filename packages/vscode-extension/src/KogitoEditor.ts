@@ -78,11 +78,11 @@ export class KogitoEditor implements EditorApi {
   }
 
   public async undo() {
-    this.envelopeServer.envelopeApi.notifications.receive_editorUndo();
+    this.envelopeServer.envelopeApi.notifications.receive_editorUndo.send();
   }
 
   public async redo() {
-    this.envelopeServer.envelopeApi.notifications.receive_editorRedo();
+    this.envelopeServer.envelopeApi.notifications.receive_editorRedo.send();
   }
 
   public getPreview() {
