@@ -60,7 +60,7 @@ describe("startInitPolling", () => {
   test("polls for init response", async () => {
     jest.spyOn(envelopeServer, "stopInitPolling");
 
-    envelopeServer.startInitPolling();
+    envelopeServer.startInitPolling(api);
     expect(envelopeServer.initPolling).toBeTruthy();
     expect(envelopeServer.initPollingTimeout).toBeTruthy();
 
@@ -83,7 +83,7 @@ describe("startInitPolling", () => {
     jest.spyOn(envelopeServer, "stopInitPolling");
     EnvelopeServer.INIT_POLLING_TIMEOUT_IN_MS = 200;
 
-    envelopeServer.startInitPolling();
+    envelopeServer.startInitPolling(api);
     expect(envelopeServer.initPolling).toBeTruthy();
     expect(envelopeServer.initPollingTimeout).toBeTruthy();
 

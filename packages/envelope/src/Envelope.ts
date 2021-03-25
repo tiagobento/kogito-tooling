@@ -59,6 +59,7 @@ export class Envelope<ApiToProvide extends ApiDefinition<ApiToProvide>,
     });
 
     this.envelopeBusController.startListening(api);
+
     return this.envelopeBusController;
   }
 }

@@ -25,12 +25,14 @@ import { KogitoGuidedTour } from "@kogito-tooling/guided-tour/dist/envelope";
 import { EditorEnvelopeView, EditorEnvelopeViewApi } from "./EditorEnvelopeView";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
+import { useCallback, useContext } from "react";
 import { Envelope } from "@kogito-tooling/envelope";
 import { KogitoEditorEnvelopeApiFactory } from "./KogitoEditorEnvelopeApiImpl";
 import { I18nService } from "@kogito-tooling/i18n/dist/envelope";
 import { EditorEnvelopeI18nContext, editorEnvelopeI18nDefaults, editorEnvelopeI18nDictionaries } from "./i18n";
 import { I18nDictionariesProvider } from "@kogito-tooling/i18n/dist/react-components";
 import { getOperatingSystem } from "@kogito-tooling/channel-common-api";
+import { useSharedValue } from "@kogito-tooling/envelope-bus/dist/hooks";
 
 export class KogitoEditorEnvelope {
   constructor(
@@ -70,7 +72,12 @@ export class KogitoEditorEnvelope {
           initialLocale={navigator.language}
         >
           <EditorEnvelopeI18nContext.Consumer>
-            {({ setLocale }) => <EditorEnvelopeView ref={editorEnvelopeViewRef} setLocale={setLocale} />}
+            {({ setLocale }) => (
+              <>
+                <Test />
+                <EditorEnvelopeView ref={editorEnvelopeViewRef} setLocale={setLocale} />
+              </>
+            )}
           </EditorEnvelopeI18nContext.Consumer>
         </I18nDictionariesProvider>
       </KogitoEditorEnvelopeContext.Provider>
@@ -84,4 +91,17 @@ export class KogitoEditorEnvelope {
       }, 0);
     });
   }
+}
+
+function Test() {
+  const context = useContext(KogitoEditorEnvelopeContext);
+  const [foo, setFoo] = useSharedValue(context.channelApi.shared.foo);
+  const click = useCallback(() => setFoo("new-foo-from-envelope"), []);
+
+  return (
+    <div style={{position: "fixed", zIndex: 9999}}>
+      <h1 style={{ color: "red" }}>{foo}</h1>
+      <button onClick={click}>Foo from envelope</button>
+    </div>
+  );
 }

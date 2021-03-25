@@ -72,34 +72,36 @@ export function open(args: {
 
   let receivedSetContentError = false;
 
+  const apiImpl = new KogitoEditorChannelApiImpl(
+    stateControl,
+    {
+      fileName: "",
+      fileExtension: "bpmn",
+      getFileContents: () => Promise.resolve(args.initialContent),
+      isReadOnly: args.readOnly ?? false
+    },
+    "en-US",
+    {
+      receive_setContentError() {
+        if (!receivedSetContentError) {
+          args.onError?.();
+          receivedSetContentError = true;
+        }
+      }
+    },
+    args.resources
+  );
   const listener = (message: MessageEvent) => {
     envelopeServer.receive(
       message.data,
-      new KogitoEditorChannelApiImpl(
-        stateControl,
-        {
-          fileName: "",
-          fileExtension: "bpmn",
-          getFileContents: () => Promise.resolve(args.initialContent),
-          isReadOnly: args.readOnly ?? false
-        },
-        "en-US",
-        {
-          receive_setContentError() {
-            if (!receivedSetContentError) {
-              args.onError?.();
-              receivedSetContentError = true;
-            }
-          }
-        },
-        args.resources
-      )
+      apiImpl
     );
   };
+  
   window.addEventListener("message", listener);
 
   args.container.appendChild(iframe);
-  envelopeServer.startInitPolling();
+  envelopeServer.startInitPolling(apiImpl);
 
   return createEditor(envelopeServer, stateControl, listener, iframe);
 }

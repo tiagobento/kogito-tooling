@@ -51,7 +51,8 @@ export class EnvelopeServer<
     this.id = this.generateRandomId();
   }
 
-  public startInitPolling() {
+  public startInitPolling(apiImpl: ApiToProvide) {
+    this.manager.currentApiImpl = apiImpl;
     this.initPolling = setInterval(() => {
       this.pollInit(this).then(() => this.stopInitPolling());
     }, EnvelopeServer.INIT_POLLING_INTERVAL_IN_MS);
@@ -63,6 +64,7 @@ export class EnvelopeServer<
   }
 
   public stopInitPolling() {
+    this.manager.currentApiImpl = undefined;
     clearInterval(this.initPolling!);
     this.initPolling = undefined;
     clearTimeout(this.initPollingTimeout!);
@@ -71,7 +73,7 @@ export class EnvelopeServer<
 
   public receive(
     message: EnvelopeBusMessage<unknown, FunctionPropertyNames<ApiToProvide> | FunctionPropertyNames<ApiToConsume>>,
-    api: ApiToProvide
+    apiImpl: ApiToProvide
   ) {
     if (message.targetEnvelopeId) {
       // When the message has a targetEnvelopeId, it was directed to a specific envelope,
@@ -81,7 +83,7 @@ export class EnvelopeServer<
 
     if (message.targetEnvelopeServerId === this.id) {
       // Message was sent directly from the Envelope to this EnvelopeServer
-      this.manager.server.receive(message, api);
+      this.manager.server.receive(message, apiImpl);
     } else if (message.purpose === EnvelopeBusMessagePurpose.NOTIFICATION) {
       // Message was sent from any Envelope to some EnvelopeServer, so it should be forwarded to this Envelope
       this.manager.server.receive(message, {} as any);

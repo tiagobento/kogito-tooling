@@ -93,13 +93,13 @@ export class KogitoEditor implements EditorApi {
     return this.envelopeServer.envelopeApi.requests.validate();
   }
 
-  public startInitPolling() {
-    this.envelopeServer.startInitPolling();
+  public startInitPolling(apiImpl: KogitoEditorChannelApi) {
+    this.envelopeServer.startInitPolling(apiImpl);
   }
 
-  public startListening(editorChannelApi: KogitoEditorChannelApi) {
+  public startListening(apiImpl: KogitoEditorChannelApi) {
     this.broadcastSubscription = this.messageBroadcaster.subscribe(msg => {
-      this.envelopeServer.receive(msg, editorChannelApi);
+      this.envelopeServer.receive(msg, apiImpl);
     });
 
     this.context.subscriptions.push(
