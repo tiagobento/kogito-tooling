@@ -32,7 +32,6 @@ import { Alert, AlertActionCloseButton, AlertActionLink } from "@patternfly/reac
 import { Button } from "@patternfly/react-core/dist/js/components/Button";
 import { Page, PageSection } from "@patternfly/react-core/dist/js/components/Page";
 import { Modal } from "@patternfly/react-core/dist/js/components/Modal";
-import { useSharedValue } from "@kogito-tooling/envelope-bus/dist/hooks";
 
 const importMonacoEditor = () => import(/* webpackChunkName: "monaco-editor" */ "@kiegroup/monaco-editor");
 
@@ -332,9 +331,6 @@ export function EditorPage(props: Props) {
     };
   }, [openModalType, editor, context.file, textEditorContent]);
 
-  const [foo, setFoo] = useSharedValue(editor?.getEnvelopeServer().manager.shared.foo);
-  const click = useCallback(() => setFoo("foo-from-channel"), []);
-
   return (
     <Page
       header={
@@ -354,12 +350,6 @@ export function EditorPage(props: Props) {
         />
       }
     >
-      <>
-        <h1>{foo}</h1>
-        <button style={{ width: "200px" }} onClick={click}>
-          Foo from channel
-        </button>
-      </>
       <PageSection isFilled={true} padding={{ default: "noPadding" }} style={{ flexBasis: "100%" }}>
         {!fullscreen && openAlert === AlertTypes.SET_CONTENT_ERROR && (
           <div className={"kogito--alert-container"}>

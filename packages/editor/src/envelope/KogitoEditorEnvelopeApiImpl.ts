@@ -70,10 +70,6 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
     private readonly i18n: I18n<EditorEnvelopeI18n>
   ) {}
 
-  public something() {
-    return { defaultValue: "asd" };
-  }
-
   private hasCapturedInitRequestYet() {
     return this.capturedInitRequestYet;
   }
@@ -176,7 +172,9 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
       `${i18n.keyBindingsHelpOverlay.categories.edit} | ${i18n.keyBindingsHelpOverlay.commands.redo}`,
       async () => {
         this.editor.redo();
-        this.args.envelopeContext.channelApi.notifications.receive_stateControlCommandUpdate.send(StateControlCommand.REDO);
+        this.args.envelopeContext.channelApi.notifications.receive_stateControlCommandUpdate.send(
+          StateControlCommand.REDO
+        );
       }
     );
     const undoId = this.args.envelopeContext.services.keyboardShortcuts.registerKeyPress(
@@ -184,7 +182,9 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
       `${i18n.keyBindingsHelpOverlay.categories.edit} | ${i18n.keyBindingsHelpOverlay.commands.undo}`,
       async () => {
         this.editor.undo();
-        this.args.envelopeContext.channelApi.notifications.receive_stateControlCommandUpdate.send(StateControlCommand.UNDO);
+        this.args.envelopeContext.channelApi.notifications.receive_stateControlCommandUpdate.send(
+          StateControlCommand.UNDO
+        );
       }
     );
 
