@@ -6,7 +6,7 @@ exports[`SingleEditorToolbar button actions 1`] = `
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -62,7 +62,7 @@ exports[`SingleEditorToolbar copied to clipboard message 1`] = `
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -105,7 +105,7 @@ exports[`SingleEditorToolbar readonly false | textMode false | textModeAvailable
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -148,7 +148,7 @@ exports[`SingleEditorToolbar readonly false | textMode false | textModeAvailable
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -198,7 +198,7 @@ exports[`SingleEditorToolbar readonly false | textMode true | textModeAvailable 
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -234,7 +234,7 @@ exports[`SingleEditorToolbar readonly false | textMode true | textModeAvailable 
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -270,7 +270,7 @@ exports[`SingleEditorToolbar readonly true | textMode false | textModeAvailable 
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -321,7 +321,7 @@ exports[`SingleEditorToolbar readonly true | textMode true | textModeAvailable f
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -357,7 +357,7 @@ exports[`SingleEditorToolbar see as diagram 1`] = `
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>
@@ -393,7 +393,7 @@ exports[`SingleEditorToolbar see as source 1`] = `
     style="display: flex;"
   >
     <textarea
-      style="opacity: 0; width: 0px; height: 0px;"
+      style="border: 0px; opacity: 0; width: 0px; height: 0px;"
     >
       test.com/editor
     </textarea>

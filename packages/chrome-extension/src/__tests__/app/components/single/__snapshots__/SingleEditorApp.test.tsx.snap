@@ -47,7 +47,7 @@ exports[`SingleEditorApp go fullscreen and back 1`] = `
       style="display: flex;"
     >
       <textarea
-        style="opacity: 0; width: 0px; height: 0px;"
+        style="border: 0px; opacity: 0; width: 0px; height: 0px;"
       >
         https://external-editor-link/test-org/test-repo/test-branch/test/path/to/file.txt
       </textarea>
@@ -113,7 +113,7 @@ exports[`SingleEditorApp not readonly 1`] = `
       style="display: flex;"
     >
       <textarea
-        style="opacity: 0; width: 0px; height: 0px;"
+        style="border: 0px; opacity: 0; width: 0px; height: 0px;"
       >
         https://external-editor-link/test-org/test-repo/test-branch/test/path/to/file.txt
       </textarea>
@@ -187,7 +187,7 @@ exports[`SingleEditorApp open external editor 1`] = `
       style="display: flex;"
     >
       <textarea
-        style="opacity: 0; width: 0px; height: 0px;"
+        style="border: 0px; opacity: 0; width: 0px; height: 0px;"
       >
         https://external-editor-link/test-org/test-repo/test-branch/test/path/to/file.txt
       </textarea>
@@ -253,7 +253,7 @@ exports[`SingleEditorApp open external editor and wait for come back 1`] = `
       style="display: flex;"
     >
       <textarea
-        style="opacity: 0; width: 0px; height: 0px;"
+        style="border: 0px; opacity: 0; width: 0px; height: 0px;"
       >
         https://external-editor-link/test-org/test-repo/test-branch/test/path/to/file.txt
       </textarea>
@@ -319,7 +319,7 @@ exports[`SingleEditorApp readonly 1`] = `
       style="display: flex;"
     >
       <textarea
-        style="opacity: 0; width: 0px; height: 0px;"
+        style="border: 0px; opacity: 0; width: 0px; height: 0px;"
       >
         https://external-editor-link/test-org/test-repo/test-branch/test/path/to/file.txt
       </textarea>

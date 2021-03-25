@@ -1169,7 +1169,7 @@ exports[`invalid file type alert alert is closed immediately after leaving the h
           </div>
         </div>
         <textarea
-          style="opacity: 0; width: 0px; height: 0px;"
+          style="border: 0px; opacity: 0; width: 0px; height: 0px;"
         />
       </section>
     </main>
