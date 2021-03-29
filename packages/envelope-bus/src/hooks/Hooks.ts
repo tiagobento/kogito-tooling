@@ -73,7 +73,9 @@ export function useSubscriptionOnce<Api extends ApiDefinition<Api>, M extends No
   }, [callback]);
 }
 
-export function useSharedValue<T>(sharedValue: SharedValueConsumer<T> | undefined): [T | undefined, (t: T) => void] {
+export function useSharedValue<T>(
+  sharedValue: SharedValueConsumer<T> | undefined
+): [T | undefined, React.Dispatch<React.SetStateAction<T>>] {
   const [value, setValue] = useState<T>();
 
   useEffect(() => {
@@ -97,4 +99,27 @@ export function useSharedValue<T>(sharedValue: SharedValueConsumer<T> | undefine
   }, [sharedValue]);
 
   return [value, ret__setValue];
+}
+
+export function useStateAsSharedValue<T>(
+    value: T | undefined,
+    setValue: React.Dispatch<React.SetStateAction<T>>,
+    sharedValue: SharedValueConsumer<T> | undefined
+) {
+  useEffect(() => {
+    if (!sharedValue) {
+      return;
+    }
+
+    const subscription = sharedValue.subscribe(newValue => setValue(newValue));
+    return () => sharedValue.unsubscribe(subscription);
+  }, [sharedValue]);
+
+  useEffect(() => {
+    if (!value) {
+      return;
+    }
+
+    sharedValue?.set(value);
+  }, [value]);
 }

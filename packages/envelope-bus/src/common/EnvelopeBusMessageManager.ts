@@ -280,6 +280,9 @@ export class EnvelopeBusMessageManager<
     message: EnvelopeBusMessage<unknown, FunctionPropertyNames<ApiToConsume> | FunctionPropertyNames<ApiToProvide>>,
     apiImpl: ApiToProvide
   ) {
+
+    this.currentApiImpl = apiImpl;
+
     if (message.purpose === EnvelopeBusMessagePurpose.RESPONSE) {
       // We can only receive responses for the API we consume.
       this.callback(message as EnvelopeBusMessage<unknown, RequestPropertyNames<ApiToConsume>>);

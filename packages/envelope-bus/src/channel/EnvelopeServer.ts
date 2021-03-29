@@ -39,6 +39,10 @@ export class EnvelopeServer<
     return this.manager.clientApi;
   }
 
+  public get shared() {
+    return this.manager.shared;
+  }
+
   constructor(
     bus: EnvelopeBus,
     public readonly origin: string,
