@@ -86,24 +86,13 @@ export class KogitoEditorEnvelopeApiImpl implements KogitoEditorEnvelopeApi {
     }
 
     this.ackCapturedInitRequest();
-
     this.setupI18n(initArgs);
 
     this.editor = await this.editorFactory.createEditor(this.args.envelopeContext, initArgs);
-
     await this.args.view().setEditor(this.editor);
 
     this.editor.af_onStartup?.();
     this.editor.af_onOpen?.();
-
-    this.args.view().setLoading();
-
-    const editorContent = await this.args.envelopeContext.channelApi.requests.receive_contentRequest();
-
-    await this.editor
-      .setContent(editorContent.path ?? "", editorContent.content)
-      .catch(e => this.args.envelopeContext.channelApi.notifications.receive_setContentError.send(editorContent))
-      .finally(() => this.args.view().setLoadingFinished());
 
     this.registerDefaultShortcuts(initArgs);
 

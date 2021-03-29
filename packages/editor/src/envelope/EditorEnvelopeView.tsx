@@ -15,10 +15,11 @@
  */
 
 import * as React from "react";
-import { Editor } from "../api";
+import { useEffect, useImperativeHandle, useState } from "react";
+import { Editor, useKogitoEditorEnvelopeContext } from "../api";
 import { LoadingScreen } from "./LoadingScreen";
 import { KeyBindingsHelpOverlay } from "./KeyBindingsHelpOverlay";
-import { useCallback, useImperativeHandle, useState } from "react";
+import { useSharedValue } from "@kogito-tooling/envelope-bus/dist/hooks";
 
 interface Props {
   setLocale: React.Dispatch<string>;
@@ -36,38 +37,31 @@ export const EditorEnvelopeViewRef: React.RefForwardingComponent<EditorEnvelopeV
   props: Props,
   forwardingRef
 ) => {
-  const [editor, setEditor] = useState<Editor | undefined>(undefined);
+  const [editor, setEditor] = useState<Editor>();
   const [loading, setLoading] = useState(true);
+  const { channelApi } = useKogitoEditorEnvelopeContext();
+  const [content, _] = useSharedValue(channelApi.shared.content);
 
-  const getEditor = useCallback(() => {
-    return editor;
-  }, [editor]);
+  useEffect(() => {
+    if (!editor) {
+      return;
+    }
 
-  const setNewEditor = useCallback((newEditor: Editor) => {
-    setEditor(newEditor);
-  }, []);
-
-  const setLoadingInit = useCallback(() => {
-    setLoading(true);
-  }, []);
-
-  const setLoadingFinished = useCallback(() => {
-    setLoading(false);
-  }, []);
-
-  const setLocale = useCallback((locale: string) => {
-    props.setLocale(locale);
-  }, []);
+    editor
+      .setContent(content?.path ?? "", content?.content ?? "")
+      .catch(e => channelApi.notifications.receive_setContentError.send(e))
+      .finally(() => setLoading(false));
+  }, [content, editor]);
 
   useImperativeHandle(
     forwardingRef,
     () => {
       return {
-        getEditor: () => getEditor(),
-        setEditor: newEditor => setNewEditor(newEditor),
-        setLoading: () => setLoadingInit(),
-        setLoadingFinished: () => setLoadingFinished(),
-        setLocale: locale => setLocale(locale)
+        getEditor: () => editor,
+        setEditor: newEditor => setEditor(newEditor),
+        setLoading: () => setLoading(true),
+        setLoadingFinished: () => setLoading(false),
+        setLocale: locale => props.setLocale(locale)
       };
     },
     []

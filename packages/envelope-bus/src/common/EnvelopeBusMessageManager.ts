@@ -101,7 +101,10 @@ export class EnvelopeBusMessageManager<
 
   public get server(): MessageBusServer<ApiToProvide, ApiToConsume> {
     return {
-      receive: (m, apiImpl) => this.receive(m, apiImpl)
+      receive: (m, apiImpl) => {
+        console.info(m);
+        this.receive(m, apiImpl)
+      }
     };
   }
 

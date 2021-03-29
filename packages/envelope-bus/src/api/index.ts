@@ -32,8 +32,8 @@ export type RequestPropertyNames<T extends ApiDefinition<T>> = {
 }[keyof T];
 
 export interface SharedValueConsumer<T> {
-  subscribe(callback: (newValue: T | undefined) => void): (newValue: T | undefined) => any;
-  unsubscribe(subscription: (newValue: T | undefined) => void): void;
+  subscribe(callback: (newValue: T) => void): (newValue: T) => any;
+  unsubscribe(subscription: (newValue: T) => void): void;
   set(t: T): void;
 }
 

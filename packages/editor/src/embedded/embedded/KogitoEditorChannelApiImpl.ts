@@ -35,6 +35,10 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
     private readonly overrides: Partial<KogitoEditorChannelApi>
   ) {}
 
+  public content() {
+    return { defaultValue: { content: "", path: "" } };
+  }
+
   public receive_newEdit(edit: KogitoEdit) {
     this.stateControl.updateCommandStack({ id: edit.id });
     this.overrides.receive_newEdit?.(edit);
@@ -61,11 +65,6 @@ export class KogitoEditorChannelApiImpl implements KogitoEditorChannelApi {
 
   public receive_guidedTourRegisterTutorial(tutorial: Tutorial) {
     KogitoGuidedTour.getInstance().registerTutorial(tutorial);
-  }
-
-  public async receive_contentRequest() {
-    const content = await this.file.getFileContents();
-    return { content: content ?? "", path: this.file.fileName };
   }
 
   public async receive_resourceContentRequest(request: ResourceContentRequest) {

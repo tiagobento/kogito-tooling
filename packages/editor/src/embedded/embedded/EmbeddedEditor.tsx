@@ -25,7 +25,7 @@ import { useSyncedKeyboardEvents } from "@kogito-tooling/keyboard-shortcuts/dist
 import { useGuidedTourPositionProvider } from "@kogito-tooling/guided-tour/dist/channel";
 import * as CSS from "csstype";
 import * as React from "react";
-import { useImperativeHandle, useMemo, useRef } from "react";
+import { useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { File, StateControl } from "../../channel";
 import { useEffectAfterFirstRender } from "../common";
 import { KogitoEditorChannelApiImpl } from "./KogitoEditorChannelApiImpl";
@@ -36,8 +36,7 @@ type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 type ChannelApiMethodsAlreadyImplementedByEmbeddedEditor =
   | "receive_guidedTourUserInteraction"
-  | "receive_guidedTourRegisterTutorial"
-  | "receive_contentRequest";
+  | "receive_guidedTourRegisterTutorial";
 
 type EmbeddedEditorChannelApiOverrides = Partial<
   Omit<KogitoEditorChannelApi, ChannelApiMethodsAlreadyImplementedByEmbeddedEditor>
@@ -148,6 +147,14 @@ const RefForwardingEmbeddedEditor: React.RefForwardingComponent<EmbeddedEditorRe
     },
     [envelopeServer, stateControl]
   );
+
+  useEffect(() => {
+    (async () =>
+      envelopeServer.shared.content.set({
+        path: props.file.fileName,
+        content: (await props.file.getFileContents()) ?? ""
+      }))();
+  }, [envelopeServer, props.file.getFileContents]);
 
   return (
     <>
