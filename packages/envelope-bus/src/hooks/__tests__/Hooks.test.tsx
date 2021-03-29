@@ -15,3 +15,8 @@
  */
 
 //TODO: tiago
+describe("test", () => {
+    test("test 1", async () => {
+        expect(true).toBeTruthy();
+    });
+});
