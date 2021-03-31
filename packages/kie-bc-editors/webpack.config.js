@@ -17,17 +17,18 @@
 const nodeExternals = require("webpack-node-externals");
 const { merge } = require("webpack-merge");
 const common = require("../../webpack.common.config");
-const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = [
   merge(common, {
     entry: {
-      index: "./src/index.ts"
+      "bpmn/index": "./src/bpmn/index.ts",
+      "dmn/index": "./src/dmn/index.ts",
+      "scesim/envelope/index": "./src/scesim/envelope/index.ts",
+      "scesim/api/index": "./src/scesim/api/index.ts"
     },
     output: {
       libraryTarget: "commonjs2"
     },
-    plugins: [new CopyPlugin([{ from: "./static/envelope", to: "./envelope-dist" }])],
     externals: [nodeExternals({ modulesDir: "../../node_modules" })]
   })
 ];

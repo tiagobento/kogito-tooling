@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 import { Notification, NotificationsApi } from "@kogito-tooling/notifications/dist/api";
 import { ResourceContentOptions, ResourceListOptions } from "@kogito-tooling/channel-common-api";
 import {
-  ChannelType,
-  Editor,
   EditorFactory,
   EditorInitArgs,
+  KogitoEditorChannelApi,
   KogitoEditorEnvelopeContextType
 } from "@kogito-tooling/editor/dist/api";
 import { Tutorial, UserInteraction } from "@kogito-tooling/guided-tour/dist/api";
@@ -36,7 +35,6 @@ import { StateControlApi } from "./api/StateControlApi";
 import { WorkspaceServiceApi } from "./api/WorkspaceServiceApi";
 import { DefaultXmlFormatter } from "./DefaultXmlFormatter";
 import { GwtAppFormerApi } from "./GwtAppFormerApi";
-import { GwtEditorMapping } from "./GwtEditorMapping";
 import { GwtEditorWrapper } from "./GwtEditorWrapper";
 import { GwtLanguageData, Resource } from "./GwtLanguageData";
 import { GwtStateControlService } from "./gwtStateControl";
@@ -61,35 +59,22 @@ declare global {
   }
 }
 
-export class GwtEditorWrapperFactory implements EditorFactory {
+export class GwtEditorWrapperFactory<E extends GwtEditorWrapper> implements EditorFactory<E, KogitoEditorChannelApi> {
   constructor(
-    private readonly args = { shouldLoadResourcesDynamically: true },
-    private readonly xmlFormatter: XmlFormatter = new DefaultXmlFormatter(),
-    private readonly gwtAppFormerApi = new GwtAppFormerApi(),
-    private readonly gwtStateControlService = new GwtStateControlService(),
-    private readonly gwtEditorMapping = new GwtEditorMapping(),
-    private readonly kieBcEditorsI18n = new I18n(kieBcEditorsI18nDefaults, kieBcEditorsI18nDictionaries)
+    private readonly languageData: GwtLanguageData,
+    private readonly gwtEditorDelegate: (factory: GwtEditorWrapperFactory<E>, initArgs: EditorInitArgs) => E,
+    public readonly args = { shouldLoadResourcesDynamically: true },
+    public readonly xmlFormatter: XmlFormatter = new DefaultXmlFormatter(),
+    public readonly gwtAppFormerApi = new GwtAppFormerApi(),
+    public readonly gwtStateControlService = new GwtStateControlService(),
+    public readonly kieBcEditorsI18n = new I18n(kieBcEditorsI18nDefaults, kieBcEditorsI18nDictionaries)
   ) {}
 
-  public supports(fileExtension: string) {
-    return (
-      this.gwtEditorMapping.getLanguageData({
-        fileExtension: fileExtension,
-        resourcesPathPrefix: "",
-        initialLocale: "",
-        isReadOnly: false,
-        channel: ChannelType.OTHER
-      }) !== undefined
-    );
-  }
-
-  public createEditor(envelopeContext: KogitoEditorEnvelopeContextType, initArgs: EditorInitArgs) {
+  public createEditor(
+    envelopeContext: KogitoEditorEnvelopeContextType<KogitoEditorChannelApi>,
+    initArgs: EditorInitArgs
+  ) {
     this.gwtAppFormerApi.setClientSideOnly(true);
-
-    const languageData = this.gwtEditorMapping.getLanguageData(initArgs);
-    if (!languageData) {
-      throw new Error("Language data does not exist");
-    }
 
     this.kieBcEditorsI18n.setLocale(initArgs.initialLocale);
     envelopeContext.services.i18n.subscribeToLocaleChange(locale => {
@@ -100,9 +85,9 @@ export class GwtEditorWrapperFactory implements EditorFactory {
     this.appendGwtLocaleMetaTag();
     this.exposeEnvelopeContext(envelopeContext, initArgs);
 
-    const gwtFinishedLoading = new Promise<Editor>(res => {
+    const gwtFinishedLoading = new Promise<E>(res => {
       this.gwtAppFormerApi.onFinishedLoading(() => {
-        res(this.newGwtEditorWrapper(languageData, envelopeContext));
+        res(this.gwtEditorDelegate(this, initArgs));
         return Promise.resolve();
       });
     });
@@ -111,23 +96,15 @@ export class GwtEditorWrapperFactory implements EditorFactory {
       return gwtFinishedLoading;
     }
 
-    return Promise.all(languageData.resources.map(resource => this.loadResource(resource))).then(() => {
+    return Promise.all(this.languageData.resources.map(resource => this.loadResource(resource))).then(() => {
       return gwtFinishedLoading;
     });
   }
 
-  private newGwtEditorWrapper(languageData: GwtLanguageData, envelopeContext: KogitoEditorEnvelopeContextType) {
-    return new GwtEditorWrapper(
-      languageData.editorId,
-      this.gwtAppFormerApi.getEditor(languageData.editorId),
-      envelopeContext.channelApi,
-      this.xmlFormatter,
-      this.gwtStateControlService,
-      this.kieBcEditorsI18n
-    );
-  }
-
-  private exposeEnvelopeContext(envelopeContext: KogitoEditorEnvelopeContextType, initArgs: EditorInitArgs) {
+  private exposeEnvelopeContext(
+    envelopeContext: KogitoEditorEnvelopeContextType<KogitoEditorChannelApi>,
+    initArgs: EditorInitArgs
+  ) {
     window.gwt = {
       stateControl: this.gwtStateControlService.exposeApi(envelopeContext.channelApi)
     };

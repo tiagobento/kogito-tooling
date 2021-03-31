@@ -15,8 +15,6 @@
  */
 
 import * as EditorEnvelope from "@kogito-tooling/editor/dist/envelope";
-import { GwtEditorWrapperFactory } from "@kogito-tooling/kie-bc-editors";
-import { EnvelopeBusMessage } from "@kogito-tooling/envelope-bus/dist/api";
 
 const initEnvelope = () => {
   const container = document.getElementById("envelope-app")!;
@@ -44,11 +42,7 @@ const initEnvelope = () => {
 
   EditorEnvelope.init({
     container: container,
-    bus: {
-      postMessage<D, Type>(message: EnvelopeBusMessage<D, Type>, targetOrigin?: string, _?: any) {
-        window.parent.postMessage(message, targetOrigin!, _);
-      }
-    },
+    bus: { postMessage: (message, targetOrigin, _) => window.parent.postMessage(message, targetOrigin!, _) },
     // The Editor's scripts are proactively loaded in this distribution, thus
     // it should not be loaded again by the Editor wrapper.
     editorFactory: new GwtEditorWrapperFactory({ shouldLoadResourcesDynamically: false })

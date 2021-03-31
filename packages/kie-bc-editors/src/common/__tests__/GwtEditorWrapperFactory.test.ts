@@ -17,10 +17,12 @@
 import { GwtEditorWrapperFactory } from "../GwtEditorWrapperFactory";
 import { GwtLanguageData, Resource } from "../GwtLanguageData";
 import { GwtStateControlService } from "../gwtStateControl";
-import { GwtEditorMapping } from "../GwtEditorMapping";
 import { messageBusClientApiMock } from "@kogito-tooling/envelope-bus/dist/common/__tests__";
 import { I18nService } from "@kogito-tooling/i18n/dist/envelope";
 import { ChannelType } from "@kogito-tooling/editor/dist/api";
+import { GwtEditorWrapper } from "../GwtEditorWrapper";
+import { KogitoEditorChannelApi } from "@kogito-tooling/editor/dist/api";
+import { MessageBusClientApi } from "@kogito-tooling/envelope-bus/dist/api";
 
 const cssResource: Resource = {
   type: "css",
@@ -79,17 +81,29 @@ describe("GwtEditorWrapperFactory", () => {
       resources: [cssResource, jsResource]
     };
 
-    const gwtEditorWrapperFactory: GwtEditorWrapperFactory = new GwtEditorWrapperFactory(
+    const channelApiMock: MessageBusClientApi<KogitoEditorChannelApi> = messageBusClientApiMock();
+
+    const gwtEditorWrapperFactory: GwtEditorWrapperFactory<GwtEditorWrapper> = new GwtEditorWrapperFactory(
+      testLanguageData,
+      self => {
+        return new GwtEditorWrapper(
+          testLanguageData.editorId,
+          self.gwtAppFormerApi.getEditor(testLanguageData.editorId),
+          channelApiMock,
+          self.xmlFormatter,
+          self.gwtStateControlService,
+          self.kieBcEditorsI18n
+        );
+      },
       { shouldLoadResourcesDynamically: true },
       xmlFormatter,
       gwtAppFormerApi,
-      new GwtStateControlService(),
-      { getLanguageData: () => testLanguageData }
+      new GwtStateControlService()
     );
 
     const editorCreation = gwtEditorWrapperFactory.createEditor(
       {
-        channelApi: messageBusClientApiMock(),
+        channelApi: channelApiMock,
         services: {
           keyboardShortcuts: {} as any,
           guidedTour: {} as any,
@@ -120,20 +134,5 @@ describe("GwtEditorWrapperFactory", () => {
     Array.from(scripts).forEach((s, i) => {
       expect(s.src).toContain(jsResource.paths[i]);
     });
-  });
-
-  test("Supported/Unsupported LanguageData type", () => {
-    const gwtEditorWrapperFactory: GwtEditorWrapperFactory = new GwtEditorWrapperFactory(
-      { shouldLoadResourcesDynamically: true },
-      xmlFormatter,
-      gwtAppFormerApi,
-      new GwtStateControlService(),
-      new GwtEditorMapping()
-    );
-    expect(gwtEditorWrapperFactory.supports("dmn")).toBeTruthy();
-    expect(gwtEditorWrapperFactory.supports("bpmn")).toBeTruthy();
-    expect(gwtEditorWrapperFactory.supports("bpmn2")).toBeTruthy();
-    expect(gwtEditorWrapperFactory.supports("scesim")).toBeTruthy();
-    expect(gwtEditorWrapperFactory.supports("unsup")).toBeFalsy();
   });
 });

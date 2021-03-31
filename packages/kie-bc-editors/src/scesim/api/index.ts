@@ -14,16 +14,5 @@
  * limitations under the License.
  */
 
-import { GwtEditorWrapperFactory } from "@kogito-tooling/kie-bc-editors";
-import * as EditorEnvelope from "@kogito-tooling/editor/dist/envelope";
-import { EnvelopeBusMessage } from "@kogito-tooling/envelope-bus/dist/api";
-
-EditorEnvelope.init({
-  container: document.getElementById("envelope-app")!,
-  bus: {
-    postMessage<D, Type>(message: EnvelopeBusMessage<D, Type>, targetOrigin?: string, _?: any) {
-      window.parent.postMessage(message, "*", _);
-    }
-  },
-  editorFactory: new GwtEditorWrapperFactory()
-});
+export * from "./SceSimEditorChannelApi";
+export * from "./SceSimEditorEnvelopeApi";

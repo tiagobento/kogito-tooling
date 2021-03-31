@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,11 @@
  */
 
 import * as EditorEnvelope from "@kogito-tooling/editor/dist/envelope";
-import {  GwtEditorWrapperFactory } from "@kogito-tooling/kie-bc-editors";
-import { EnvelopeBusMessage } from "@kogito-tooling/envelope-bus/dist/api";
+import { BpmnEditorChannelApi, BpmnEditorEnvelopeApi } from "@kogito-tooling/kie-bc-editors/dist/bpmn";
+import { BpmnEditor, BpmnEditorEnvelopeApiImpl } from "@kogito-tooling/kie-bc-editors/dist/bpmn";
 
-EditorEnvelope.init({
+EditorEnvelope.initCustom<BpmnEditor, BpmnEditorEnvelopeApi, BpmnEditorChannelApi>({
   container: document.getElementById("envelope-app")!,
-  bus: {
-    postMessage<D, Type>(message: EnvelopeBusMessage<D, Type>, targetOrigin?: string, _?: any) {
-      window.parent.postMessage(message, targetOrigin!, _);
-    }
-  },
-  editorFactory: new GwtEditorWrapperFactory()
+  bus: acquireVsCodeApi(),
+  apiImplFactory: { create: args => new BpmnEditorEnvelopeApiImpl(args) }
 });

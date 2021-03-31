@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,10 +15,11 @@
  */
 
 import * as EditorEnvelope from "@kogito-tooling/editor/dist/envelope";
-import { PMMLEditorFactory } from "@kogito-tooling/pmml-editor";
+import { SceSimEditorChannelApi, SceSimEditorEnvelopeApi } from "@kogito-tooling/kie-bc-editors/dist/scesim/api";
+import { SceSimEditor, SceSimEditorEnvelopeApiImpl } from "@kogito-tooling/kie-bc-editors/dist/scesim/envelope";
 
-EditorEnvelope.init({
+EditorEnvelope.initCustom<SceSimEditor, SceSimEditorEnvelopeApi, SceSimEditorChannelApi>({
   container: document.getElementById("envelope-app")!,
-  bus: { postMessage: (message, targetOrigin, _) => window.parent.postMessage(message, "*", _) },
-  editorFactory: new PMMLEditorFactory()
+  bus: { postMessage: (message, targetOrigin, _) => window.parent.postMessage(message, targetOrigin!, _) },
+  apiImplFactory: { create: args => new SceSimEditorEnvelopeApiImpl(args) }
 });
