@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-
 import { KogitoEditorChannelApi } from "@kogito-tooling/editor/dist/api";
 
 export interface SceSimEditorChannelApi extends KogitoEditorChannelApi {
-    mySceSimChannelMethod(): void;
+  mySceSimChannelMethod(): void;
 }

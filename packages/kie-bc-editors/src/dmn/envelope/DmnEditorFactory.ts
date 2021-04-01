@@ -14,40 +14,33 @@
  * limitations under the License.
  */
 
-import { GwtEditorWrapperFactory, GwtLanguageData } from "../../common";
+import { GwtEditorWrapperFactory } from "../../common";
 import { DmnEditorChannelApi, getDmnLanguageData } from "../api";
 import { EditorFactory, EditorInitArgs, KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor/dist/api";
 import { DmnEditor, DmnEditorImpl } from "./DmnEditor";
 
 export class DmnEditorFactory implements EditorFactory<DmnEditor, DmnEditorChannelApi> {
-  constructor(private readonly gwtEnvelopeConfig: { shouldLoadResourcesDynamically: boolean }) {}
+  constructor(private readonly gwtEditorEnvelopeConfig: { shouldLoadResourcesDynamically: boolean }) {}
 
   public createEditor(
-    envelopeContext: KogitoEditorEnvelopeContextType<DmnEditorChannelApi>,
+    ctx: KogitoEditorEnvelopeContextType<DmnEditorChannelApi>,
     initArgs: EditorInitArgs
   ): Promise<DmnEditor> {
     const languageData = getDmnLanguageData(initArgs.resourcesPathPrefix);
-    return new GwtEditorWrapperFactory<DmnEditor>(
+    const factory = new GwtEditorWrapperFactory<DmnEditor>(
       languageData,
-      self => {
-        return this.newDmnEditor(languageData, self, envelopeContext);
-      },
-      this.gwtEnvelopeConfig
-    ).createEditor(envelopeContext, initArgs);
-  }
-
-  private newDmnEditor(
-    languageData: GwtLanguageData,
-    gwtEditorWrapperFactory: GwtEditorWrapperFactory<DmnEditor>,
-    envelopeContext: KogitoEditorEnvelopeContextType<DmnEditorChannelApi>
-  ) {
-    return new DmnEditorImpl(
-      languageData.editorId,
-      gwtEditorWrapperFactory.gwtAppFormerApi.getEditor(languageData.editorId),
-      envelopeContext.channelApi,
-      gwtEditorWrapperFactory.xmlFormatter,
-      gwtEditorWrapperFactory.gwtStateControlService,
-      gwtEditorWrapperFactory.kieBcEditorsI18n
+      self =>
+        new DmnEditorImpl(
+          languageData.editorId,
+          self.gwtAppFormerApi.getEditor(languageData.editorId),
+          ctx.channelApi,
+          self.xmlFormatter,
+          self.gwtStateControlService,
+          self.kieBcEditorsI18n
+        ),
+      this.gwtEditorEnvelopeConfig
     );
+
+    return factory.createEditor(ctx, initArgs);
   }
 }

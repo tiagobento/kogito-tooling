@@ -14,40 +14,33 @@
  * limitations under the License.
  */
 
-import { GwtEditorWrapperFactory, GwtLanguageData } from "../../common";
-import { BpmnEditorChannelApi, getBpmnLanguageData } from "../api";
-import { EditorFactory, EditorInitArgs, KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor/dist/api";
 import { BpmnEditor, BpmnEditorImpl } from "./BpmnEditor";
+import { BpmnEditorChannelApi, getBpmnLanguageData } from "../api";
+import { GwtEditorWrapperFactory } from "../../common";
+import { EditorFactory, EditorInitArgs, KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor/dist/api";
 
 export class BpmnEditorFactory implements EditorFactory<BpmnEditor, BpmnEditorChannelApi> {
   constructor(private readonly gwtEditorEnvelopeConfig: { shouldLoadResourcesDynamically: boolean }) {}
 
   public createEditor(
-    envelopeContext: KogitoEditorEnvelopeContextType<BpmnEditorChannelApi>,
+    ctx: KogitoEditorEnvelopeContextType<BpmnEditorChannelApi>,
     initArgs: EditorInitArgs
   ): Promise<BpmnEditor> {
     const languageData = getBpmnLanguageData(initArgs.resourcesPathPrefix);
-    return new GwtEditorWrapperFactory<BpmnEditor>(
+    const factory = new GwtEditorWrapperFactory<BpmnEditor>(
       languageData,
-      self => {
-        return this.newBpmnEditor(languageData, self, envelopeContext);
-      },
+      self =>
+        new BpmnEditorImpl(
+          languageData.editorId,
+          self.gwtAppFormerApi.getEditor(languageData.editorId),
+          ctx.channelApi,
+          self.xmlFormatter,
+          self.gwtStateControlService,
+          self.kieBcEditorsI18n
+        ),
       this.gwtEditorEnvelopeConfig
-    ).createEditor(envelopeContext, initArgs);
-  }
-
-  private newBpmnEditor(
-    languageData: GwtLanguageData,
-    gwtEditorWrapperFactory: GwtEditorWrapperFactory<BpmnEditor>,
-    envelopeContext: KogitoEditorEnvelopeContextType<BpmnEditorChannelApi>
-  ) {
-    return new BpmnEditorImpl(
-      languageData.editorId,
-      gwtEditorWrapperFactory.gwtAppFormerApi.getEditor(languageData.editorId),
-      envelopeContext.channelApi,
-      gwtEditorWrapperFactory.xmlFormatter,
-      gwtEditorWrapperFactory.gwtStateControlService,
-      gwtEditorWrapperFactory.kieBcEditorsI18n
     );
+
+    return factory.createEditor(ctx, initArgs);
   }
 }

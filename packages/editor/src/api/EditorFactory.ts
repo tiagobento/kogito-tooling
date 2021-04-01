@@ -18,12 +18,15 @@ import { EditorInitArgs } from "./KogitoEditorEnvelopeApi";
 import { Editor } from "./Editor";
 import { KogitoEditorEnvelopeContextType } from "./KogitoEditorEnvelopeContext";
 import { ApiDefinition } from "@kogito-tooling/envelope-bus/dist/api";
-import {KogitoEditorChannelApi} from "./KogitoEditorChannelApi";
+import { KogitoEditorChannelApi } from "./KogitoEditorChannelApi";
 
 /**
  * Factory of Editors to be created inside the envelope.
  */
-export interface EditorFactory<E extends Editor, ChannelApi extends KogitoEditorChannelApi & ApiDefinition<ChannelApi>> {
+export interface EditorFactory<
+  E extends Editor,
+  ChannelApi extends KogitoEditorChannelApi & ApiDefinition<ChannelApi>
+> {
   /**
    * Returns an Editor instance.
    * @param envelopeContext The context to be used by Editor implementation.

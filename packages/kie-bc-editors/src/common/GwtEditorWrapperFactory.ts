@@ -63,7 +63,7 @@ export class GwtEditorWrapperFactory<E extends GwtEditorWrapper> implements Edit
   constructor(
     private readonly languageData: GwtLanguageData,
     private readonly gwtEditorDelegate: (factory: GwtEditorWrapperFactory<E>, initArgs: EditorInitArgs) => E,
-    public readonly args = { shouldLoadResourcesDynamically: true },
+    public readonly gwtEditorEnvelopeConfig: { shouldLoadResourcesDynamically: boolean },
     public readonly xmlFormatter: XmlFormatter = new DefaultXmlFormatter(),
     public readonly gwtAppFormerApi = new GwtAppFormerApi(),
     public readonly gwtStateControlService = new GwtStateControlService(),
@@ -92,7 +92,7 @@ export class GwtEditorWrapperFactory<E extends GwtEditorWrapper> implements Edit
       });
     });
 
-    if (!this.args.shouldLoadResourcesDynamically) {
+    if (!this.gwtEditorEnvelopeConfig.shouldLoadResourcesDynamically) {
       return gwtFinishedLoading;
     }
 

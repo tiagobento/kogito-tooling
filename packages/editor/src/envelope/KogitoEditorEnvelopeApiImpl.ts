@@ -35,7 +35,7 @@ import { EditorEnvelopeI18n, editorEnvelopeI18nDefaults, editorEnvelopeI18nDicti
 import { ApiDefinition } from "@kogito-tooling/envelope-bus/dist/api";
 
 export class KogitoEditorEnvelopeApiImpl<
-    E extends Editor,
+  E extends Editor,
   EnvelopeApi extends KogitoEditorEnvelopeApi & ApiDefinition<EnvelopeApi> = KogitoEditorEnvelopeApi,
   ChannelApi extends KogitoEditorChannelApi & ApiDefinition<ChannelApi> = KogitoEditorChannelApi
 > implements KogitoEditorEnvelopeApi {

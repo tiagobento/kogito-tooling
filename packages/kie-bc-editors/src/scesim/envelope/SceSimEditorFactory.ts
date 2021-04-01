@@ -23,17 +23,17 @@ export class SceSimEditorFactory implements EditorFactory<SceSimEditor, SceSimEd
   constructor(private readonly gwtEditorEnvelopeConfig: { shouldLoadResourcesDynamically: boolean }) {}
 
   public createEditor(
-    envelopeContext: KogitoEditorEnvelopeContextType<SceSimEditorChannelApi>,
+    ctx: KogitoEditorEnvelopeContextType<SceSimEditorChannelApi>,
     initArgs: EditorInitArgs
   ): Promise<SceSimEditor> {
     const languageData = getSceSimLanguageData(initArgs.resourcesPathPrefix);
-    const gwtEditorWrapperFactory = new GwtEditorWrapperFactory<SceSimEditor>(
+    const factory = new GwtEditorWrapperFactory<SceSimEditor>(
       languageData,
       self =>
         new SceSimEditorImpl(
           languageData.editorId,
           self.gwtAppFormerApi.getEditor(languageData.editorId),
-          envelopeContext.channelApi,
+          ctx.channelApi,
           self.xmlFormatter,
           self.gwtStateControlService,
           self.kieBcEditorsI18n
@@ -41,6 +41,6 @@ export class SceSimEditorFactory implements EditorFactory<SceSimEditor, SceSimEd
       this.gwtEditorEnvelopeConfig
     );
 
-    return gwtEditorWrapperFactory.createEditor(envelopeContext, initArgs);
+    return factory.createEditor(ctx, initArgs);
   }
 }

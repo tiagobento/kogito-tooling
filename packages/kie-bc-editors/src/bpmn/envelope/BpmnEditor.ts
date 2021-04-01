@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {GwtEditorWrapper} from "../../common";
+import { GwtEditorWrapper } from "../../common";
 
 export interface BpmnEditor extends GwtEditorWrapper {
-    myBpmnMethod(): string;
+  myBpmnMethod(): string;
 }
 
 export class BpmnEditorImpl extends GwtEditorWrapper implements BpmnEditor {
-    public myBpmnMethod() {
-        return "bpmn-specific--configured";
-    }
+  public myBpmnMethod() {
+    return "bpmn-specific--configured";
+  }
 }

@@ -17,5 +17,5 @@
 import { KogitoEditorEnvelopeApi } from "@kogito-tooling/editor/dist/api";
 
 export interface BpmnEditorEnvelopeApi extends KogitoEditorEnvelopeApi {
-    myBpmnEnvelopeMethod(): Promise<string>;
+  myBpmnEnvelopeMethod(): Promise<string>;
 }
