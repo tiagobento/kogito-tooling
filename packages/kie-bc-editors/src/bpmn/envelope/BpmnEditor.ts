@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export * from "./SceSimEditorChannelApi";
-export * from "./SceSimEditorEnvelopeApi";
-export * from "./SceSimEditorLanguageData";
+import {GwtEditorWrapper} from "../../common";
+
+export interface BpmnEditor extends GwtEditorWrapper {
+    myBpmnMethod(): string;
+}
+
+export class BpmnEditorImpl extends GwtEditorWrapper implements BpmnEditor {
+    public myBpmnMethod() {
+        return "bpmn-specific--configured";
+    }
+}

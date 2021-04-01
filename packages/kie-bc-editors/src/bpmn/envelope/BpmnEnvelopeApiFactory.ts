@@ -17,30 +17,31 @@
 import { KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor/dist/api";
 import { EditorEnvelopeViewApi, KogitoEditorEnvelopeApiImpl } from "@kogito-tooling/editor/dist/envelope";
 import { EnvelopeApiFactoryArgs } from "@kogito-tooling/envelope";
-import { SceSimEditorChannelApi, SceSimEditorEnvelopeApi } from "../api";
-import { SceSimEditor } from "./SceSimEditor";
-import { SceSimEditorFactory } from "./SceSimEditorFactory";
+import { BpmnEditorChannelApi, BpmnEditorEnvelopeApi } from "../api";
+import { BpmnEditor } from "./BpmnEditor";
+import { BpmnEditorFactory } from "./BpmnEditorFactory";
 
-export type SceSimEnvelopeApiFactoryArgs = EnvelopeApiFactoryArgs<
-  SceSimEditorEnvelopeApi,
-  SceSimEditorChannelApi,
-  EditorEnvelopeViewApi<SceSimEditor>,
-  KogitoEditorEnvelopeContextType<SceSimEditorChannelApi>
+export type BpmnEnvelopeApiFactoryArgs = EnvelopeApiFactoryArgs<
+  BpmnEditorEnvelopeApi,
+  BpmnEditorChannelApi,
+  EditorEnvelopeViewApi<BpmnEditor>,
+  KogitoEditorEnvelopeContextType<BpmnEditorChannelApi>
 >;
 
-export class SceSimEditorEnvelopeApiImpl
-  extends KogitoEditorEnvelopeApiImpl<SceSimEditor, SceSimEditorEnvelopeApi, SceSimEditorChannelApi>
-  implements SceSimEditorEnvelopeApi {
+export class BpmnEditorEnvelopeApiImpl
+  extends KogitoEditorEnvelopeApiImpl<BpmnEditor, BpmnEditorEnvelopeApi, BpmnEditorChannelApi>
+  implements BpmnEditorEnvelopeApi {
   constructor(
-    private readonly sceSimArgs: SceSimEnvelopeApiFactoryArgs,
+    private readonly bpmnArgs: BpmnEnvelopeApiFactoryArgs,
     gwtEditorEnvelopeConfig: { shouldLoadResourcesDynamically: boolean }
   ) {
-    super(sceSimArgs, new SceSimEditorFactory(gwtEditorEnvelopeConfig));
+    super(bpmnArgs, new BpmnEditorFactory(gwtEditorEnvelopeConfig));
   }
 
-  public mySceSimEnvelopeMethod() {
-    const editor = this.sceSimArgs.view().getEditor();
-    const ret = editor?.mySceSimMethod() ?? "scesim-specific--default";
+  public myBpmnEnvelopeMethod() {
+    this.bpmnArgs.envelopeContext.channelApi.notifications.myBpmnChannelMethod();
+    const editor = this.bpmnArgs.view().getEditor();
+    const ret = editor?.myBpmnMethod() ?? "bpmn-specific--default";
     return Promise.resolve(ret);
   }
 }

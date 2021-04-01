@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export * from "./SceSimEditorChannelApi";
-export * from "./SceSimEditorEnvelopeApi";
-export * from "./SceSimEditorLanguageData";
+import { GwtEditorWrapper } from "../../common";
+
+export interface DmnEditor extends GwtEditorWrapper {
+  myDmnMethod(): string;
+}
+
+export class DmnEditorImpl extends GwtEditorWrapper implements DmnEditor {
+  public myDmnMethod() {
+    return "dmn-specific--configured";
+  }
+}

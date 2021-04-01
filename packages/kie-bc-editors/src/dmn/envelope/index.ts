@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./SceSimEditorChannelApi";
-export * from "./SceSimEditorEnvelopeApi";
-export * from "./SceSimEditorLanguageData";
+export * from "./DmnEditor";
+export * from "./DmnEditorFactory";
+export * from "./DmnEnvelopeApiFactory";

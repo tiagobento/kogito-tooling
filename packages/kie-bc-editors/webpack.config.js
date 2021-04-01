@@ -21,8 +21,10 @@ const common = require("../../webpack.common.config");
 module.exports = [
   merge(common, {
     entry: {
-      "bpmn/index": "./src/bpmn/index.ts",
-      "dmn/index": "./src/dmn/index.ts",
+      "bpmn/envelope/index": "./src/bpmn/envelope/index.ts",
+      "bpmn/api/index": "./src/bpmn/api/index.ts",
+      "dmn/envelope/index": "./src/dmn/envelope/index.ts",
+      "dmn/api/index": "./src/dmn/api/index.ts",
       "scesim/envelope/index": "./src/scesim/envelope/index.ts",
       "scesim/api/index": "./src/scesim/api/index.ts"
     },

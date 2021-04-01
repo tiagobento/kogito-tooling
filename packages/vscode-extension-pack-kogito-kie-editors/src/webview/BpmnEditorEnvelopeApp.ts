@@ -15,11 +15,11 @@
  */
 
 import * as EditorEnvelope from "@kogito-tooling/editor/dist/envelope";
-import { BpmnEditorChannelApi, BpmnEditorEnvelopeApi } from "@kogito-tooling/kie-bc-editors/dist/bpmn";
-import { BpmnEditor, BpmnEditorEnvelopeApiImpl } from "@kogito-tooling/kie-bc-editors/dist/bpmn";
+import { BpmnEditorChannelApi, BpmnEditorEnvelopeApi } from "@kogito-tooling/kie-bc-editors/dist/bpmn/api";
+import { BpmnEditor, BpmnEditorEnvelopeApiImpl } from "@kogito-tooling/kie-bc-editors/dist/bpmn/envelope";
 
 EditorEnvelope.initCustom<BpmnEditor, BpmnEditorEnvelopeApi, BpmnEditorChannelApi>({
   container: document.getElementById("envelope-app")!,
   bus: acquireVsCodeApi(),
-  apiImplFactory: { create: args => new BpmnEditorEnvelopeApiImpl(args) }
+  apiImplFactory: { create: args => new BpmnEditorEnvelopeApiImpl(args, { shouldLoadResourcesDynamically: true }) }
 });

@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
-export * from "./SceSimEditorChannelApi";
-export * from "./SceSimEditorEnvelopeApi";
-export * from "./SceSimEditorLanguageData";
+import {editors, GwtLanguageData} from "../../common";
+
+export function getBpmnLanguageData(resourcesPathPrefix: string): GwtLanguageData {
+    return {
+        type: "gwt",
+        editorId: editors.bpmn.id,
+        gwtModuleName: editors.bpmn.name,
+        resources: [
+            {
+                type: "css",
+                paths: [`${resourcesPathPrefix}/${editors.bpmn.name}/css/patternfly.min.css`]
+            },
+            {
+                type: "js",
+                paths: [`${resourcesPathPrefix}/${editors.bpmn.name}/${editors.bpmn.name}.nocache.js`]
+            }
+        ]
+    };
+}

@@ -15,6 +15,8 @@
  */
 
 import * as EditorEnvelope from "@kogito-tooling/editor/dist/envelope";
+import { BpmnEditorChannelApi, BpmnEditorEnvelopeApi } from "@kogito-tooling/kie-bc-editors/dist/bpmn/api";
+import { BpmnEditor, BpmnEditorEnvelopeApiImpl } from "@kogito-tooling/kie-bc-editors/dist/bpmn/envelope";
 
 const initEnvelope = () => {
   const container = document.getElementById("envelope-app")!;
@@ -40,12 +42,10 @@ const initEnvelope = () => {
   });
   mutationObserver.observe(document.body, { childList: true, subtree: true });
 
-  EditorEnvelope.init({
+  EditorEnvelope.initCustom<BpmnEditor, BpmnEditorEnvelopeApi, BpmnEditorChannelApi>({
     container: container,
     bus: { postMessage: (message, targetOrigin, _) => window.parent.postMessage(message, targetOrigin!, _) },
-    // The Editor's scripts are proactively loaded in this distribution, thus
-    // it should not be loaded again by the Editor wrapper.
-    editorFactory: new GwtEditorWrapperFactory({ shouldLoadResourcesDynamically: false })
+    apiImplFactory: { create: args => new BpmnEditorEnvelopeApiImpl(args, { shouldLoadResourcesDynamically: false }) }
   });
 };
 

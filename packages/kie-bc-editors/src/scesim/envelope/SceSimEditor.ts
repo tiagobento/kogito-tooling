@@ -22,6 +22,6 @@ export interface SceSimEditor extends GwtEditorWrapper {
 
 export class SceSimEditorImpl extends GwtEditorWrapper implements SceSimEditor {
   public mySceSimMethod() {
-    return "scesim-method-return";
+    return "scesim-specific--configured";
   }
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export * from "./SceSimEditorChannelApi";
-export * from "./SceSimEditorEnvelopeApi";
-export * from "./SceSimEditorLanguageData";
+import { KogitoEditorEnvelopeApi } from "@kogito-tooling/editor/dist/api";
+
+export interface BpmnEditorEnvelopeApi extends KogitoEditorEnvelopeApi {
+    myBpmnEnvelopeMethod(): Promise<string>;
+}
