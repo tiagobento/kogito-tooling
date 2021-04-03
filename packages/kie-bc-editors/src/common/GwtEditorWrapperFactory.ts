@@ -24,12 +24,10 @@ import {
 } from "@kogito-tooling/editor/dist/api";
 import { Tutorial, UserInteraction } from "@kogito-tooling/guided-tour/dist/api";
 import { I18n } from "@kogito-tooling/i18n/dist/core";
-import { PMMLEditorMarshallerService } from "@kogito-tooling/pmml-editor-marshaller";
 import { EditorContextApi } from "./api/EditorContextApi";
 import { GuidedTourApi } from "./api/GuidedTourApi";
 import { I18nServiceApi } from "./api/I18nServiceApi";
 import { KeyboardShortcutsApi } from "./api/KeyboardShorcutsApi";
-import { PMMLEditorMarshallerApi } from "./api/PMMLEditorMarshallerApi";
 import { ResourceContentApi } from "./api/ResourceContentApi";
 import { StateControlApi } from "./api/StateControlApi";
 import { WorkspaceServiceApi } from "./api/WorkspaceServiceApi";
@@ -41,23 +39,22 @@ import { GwtStateControlService } from "./gwtStateControl";
 import { kieBcEditorsI18nDefaults, kieBcEditorsI18nDictionaries } from "./i18n";
 import { XmlFormatter } from "./XmlFormatter";
 
-declare global {
-  interface Window {
-    gwt: {
-      stateControl: StateControlApi;
-    };
-    envelope: {
-      guidedTourService: GuidedTourApi;
-      editorContext: EditorContextApi;
-      resourceContentEditorService?: ResourceContentApi;
-      keyboardShortcuts: KeyboardShortcutsApi;
-      workspaceService: WorkspaceServiceApi;
-      i18nService: I18nServiceApi;
-      pmmlEditorMarshallerService: PMMLEditorMarshallerApi;
-      notificationsService: NotificationsApi;
-    };
-  }
+export interface CustomWindow extends Window {
+  gwt: {
+    stateControl: StateControlApi;
+  };
+  envelope: {
+    guidedTourService: GuidedTourApi;
+    editorContext: EditorContextApi;
+    resourceContentEditorService?: ResourceContentApi;
+    keyboardShortcuts: KeyboardShortcutsApi;
+    workspaceService: WorkspaceServiceApi;
+    i18nService: I18nServiceApi;
+    notificationsService: NotificationsApi;
+  };
 }
+
+declare let window: CustomWindow;
 
 export class GwtEditorWrapperFactory<E extends GwtEditorWrapper> implements EditorFactory<E, KogitoEditorChannelApi> {
   constructor(
@@ -110,58 +107,60 @@ export class GwtEditorWrapperFactory<E extends GwtEditorWrapper> implements Edit
     };
 
     window.envelope = {
-      editorContext: {
-        operatingSystem: envelopeContext.operatingSystem,
-        channel: initArgs.channel,
-        readOnly: initArgs.isReadOnly
-      },
-      keyboardShortcuts: envelopeContext.services.keyboardShortcuts,
-      guidedTourService: {
-        refresh(userInteraction: UserInteraction): void {
-          envelopeContext.channelApi.notifications.receive_guidedTourUserInteraction(userInteraction);
+      ...(window.envelope ?? {}),
+      ...{
+        editorContext: {
+          operatingSystem: envelopeContext.operatingSystem,
+          channel: initArgs.channel,
+          readOnly: initArgs.isReadOnly
         },
-        registerTutorial(tutorial: Tutorial): void {
-          envelopeContext.channelApi.notifications.receive_guidedTourRegisterTutorial(tutorial);
+        keyboardShortcuts: envelopeContext.services.keyboardShortcuts,
+        guidedTourService: {
+          refresh(userInteraction: UserInteraction): void {
+            envelopeContext.channelApi.notifications.receive_guidedTourUserInteraction(userInteraction);
+          },
+          registerTutorial(tutorial: Tutorial): void {
+            envelopeContext.channelApi.notifications.receive_guidedTourRegisterTutorial(tutorial);
+          },
+          isEnabled(): boolean {
+            return envelopeContext.services.guidedTour.isEnabled();
+          }
         },
-        isEnabled(): boolean {
-          return envelopeContext.services.guidedTour.isEnabled();
-        }
-      },
-      resourceContentEditorService: {
-        get(path: string, opts?: ResourceContentOptions) {
-          return envelopeContext.channelApi.requests
-            .receive_resourceContentRequest({ path, opts })
-            .then(r => r?.content);
+        resourceContentEditorService: {
+          get(path: string, opts?: ResourceContentOptions) {
+            return envelopeContext.channelApi.requests
+              .receive_resourceContentRequest({ path, opts })
+              .then(r => r?.content);
+          },
+          list(pattern: string, opts?: ResourceListOptions) {
+            return envelopeContext.channelApi.requests
+              .receive_resourceListRequest({ pattern, opts })
+              .then(r => r.paths.sort());
+          }
         },
-        list(pattern: string, opts?: ResourceListOptions) {
-          return envelopeContext.channelApi.requests
-            .receive_resourceListRequest({ pattern, opts })
-            .then(r => r.paths.sort());
-        }
-      },
-      workspaceService: {
-        openFile(path: string): void {
-          envelopeContext.channelApi.notifications.receive_openFile(path);
-        }
-      },
-      i18nService: {
-        getLocale: () => {
-          return envelopeContext.channelApi.requests.receive_getLocale();
+        workspaceService: {
+          openFile(path: string): void {
+            envelopeContext.channelApi.notifications.receive_openFile(path);
+          }
         },
-        onLocaleChange: (onLocaleChange: (locale: string) => void) => {
-          envelopeContext.services.i18n.subscribeToLocaleChange(onLocaleChange);
-        }
-      },
-      pmmlEditorMarshallerService: new PMMLEditorMarshallerService(),
-      notificationsService: {
-        createNotification: (notification: Notification) => {
-          envelopeContext.channelApi.notifications.createNotification(notification);
+        i18nService: {
+          getLocale: () => {
+            return envelopeContext.channelApi.requests.receive_getLocale();
+          },
+          onLocaleChange: (onLocaleChange: (locale: string) => void) => {
+            envelopeContext.services.i18n.subscribeToLocaleChange(onLocaleChange);
+          }
         },
-        removeNotifications: (path: string) => {
-          envelopeContext.channelApi.notifications.removeNotifications(path);
-        },
-        setNotifications: (path: string, notifications: Notification[]) => {
-          envelopeContext.channelApi.notifications.setNotifications(path, notifications);
+        notificationsService: {
+          createNotification: (notification: Notification) => {
+            envelopeContext.channelApi.notifications.createNotification(notification);
+          },
+          removeNotifications: (path: string) => {
+            envelopeContext.channelApi.notifications.removeNotifications(path);
+          },
+          setNotifications: (path: string, notifications: Notification[]) => {
+            envelopeContext.channelApi.notifications.setNotifications(path, notifications);
+          }
         }
       }
     };

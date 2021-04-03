@@ -18,6 +18,16 @@ import { GwtEditorWrapperFactory } from "../../common";
 import { DmnEditorChannelApi, getDmnLanguageData } from "../api";
 import { EditorFactory, EditorInitArgs, KogitoEditorEnvelopeContextType } from "@kogito-tooling/editor/dist/api";
 import { DmnEditor, DmnEditorImpl } from "./DmnEditor";
+import { PMMLEditorMarshallerApi } from "../../common/api/PMMLEditorMarshallerApi";
+import { PMMLEditorMarshallerService } from "@kogito-tooling/pmml-editor-marshaller";
+
+export interface CustomWindow extends Window {
+  envelope: {
+    pmmlEditorMarshallerService: PMMLEditorMarshallerApi;
+  };
+}
+
+declare let window: CustomWindow;
 
 export class DmnEditorFactory implements EditorFactory<DmnEditor, DmnEditorChannelApi> {
   constructor(private readonly gwtEditorEnvelopeConfig: { shouldLoadResourcesDynamically: boolean }) {}
@@ -26,6 +36,11 @@ export class DmnEditorFactory implements EditorFactory<DmnEditor, DmnEditorChann
     ctx: KogitoEditorEnvelopeContextType<DmnEditorChannelApi>,
     initArgs: EditorInitArgs
   ): Promise<DmnEditor> {
+    window.envelope = {
+      ...(window.envelope ?? {}),
+      ...{ pmmlEditorMarshallerService: new PMMLEditorMarshallerService() }
+    };
+
     const languageData = getDmnLanguageData(initArgs.resourcesPathPrefix);
     const factory = new GwtEditorWrapperFactory<DmnEditor>(
       languageData,
