@@ -110,10 +110,6 @@ module.exports = async (env, argv) => {
             ]
           }
         },
-        {
-          test: /\.ttf$/,
-          use: ["file-loader"]
-        },
         ...pfWebpackOptions.patternflyRules
       ]
     },
