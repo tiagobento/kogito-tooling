@@ -23,7 +23,6 @@ import {
 } from "../../api";
 import { useSyncedKeyboardEvents } from "@kogito-tooling/keyboard-shortcuts/dist/channel";
 import { useGuidedTourPositionProvider } from "@kogito-tooling/guided-tour/dist/channel";
-import * as CSS from "csstype";
 import * as React from "react";
 import { useImperativeHandle, useMemo, useRef, useState } from "react";
 import { File, StateControl } from "../../channel";
@@ -61,7 +60,7 @@ export type EmbeddedEditorRef =
     })
   | null;
 
-const containerStyles: CSS.Properties = {
+const containerStyles: React.CSSProperties = {
   display: "flex",
   flex: 1,
   flexDirection: "column",

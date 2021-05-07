@@ -19,10 +19,9 @@ import { EnvelopeServer } from "@kogito-tooling/envelope-bus/dist/channel";
 import * as React from "react";
 import { useImperativeHandle, useMemo, useRef } from "react";
 import { useConnectedEnvelopeServer } from "@kogito-tooling/envelope-bus/dist/hooks";
-import * as CSS from "csstype";
 import { ContainerType } from "../api";
 
-const containerStyles: CSS.Properties = {
+const containerStyles: React.CSSProperties = {
   display: "flex",
   flex: 1,
   flexDirection: "column",
