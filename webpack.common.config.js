@@ -17,7 +17,7 @@
 const path = require("path");
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   output: {
     path: path.resolve("./dist"),
     filename: "[name].js",
