@@ -268,7 +268,7 @@ jobs:
       - name: Download dependencies
         run: |
           cd ${{ github.workspace }}/kogito-tooling
-          yarn run init
+          yarn bootstrap
 
       - name: Build kogito-tooling
         env:
@@ -353,7 +353,7 @@ jobs:
           DISPLAY: ":99.0"
         run: |
           cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors
-          yarn build:fast
+          yarn build:dev
           cd ${{ github.workspace }}/kogito-tooling/packages/online-editor && yarn run start &
           cd ${{ github.workspace }}/kogito-tooling/packages/chrome-extension-pack-kogito-kie-editors && yarn run serve-envelope &
           sleep 30
