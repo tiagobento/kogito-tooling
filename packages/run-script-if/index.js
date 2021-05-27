@@ -52,25 +52,25 @@ async function main() {
 
   if (process.env[argv.env] && process.env[argv.env] !== argv.eq) {
     console.info(
-        `[run-script-if] Skipping ${nCommands} command(s): ${formattedCommandsToLog}. Environment variable '${argv.env}' is not equal to '${argv.eq}'.`
+      `[run-script-if] Skipping ${nCommands} command(s): ${formattedCommandsToLog}. Environment variable '${argv.env}' is not equal to '${argv.eq}'.`
     );
     process.exit(0);
   }
 
   if (!process.env[argv.env] && argv["run-if-empty"] !== "true") {
     console.info(
-        `[run-script-if] Skipping ${nCommands} command(s):${formattedCommandsToLog}. Environment variable '${argv.env}' is not set and --run-if-empty is "${argv["run-if-empty"]}".`
+      `[run-script-if] Skipping ${nCommands} command(s):${formattedCommandsToLog}. Environment variable '${argv.env}' is not set and --run-if-empty is "${argv["run-if-empty"]}".`
     );
     process.exit(0);
   }
 
   if (!process.env[argv.env]) {
     console.info(
-        `[run-script-if] Running ${nCommands} command(s): ${formattedCommandsToLog}. Environment variable '${argv.env}' is not set and --run-if-empty is "${argv["run-if-empty"]}".`
+      `[run-script-if] Running ${nCommands} command(s): ${formattedCommandsToLog}. Environment variable '${argv.env}' is not set and --run-if-empty is "${argv["run-if-empty"]}".`
     );
   } else {
     console.info(
-        `[run-script-if] Running ${nCommands} commands(s): ${formattedCommandsToLog}. Environment variable '${argv.env}' is equal to '${argv.eq}'.`
+      `[run-script-if] Running ${nCommands} commands(s): ${formattedCommandsToLog}. Environment variable '${argv.env}' is equal to '${argv.eq}'.`
     );
   }
 
