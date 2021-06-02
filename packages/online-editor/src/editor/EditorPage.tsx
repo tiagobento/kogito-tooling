@@ -217,6 +217,7 @@ export function EditorPage(props: Props) {
   }, [editor]);
 
   const enterFullscreen = useCallback(() => {
+    console.info("test");
     document.documentElement.requestFullscreen?.();
     (document.documentElement as any).webkitRequestFullscreen?.();
   }, []);
