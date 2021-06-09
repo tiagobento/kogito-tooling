@@ -1,6 +1,6 @@
 {
   "name": "@kogito-tooling/kie-editors-standalone",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "license": "Apache-2.0",
   "files": [
@@ -14,8 +14,8 @@
   },
   "devDependencies": {
     "@kie-tooling-core/editor": "^0.0.4",
-    "@kogito-tooling/external-assets-base": "0.0.4",
-    "@kogito-tooling/kie-bc-editors": "0.0.4"
+    "@kogito-tooling/external-assets-base": "0.0.5",
+    "@kogito-tooling/kie-bc-editors": "0.0.5"
   },
   "scripts": {
     "lint": "run-script-if --env KOGITO_TOOLING_BUILD_lint --true-if-empty --then 'yarn eslint ./src --ext .ts,.tsx'",
