@@ -19,6 +19,13 @@ runs:
         cd ${{ inputs.path }}
         git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
+    - name: "Check2 yarn.lock"
+      shell: bash
+      run: |
+        cd ${{ inputs.path }}
+        git diff yarn.lock;
+        [ "0" == "$(git diff yarn.lock | wc -l)" ]
+
     - name: "Setup Yarn and Lerna"
       shell: bash
       run: |
