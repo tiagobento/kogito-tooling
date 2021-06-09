@@ -90,6 +90,7 @@ jobs:
           echo ${{ needs.create_release.outputs.html_url }}
           echo ${{ needs.create_release.outputs.id }}
           echo ${{ needs.create_release.outputs.tag }}
+          ls
 
 #          cd kogito-tooling && yarn run build:prod && cd -
 
