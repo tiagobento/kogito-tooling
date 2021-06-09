@@ -1,6 +1,6 @@
 {
   "name": "@kogito-tooling/i18n-common-dictionary",
-  "version": "0.0.4-prerelease",
+  "version": "0.0.4",
   "description": "",
   "license": "Apache-2.0",
   "main": "./dist/index.js",
