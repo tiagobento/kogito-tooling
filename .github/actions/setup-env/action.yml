@@ -24,12 +24,14 @@ runs:
       run: |
         cd ${{ inputs.path }}
         git diff yarn.lock;
-        [ "0" == "$(git diff yarn.lock | wc -l)" ]
+        echo 'a'
+        [ "0" == "$(git diff yarn.lock | wc -l | tr -d ' ')" ]
 
     - name: "Setup Yarn and Lerna"
       shell: bash
       run: |
         cd ${{ inputs.path }}
+        echo 'b'
         npm install -g lerna@4.0.0 yarn@1.22.10
         yarn config set network-timeout 1000000
 
