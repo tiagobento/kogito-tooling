@@ -17,6 +17,8 @@
 const path = require("path");
 const buildEnv = require("@kogito-tooling/build-env");
 
+//useless comment on root file
+
 module.exports = (env) => {
   const transpileOnly = buildEnv.global.webpack(env).transpileOnly;
   const minimize = buildEnv.global.webpack(env).minimize;
