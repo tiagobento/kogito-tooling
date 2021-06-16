@@ -47,6 +47,8 @@ export function App(props: Props) {
     setFile(fileOpened);
   }, []);
 
+  //useless comment on specific package
+
   const onFileNameChanged = useCallback(
     (fileName: string, fileExtension: string) => {
       setFile({
