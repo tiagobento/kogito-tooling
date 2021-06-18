@@ -58,7 +58,7 @@ jobs:
       - name: "Print release parameters"
         shell: bash
         run: |
-          echo ${{ needs.create_release.outputs }}
+          echo ${{ toJSON(needs.create_release.outputs) }}
 
       - name: "Checkout"
         uses: actions/checkout@v2
@@ -75,7 +75,7 @@ jobs:
         uses: ./kogito-tooling/.github/actions/setup-env
         with:
           os: ${{ matrix.os }}
-          path: ${{ github.workspace }}/kogito-tooling
+          path: "${{ github.workspace }}/kogito-tooling"
 
       - name: "Build"
         working-directory: ${{ github.workspace }}/kogito-tooling
