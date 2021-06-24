@@ -1,6 +1,6 @@
 {
   "name": "@kogito-tooling/i18n-common-dictionary",
-  "version": "0.0.0",
+  "version": "0.0.15",
   "private": true,
   "description": "",
   "license": "Apache-2.0",
@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "@kie-tooling-core/i18n": "^0.0.9",
-    "@kogito-tooling/build-env": "0.0.0"
+    "@kogito-tooling/build-env": "0.0.15"
   }
 }
