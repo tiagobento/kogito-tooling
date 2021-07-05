@@ -38,13 +38,11 @@ import { useCallback, useContext, useMemo, useState } from "react";
 import { GlobalContext } from "../common/GlobalContext";
 import { useLocation } from "react-router";
 import { useOnlineI18n } from "../common/i18n";
-import { DmnRunnerButton } from "./DmnRunner/DmnRunnerButton";
 import { useDmnRunner } from "./DmnRunner/DmnRunnerContext";
 import { DmnRunnerDropdownGroup } from "./DmnRunner/DmnRunnerDropdownGroup";
 import { DmnRunnerStatus } from "./DmnRunner/DmnRunnerStatus";
 import { useDeploy } from "./deploy/DeployContext";
-import { DeployInstanceStatus } from "./deploy/DeployInstanceStatus";
-import { DeployDropdown } from "./deploy/DeployDropdown";
+import { DmnExtendedServicesDropdown } from "./services/DmnExtendedServicesDropdown";
 
 interface Props {
   onFileNameChanged: (fileName: string, fileExtension: string) => void;
@@ -219,22 +217,6 @@ export function EditorToolbar(props: Props) {
       logoProps={logoProps}
       headerTools={
         <PageHeaderTools>
-          {deployContext.instanceStatus !== DeployInstanceStatus.UNAVAILABLE && (
-            <PageHeaderToolsGroup>
-              <PageHeaderToolsItem
-                visibility={{
-                  default: "hidden",
-                  "2xl": "visible",
-                  xl: "visible",
-                  lg: "hidden",
-                  md: "hidden",
-                  sm: "hidden",
-                }}
-              >
-                <DeployDropdown />
-              </PageHeaderToolsItem>
-            </PageHeaderToolsGroup>
-          )}
           <PageHeaderToolsGroup>
             {dmnRunner.status !== DmnRunnerStatus.UNAVAILABLE && (
               <PageHeaderToolsItem
@@ -247,7 +229,7 @@ export function EditorToolbar(props: Props) {
                   sm: "hidden",
                 }}
               >
-                <DmnRunnerButton />
+                <DmnExtendedServicesDropdown />
               </PageHeaderToolsItem>
             )}
           </PageHeaderToolsGroup>
