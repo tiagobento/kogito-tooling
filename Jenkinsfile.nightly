@@ -26,6 +26,7 @@ pipeline {
             steps {
                 script {
                     def currentBranch = env.BRANCH_NAME ?: env.GIT_BRANCH
+                    currentBranch = currentBranch == 'main' ? 'master' : currentBranch
                     println "Checking out ${env.BUILD_CONFIGURATION_REPO_URL}:${currentBranch} into build_config folder"
                     sh "git clone -b ${currentBranch} --single-branch ${env.BUILD_CONFIGURATION_REPO_URL} build_config"
                 }
@@ -44,14 +45,13 @@ pipeline {
                     env['EXTERNAL_RESOURCE_PATH__bpmnEditor'] = "$WORKSPACE/kiegroup_kogito-tooling/.github/supporting-files/maven-artifacts/bpmn-editor-unpacked/target/bpmn"
                     env['EXTERNAL_RESOURCE_PATH__dmnEditor'] = "$WORKSPACE/kiegroup_kogito-tooling/.github/supporting-files/maven-artifacts/dmn-editor-unpacked/target/dmn"
                     env['EXTERNAL_RESOURCE_PATH__scesimEditor'] = "$WORKSPACE/kiegroup_kogito-tooling/.github/supporting-files/maven-artifacts/scesim-editor-unpacked/target/scesim"
-                    env['EXTERNAL_RESOURCE_PATH__quarkusRunner'] = "$WORKSPACE/kiegroup_kogito-tooling/.github/supporting-files/maven-artifacts/kogito-tooling/quarkus-runner-unpacked/target/dependencies"
                 }
             }
         }
         stage('Build Nightly projects') {
             steps {
                 script {
-                    def projectCollection = ["kiegroup/kogito-tooling-java", "kiegroup/kogito-editors-java", "kiegroup/kogito-tooling"]
+                    def projectCollection = ["kiegroup/kogito-editors-java", "kiegroup/kogito-tooling"]
                     println "Project Collection to build ${projectCollection}"
                     def buildConfigAdditionalVariables = [:]
                     def buildConfigPathFolder = "$WORKSPACE/build_config/kogito/nightly"

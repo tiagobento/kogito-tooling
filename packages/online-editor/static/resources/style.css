@@ -81,13 +81,12 @@
 }
 
 .kogito--alert-container {
-  position: absolute;
+  position: fixed;
   display: flex;
   width: 100%;
   justify-content: center;
   align-items: center;
   padding: 1em;
-  pointer-events: none;
 }
 
 .kogito--alert {
@@ -95,7 +94,7 @@
 }
 
 .kogito--alert-container-unsaved {
-  position: absolute;
+  position: fixed;
   display: flex;
   width: 100%;
   justify-content: flex-end;
@@ -212,6 +211,13 @@
 
 .kogito--editor__embed-modal-embed-code-items {
   padding: var(--pf-global--spacer--xs);
+}
+
+.kogito-tooling--build-info {
+  font-size: 0.8em;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
 }
 
 .kogito--code {
