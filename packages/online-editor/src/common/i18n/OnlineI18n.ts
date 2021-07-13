@@ -410,7 +410,7 @@ interface OnlineDictionary extends ReferenceDictionary {
       available: string;
       tooltip: {
         outdated: string;
-        connected: string;
+        connected: (port: string) => string;
         disconnected: string;
       };
     };

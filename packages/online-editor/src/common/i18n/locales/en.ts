@@ -460,8 +460,8 @@ export const en: OnlineI18n = {
     button: {
       available: `This is only available in ${en_common.names.chrome} at the moment`,
       tooltip: {
-        outdated: `The ${en_common.names.kieToolingExtendedServices} is outdated`,
-        connected: `The ${en_common.names.kieToolingExtendedServices} is connected`,
+        outdated: `${en_common.names.kieToolingExtendedServices} is outdated.`,
+        connected: (port: string) => `${en_common.names.kieToolingExtendedServices} is connected to port ${port}.`,
         disconnected: `The ${en_common.names.kieToolingExtendedServices} is disconnected`,
       },
     },
